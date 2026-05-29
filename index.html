@@ -38,6 +38,21 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* ==========================================================================
+           SCROLL ANIMATIONS MECHANISM
+           ========================================================================== */
+        .reveal {
+            position: relative;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         /* Highlight Text Utility */
         .text-gradient {
             background: linear-gradient(135deg, #fff 30%, var(--brand-red) 100%);
@@ -229,6 +244,58 @@
         }
 
         .modern-card p {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Zero-Capital Workflow Architecture */
+        .workflow-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .workflow-card {
+            background: var(--surface-dark);
+            border: 1px solid var(--border-dark);
+            padding: 40px 30px;
+            border-radius: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .workflow-card:hover {
+            border-color: rgba(0, 230, 118, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 230, 118, 0.03);
+        }
+
+        .workflow-step-num {
+            position: absolute;
+            top: -20px;
+            left: 30px;
+            background: linear-gradient(135deg, var(--brand-green), #00b0ff);
+            color: #000;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            box-shadow: 0 0 20px var(--brand-green-glow);
+        }
+
+        .workflow-card h3 {
+            font-size: 22px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .workflow-card p {
             color: var(--text-muted);
             font-size: 15px;
             line-height: 1.6;
@@ -475,6 +542,7 @@
             .hero-section p { font-size: 16px; }
             .about-split { grid-template-columns: 1fr; gap: 35px; }
             .syllabus-grid { grid-template-columns: 1fr; gap: 15px; }
+            .workflow-grid { grid-template-columns: 1fr; gap: 40px; }
             .calc-grid { grid-template-columns: 1fr; gap: 15px; }
             .calc-container { padding: 30px 20px; }
             .section-header h2 { font-size: 28px; }
@@ -491,10 +559,9 @@
         <div class="logo">VCA<span>.</span></div>
         <ul class="nav-links">
             <li><a href="#about">About VCA</a></li>
+            <li><a href="#how-it-works">Zero-Capital Strategy</a></li>
             <li><a href="#why">Why This Course</a></li>
             <li><a href="#curriculum">Syllabus</a></li>
-            <li><a href="#platform">SmartBroker.lk</a></li>
-            <li><a href="#faq">FAQ</a></li>
             <li><a href="#pricing">Enroll Now</a></li>
         </ul>
     </nav>
@@ -507,8 +574,37 @@
         <a href="https://wa.me/94784600445?text=Hi%20VCA%2C%20I%20want%20to%20enroll%20in%20the%20Professional%20Broker%20Guide%20course." target="_blank" class="primary-btn">Get Immediate Access ➡️</a>
     </div>
 
-    <!-- About Us Section -->
-    <section id="about" class="glow-effect">
+    <!-- NEW SECTION: How it works with Zero Capital (With Reveal Animation) -->
+    <section id="how-it-works" class="reveal" style="border-top: 1px solid var(--border-dark);">
+        <div class="section-header">
+            <h2>සතයක්වත් නැතුව බිස්නස් එක කරන්නේ කොහොමද? 🤔</h2>
+            <p>සාම්ප්‍රදායිකව වාහන බිස්නස් කරන්න ලොකු සේල් එකක් හෝ ලක්ෂ ගණනක ප්‍රාග්ධනයක් ඕනේ වුණාට, අපේ ඩිජිටල් ක්‍රමවේදය ක්‍රියාත්මක වෙන්නේ මෙන්න මෙහෙමයි:</p>
+        </div>
+
+        <div class="workflow-grid">
+            <!-- Step 1 -->
+            <div class="workflow-card">
+                <div class="workflow-step-num">01</div>
+                <h3>Information Capture 📲</h3>
+                <p>ඔයා මුලින්ම කරන්නේ වාහනයක් විකුණන්න කැමැත්තෙන් ඉන්න සැබෑ අයිතිකරුවෙක් (Direct Seller) අපේ ඩිජිටල් Tools හරහා සොයාගෙන, වාහනයේ සියලුම විස්තර සහ Premium ඡායාරූප ඔයාගේ Smartphone එකට ලබාගන්න එකයි.</p>
+            </div>
+            <!-- Step 2 -->
+            <div class="workflow-card">
+                <div class="workflow-step-num">02</div>
+                <h3>The Stealth Match 🧠</h3>
+                <p>ඊළඟට ඔයා සතයක්වත් Ads වලට වියදම් කරන්නේ නැතුව අපේ Organic Marketing ක්‍රමවේද සහ <b>smartbroker.lk</b> ප්ලැට්ෆෝම් එක පාවිච්චි කරලා, ඒ වාහනයම මිලදී ගන්න බලාගෙන ඉන්න "Hot Buyer" කෙනෙක්ව තත්පර ගණනකින් Match කරනවා.</p>
+            </div>
+            <!-- Step 3 -->
+            <div class="workflow-card">
+                <div class="workflow-step-num">03</div>
+                <h3>Risk-Free Commission 💰</h3>
+                <p>වාහනය ඔයාගේ නමට ගන්නේ හෝ සල්ලි ගෙවන්නේ නැති නිසා ඔයාට කිසිම අවදානමක් (Risk) නැහැ. ගැනුම්කරු සහ විකුණුම්කරු මුහුණට මුහුණ හමුවී Deal එක Close කරද්දී ඔයාට නීත්‍යානුකූලව හිමි **2% ක සුපිරි කොමිස් මුදල** ඔයාගේ අතට ලැබෙනවා.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Section (With Reveal Animation) -->
+    <section id="about" class="glow-effect reveal">
         <div class="about-split">
             <div class="about-content">
                 <h3 class="text-gradient">Who We Are? (About VCA)</h3>
@@ -534,8 +630,8 @@
         </div>
     </section>
 
-    <!-- Why This Course Section -->
-    <section id="why">
+    <!-- Why This Course Section (With Reveal Animation) -->
+    <section id="why" class="reveal">
         <div class="section-header">
             <h2>Why This Course is Extremely Unique?</h2>
             <p>සාමාන්‍ය කෝස් එකකට වඩා මේක වෙනස් වෙන්නේ ඇයි කියලා බලන්න.</p>
@@ -559,8 +655,8 @@
         </div>
     </section>
 
-    <!-- Course Syllabus Display -->
-    <section id="curriculum">
+    <!-- Course Syllabus Display (With Reveal Animation) -->
+    <section id="curriculum" class="reveal">
         <div class="section-header">
             <h2>Course Syllabus (10 Modules)</h2>
             <p>Step-by-Step මුල සිට සරලව ඉගෙනගන්න ලැබෙන සම්පූර්ණ විෂය මාලාව.</p>
@@ -606,7 +702,7 @@
                 <div class="module-number">06</div>
                 <div class="module-info">
                     <h4>Organic Buyer Attraction</h4>
-                    <p>Ads සඳහා එක රුපියලක්වත් වියදම් නොකර, නොමිලේම සැබෑ ගැනුම්කරුවන් (Hot Buyers) සිය ගණනක් ගෙන්වා ගැනීම.</p>
+                    <p>Ads සඳහා එක ਰුපියලක්වත් වියදම් නොකර, නොමිලේම සැබෑ ගැනුම්කරුවන් (Hot Buyers) සිය ගණනක් ගෙන්වා ගැනීම.</p>
                 </div>
             </div>
             <div class="module-row">
@@ -640,95 +736,8 @@
         </div>
     </section>
 
-    <!-- SmartBroker Platform Feature Section -->
-    <section id="platform" class="glow-effect" style="background: linear-gradient(180deg, rgba(10,10,12,1) 0%, rgba(255,51,75,0.02) 50%, rgba(10,10,12,1) 100%);">
-        <div class="about-split">
-            <div class="about-content" style="background: linear-gradient(135deg, rgba(20,20,25,0.6) 0%, rgba(15,15,18,0.9) 100%); padding: 45px; border-radius: 24px; border: 1px solid rgba(255, 51, 75, 0.15);">
-                <div class="announcement-tag" style="margin-bottom: 15px; background: rgba(255,51,75,0.15);">VCA Exclusive Ecosystem</div>
-                <h3 class="text-gradient" style="font-size: 32px; font-weight: 800;">Introducing smartbroker.lk Platform! 🚀</h3>
-                <p style="margin-top: 15px;">කෝස් එක ඉගෙනගෙන ඉවර වෙලා "දැන් මම කොහොමද බිස්නස් එක කරන්නේ?" කියලා ඔයා අතරමං වෙන්නේ නැහැ. VCA ශිෂ්‍යයන් වෙනුවෙන්ම ලංකාවේ නිර්මාණය වන අංක එකේ ඩිජිටල් වාහන ජාලය (Automotive Network) වෙන <b>smartbroker.lk</b> ප්ලැට්ෆෝම් එකට ඔබට නොමිලේම ප්‍රවේශය ලැබෙනවා.</p>
-                <p>මේක සාමාන්‍ය Car Sale වෙබ්සයිට් එකක් නෙවෙයි. මේක ඔයාගේ ව්‍යාපාරය එක රැයකින් Scale කරන්න හදපු රහසිගත ඩිජිටල් Tool එකක්!</p>
-            </div>
-            
-            <div class="about-content">
-                <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 25px;">Platform එකෙන් ඔයාට ලැබෙන සුවිශේෂී වාසි 👇</h3>
-                
-                <div class="target-box" style="border-left-color: var(--brand-red);">
-                    <h4 style="color: var(--brand-red);">Verified Direct Sellers Database 🔒</h4>
-                    <p>ලංකාව වටෙන්ම තියෙන, අතරමැදියන් නොමැති සැබෑ වාහන අයිතිකරුවන්ගේ (Direct Sellers) තොරතුරු සහ ෆෝන් නම්බර්ස් ක්ෂණිකව ලබාගැනීමේ හැකියාව.</p>
-                </div>
-                
-                <div class="target-box" style="border-left-color: #fff;">
-                    <h4>Smart Matching Algorithm 🧠</h4>
-                    <p>ඔයා ළඟ ඉන්න Buyer කෙනෙක් ඉල්ලන වාහනය ලංකාවේ වෙනත් තැනක තියෙනවා නම්, ප්ලැට්ෆෝම් එක මඟින් එය තත්පරයකින් Match කර Co-Brokerage (කොමිස් බෙදාගැනීමේ ක්‍රමයට) Deal එක Close කරන්න උදව් දීම.</p>
-                </div>
-                
-                <div class="target-box" style="border-left-color: var(--brand-red);">
-                    <h4>Premium Digital Business Card & Portfolio 🪪</h4>
-                    <p>ඔයා සාමාන්‍ය බ්‍රෝකර් කෙනෙක් නෙවෙයි කියලා පෙන්වන්න, smartbroker.lk හරහා ඔයාගේම නමින් Professional Verified Consultant Profile එකක් සෑදීමේ අවස්ථාව.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Modern Accordion FAQ Section -->
-    <section id="faq" class="glow-effect">
-        <div class="section-header">
-            <h2>Frequently Asked Questions (FAQ)</h2>
-            <p>ඔයාට තියෙන හැම ප්‍රශ්නයකටම සරලව පිළිතුරු මෙන්න.</p>
-        </div>
-
-        <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px;">
-            
-            <!-- FAQ Item 1 -->
-            <div class="faq-item" style="background: var(--surface-dark); border: 1px solid var(--border-dark); border-radius: 12px; overflow: hidden; transition: all 0.3s ease;">
-                <button class="faq-toggle" style="width: 100%; background: none; border: none; padding: 22px 30px; text-align: left; color: var(--text-pure); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 15px;">
-                    <span>1. මේ කෝස් එක කරන්න මට වාහන ගැන ලොකු Mechanical දැනුමක් තියෙන්න ඕනෙද?</span>
-                    <span class="faq-icon" style="font-size: 20px; color: var(--brand-red); transition: transform 0.3s ease;">+</span>
-                </button>
-                <div class="faq-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(255,255,255,0.01);">
-                    <p style="padding: 0 30px 22px 30px; color: var(--text-muted); font-size: 15px; line-height: 1.6;">නැහැ බ්‍රෝ! වාහනයක එන්ජිමක් ගලවන්න හෝ හදන්න ඔයා දැනගන්න ඕනේ නැහැ. වාහනයක Exterior/Interior එකක් බැලූ බැල්මට පරික්ෂා කරන්නේ කොහොමද, ධාවන තත්ත්වය (Running Condition) සහ Legal Documents (ලියකියවිලි) චෙක් කරන්නේ කොහොමද කියන දේ Basic මට්ටමේ ඉඳලා Practical විදිහට අපි කෝස් එකේදී කියලා දෙනවා.</p>
-                </div>
-            </div>
-
-            <!-- FAQ Item 2 -->
-            <div class="faq-item" style="background: var(--surface-dark); border: 1px solid var(--border-dark); border-radius: 12px; overflow: hidden; transition: all 0.3s ease;">
-                <button class="faq-toggle" style="width: 100%; background: none; border: none; padding: 22px 30px; text-align: left; color: var(--text-pure); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 15px;">
-                    <span>2. Smartbroker.lk ප්ලැට්ෆෝම් එකට Access ලැබෙන්නේ කවදා ඉඳන්ද?</span>
-                    <span class="faq-icon" style="font-size: 20px; color: var(--brand-red); transition: transform 0.3s ease;">+</span>
-                </button>
-                <div class="faq-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(255,255,255,0.01);">
-                    <p style="padding: 0 30px 22px 30px; color: var(--text-muted); font-size: 15px; line-height: 1.6;">ඔයා සාර්ථකව කෝස් එකට Enroll වුණු ගමන්ම ඔයාගේ Student Dashboard එක හරහා smartbroker.lk ප්ලැට්ෆෝම් එකට පිවිසෙන්න පුළුවන් Premium Account එකක් Instant ඇක්ටිවේට් වෙනවා. එතැන් ඉඳන් ජීවිත කාලයටම (Lifetime) ඔයාට ඒක නොමිලේ පාවිච්චි කරන්න පුළුවන්.</p>
-                </div>
-            </div>
-
-            <!-- FAQ Item 3 -->
-            <div class="faq-item" style="background: var(--surface-dark); border: 1px solid var(--border-dark); border-radius: 12px; overflow: hidden; transition: all 0.3s ease;">
-                <button class="faq-toggle" style="width: 100%; background: none; border: none; padding: 22px 30px; text-align: left; color: var(--text-pure); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 15px;">
-                    <span>3. Part-time එකක් විදිහට ජොබ් එකක් කරන ගමන් මේක කරන්න පුළුවන්ද?</span>
-                    <span class="faq-icon" style="font-size: 20px; color: var(--brand-red); transition: transform 0.3s ease;">+</span>
-                </button>
-                <div class="faq-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(255,255,255,0.01);">
-                    <p style="padding: 0 30px 22px 30px; color: var(--text-muted); font-size: 15px; line-height: 1.6;">අනිවාර්යයෙන්ම පුළුවන්. කෝස් එකේ තියෙන වීඩියෝස් ඔයාට කැමති වෙලාවක (Recorded Videos) බලන්න පුළුවන් නිසා ඔයාගේ Full-time ජොබ් එකට හෝ අධ්‍යාපන කටයුතු වලට කිසිම බාධාවක් වෙන්නේ නැහැ. දවසට පැය 1ක් හෝ 2ක් ස්මාර්ට්ෆෝන් එකෙන් වෙන් කලත් හොඳ Income එකකට යන්න පුළුවන්.</p>
-                </div>
-            </div>
-
-            <!-- FAQ Item 4 -->
-            <div class="faq-item" style="background: var(--surface-dark); border: 1px solid var(--border-dark); border-radius: 12px; overflow: hidden; transition: all 0.3s ease;">
-                <button class="faq-toggle" style="width: 100%; background: none; border: none; padding: 22px 30px; text-align: left; color: var(--text-pure); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 15px;">
-                    <span>4. මට මොකක් හරි ප්‍රායෝගික ගැටළුවක් ආවොත් Help කරන්නේ කවුද?</span>
-                    <span class="faq-icon" style="font-size: 20px; color: var(--brand-red); transition: transform 0.3s ease;">+</span>
-                </button>
-                <div class="faq-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(255,255,255,0.01);">
-                    <p style="padding: 0 30px 22px 30px; color: var(--text-muted); font-size: 15px; line-height: 1.6;">අපි ඔයාව අපේ Exclusive VCA Students WhatsApp Community එකට ඇතුළත් කරනවා. එතනදී ඔයාට සිද්ධ වෙන හැම Deal එකකදීම එන ප්‍රශ්න, ලීසිං කරගන්න විදිහ වගේ ඕනෑම දේකට අපේ Team එකෙන් සෘජුවම (Direct Support) මඟපෙන්වීම් ලැබෙනවා.</p>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- Strategic Wealth Blueprint (14 Days Calculation) -->
-    <section id="calculation" style="border-top: 1px solid var(--border-dark);">
+    <!-- Strategic Wealth Blueprint (14 Days Calculation) - (With Reveal Animation) -->
+    <section id="calculation" class="reveal" style="border-top: 1px solid var(--border-dark);">
         <div class="calc-container">
             <div class="announcement-tag" style="background: rgba(0, 230, 118, 0.08); border-color: rgba(0, 230, 118, 0.3); color: var(--brand-green);">The 14-Day Wealth Blueprint</div>
             <h3 style="font-size: 32px; font-weight: 800; text-align: center;" class="text-gradient-green">ඔයාගේ පළවෙනි මිලියනය (Rs. 1,000,000) දවස් 14න් හොයන්නේ කොහොමද?</h3>
@@ -758,8 +767,8 @@
         </div>
     </section>
 
-    <!-- Pricing / Action Conversion Display -->
-    <section id="pricing" style="padding-top: 20px;">
+    <!-- Pricing / Action Conversion Display (With Reveal Animation) -->
+    <section id="pricing" class="reveal" style="padding-top: 20px;">
         <!-- Trust & Security Badges Area -->
         <div class="trust-badge-container">
             <div class="trust-badge" style="border-color: var(--brand-green);">
@@ -789,10 +798,8 @@
                     <li>Legal Brokerage Agreement Templates (නීතිමය ලියකියවිලි නිදර්ශක)</li>
                 </ul>
                 
-                <!-- Updated Buy Button with WhatsApp Integration -->
                 <a href="https://wa.me/94784600445?text=Hi%20VCA%2C%20I%20want%20to%20enroll%20in%20the%20Professional%20Broker%20Guide%20course." target="_blank" class="primary-btn" style="display: block; width: 100%; text-align: center;">Enroll in Masterclass Now ➡️</a>
                 
-                <!-- Risk Reversal Text Copy -->
                 <p style="font-size: 13px; color: #cbd5e1; margin-top: 20px; line-height: 1.5; padding: 10px; background: rgba(255, 51, 75, 0.05); border-radius: 8px; border: 1px solid rgba(255, 51, 75, 0.15);">
                     🎯 <b>100% Risk-Free Guarantee:</b> මාස 2ක් (දවස් 60ක්) ඇතුළත මේ කෝස් එකෙන් ඔයාට වටිනාකමක් සොයාගන්න බැරි වුණොත්, අපිට මැසේජ් එකක් දාන්න. කිසිම ප්‍රශ්නයකින් තොරව ඔයාගේ මුදල් <b>සම්පූර්ණයෙන්ම ආපසු ලබා දෙනවා (Full Refund)</b>.
                 </p>
@@ -806,15 +813,15 @@
         <p style="color: #444; font-size: 12px; margin-top: 10px;">Fueling the Next Generation of Automotive Entrepreneurs.</p>
     </footer>
 
-    <!-- FAQ Logic JavaScript -->
+    <!-- INTERACTIVE JAVASCRIPT: FAQ & Scroll Animations -->
     <script>
+        // --- 1. FAQ Accordion Logic ---
         document.querySelectorAll('.faq-toggle').forEach(button => {
             button.addEventListener('click', () => {
                 const faqItem = button.parentElement;
                 const content = button.nextElementSibling;
                 const icon = button.querySelector('.faq-icon');
                 
-                // Close other open FAQ items
                 document.querySelectorAll('.faq-content').forEach(otherContent => {
                     if (otherContent !== content && otherContent.style.maxHeight !== '0px') {
                         otherContent.style.maxHeight = '0px';
@@ -824,7 +831,6 @@
                     }
                 });
 
-                // Toggle current FAQ item
                 if (content.style.maxHeight && content.style.maxHeight !== '0px') {
                     content.style.maxHeight = '0px';
                     icon.textContent = '+';
@@ -838,6 +844,25 @@
                 }
             });
         });
+
+        // --- 2. Smooth Scroll Reveal Animation Logic ---
+        function revealSections() {
+            const reveals = document.querySelectorAll('.reveal');
+            const windowHeight = window.innerHeight;
+            
+            reveals.forEach(reveal => {
+                const revealTop = reveal.getBoundingClientRect().top;
+                const revealPoint = 100; // Element එකක් පෙනෙන්න පටන් ගන්නා සීමාව (px)
+
+                if (revealTop < windowHeight - revealPoint) {
+                    reveal.classList.add('active');
+                }
+            });
+        }
+
+        // Listeners for Scroll and Initial Load
+        window.addEventListener('scroll', revealSections);
+        window.addEventListener('DOMContentLoaded', revealSections);
     </script>
 
 </body>
