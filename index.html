@@ -40,7 +40,7 @@
 
         /* ==========================================================================
            SCROLL ANIMATIONS MECHANISM
-           ========================================================================== */
+           ========================================================================= */
         .reveal {
             position: relative;
             opacity: 0;
@@ -177,7 +177,10 @@
             border-radius: 100px;
             transition: all 0.3s ease;
             box-shadow: 0 0 30px var(--brand-red-glow);
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             text-align: center;
         }
 
@@ -185,6 +188,12 @@
             background: var(--brand-red-hover);
             transform: translateY(-2px);
             box-shadow: 0 0 40px var(--brand-red);
+        }
+
+        .primary-btn svg {
+            fill: currentColor;
+            width: 18px;
+            height: 18px;
         }
 
         /* Layout Grid System */
@@ -231,10 +240,23 @@
             transform: translateY(-5px);
         }
 
-        .card-icon {
-            font-size: 28px;
-            margin-bottom: 20px;
-            display: inline-block;
+        .card-icon-wrap {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 51, 75, 0.06);
+            border: 1px solid rgba(255, 51, 75, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 22px;
+            color: var(--brand-red);
+        }
+
+        .card-icon-wrap svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
         }
 
         .modern-card h3 {
@@ -288,10 +310,22 @@
             box-shadow: 0 0 20px var(--brand-green-glow);
         }
 
-        .workflow-card h3 {
-            font-size: 22px;
+        .workflow-card .workflow-icon-wrap {
+            color: var(--brand-green);
             margin-top: 10px;
             margin-bottom: 15px;
+            display: flex;
+        }
+
+        .workflow-card .workflow-icon-wrap svg {
+            width: 32px;
+            height: 32px;
+            fill: currentColor;
+        }
+
+        .workflow-card h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
             font-weight: 700;
         }
 
@@ -445,6 +479,12 @@
             font-weight: 600;
         }
 
+        .trust-badge svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
         /* Pricing Card Architecture */
         .pricing-wrap {
             display: flex;
@@ -512,11 +552,11 @@
             gap: 12px;
         }
 
-        .feature-checklist li::before {
-            content: '✓';
-            color: var(--brand-red);
-            font-weight: bold;
-            font-size: 16px;
+        .feature-checklist li svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--brand-red);
+            flex-shrink: 0;
         }
 
         /* Footer styling */
@@ -571,13 +611,16 @@
         <div class="announcement-tag">Vehicle Consultant Academy (VCA) Presenting</div>
         <h1><span class="text-gradient">Professional Broker Guide</span> — Zero Investment එකකින් Automotive Business එක පටන් ගන්න!</h1>
         <p>ලංකාවේ Traditional Broker ක්‍රමයෙන් මිදිලා, ඔයාගේ Smartphone එක විතරක් පාවිච්චි කරලා මාසිකව ලක්ෂ ගණනක Income එකක් හොයන සැබෑ "Vehicle Consultant" කෙනෙක් වෙන්න ලෑස්ති වෙන්න.</p>
-        <a href="https://wa.me/94784600445?text=Hi%20VCA%2C%20I%20want%20to%20enroll%20in%20the%20Professional%20Broker%20Guide%20course." target="_blank" class="primary-btn">Get Immediate Access </a>
+        <a href="https://wa.me/94784600445?text=Hi%20VCA%2C%20I%20want%20to%20enroll%20in%20the%20Professional%20Broker%20Guide%20course." target="_blank" class="primary-btn">
+            Get Immediate Access
+            <svg viewBox="0 0 24 24"><path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/></svg>
+        </a>
     </div>
 
-    <!-- NEW SECTION: How it works with Zero Capital (With Reveal Animation) -->
+    <!-- SECTION: How it works with Zero Capital -->
     <section id="how-it-works" class="reveal" style="border-top: 1px solid var(--border-dark);">
         <div class="section-header">
-            <h2>සතයක්වත් නැතුව බිස්නස් එක කරන්නේ කොහොමද? </h2>
+            <h2>සතයක්වත් නැතුව බිස්නස් එක කරන්නේ කොහොමද?</h2>
             <p>සාම්ප්‍රදායිකව වාහන බිස්නස් කරන්න ලොකු සේල් එකක් හෝ ලක්ෂ ගණනක ප්‍රාග්ධනයක් ඕනේ වුණාට, අපේ ඩිජිටල් ක්‍රමවේදය ක්‍රියාත්මක වෙන්නේ මෙන්න මෙහෙමයි:</p>
         </div>
 
@@ -585,25 +628,34 @@
             <!-- Step 1 -->
             <div class="workflow-card">
                 <div class="workflow-step-num">01</div>
-                <h3>Information Capture </h3>
+                <div class="workflow-icon-wrap">
+                    <svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+                </div>
+                <h3>Information Capture</h3>
                 <p>ඔයා මුලින්ම කරන්නේ වාහනයක් විකුණන්න කැමැත්තෙන් ඉන්න සැබෑ අයිතිකරුවෙක් (Direct Seller) අපේ ඩිජිටල් Tools හරහා සොයාගෙන, වාහනයේ සියලුම විස්තර සහ Premium ඡායාරූප ඔයාගේ Smartphone එකට ලබාගන්න එකයි.</p>
             </div>
             <!-- Step 2 -->
             <div class="workflow-card">
                 <div class="workflow-step-num">02</div>
+                <div class="workflow-icon-wrap">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                </div>
                 <h3>The Stealth Match</h3>
                 <p>ඊළඟට ඔයා සතයක්වත් Ads වලට වියදම් කරන්නේ නැතුව අපේ Organic Marketing ක්‍රමවේද සහ <b>smartbroker.lk</b> ප්ලැට්ෆෝම් එක පාවිච්චි කරලා, ඒ වාහනයම මිලදී ගන්න බලාගෙන ඉන්න "Hot Buyer" කෙනෙක්ව තත්පර ගණනකින් Match කරනවා.</p>
             </div>
             <!-- Step 3 -->
             <div class="workflow-card">
                 <div class="workflow-step-num">03</div>
-                <h3>Risk-Free Commission </h3>
+                <div class="workflow-icon-wrap">
+                    <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                </div>
+                <h3>Risk-Free Commission</h3>
                 <p>වාහනය ඔයාගේ නමට ගන්නේ හෝ සල්ලි ගෙවන්නේ නැති නිසා ඔයාට කිසිම අවදානමක් (Risk) නැහැ. ගැනුම්කරු සහ විකුණුම්කරු මුහුණට මුහුණ හමුවී Deal එක Close කරද්දී ඔයාට නීත්‍යානුකූලව හිමි **2% ක සුපිරි කොමිස් මුදල** ඔයාගේ අතට ලැබෙනවා.</p>
             </div>
         </div>
     </section>
 
-    <!-- About Us Section (With Reveal Animation) -->
+    <!-- About Us Section -->
     <section id="about" class="glow-effect reveal">
         <div class="about-split">
             <div class="about-content">
@@ -612,7 +664,7 @@
                 <p>අපේ ප්‍රධානම අරමුණ වෙන්නේ කිසිම මූලික ප්‍රාග්ධනයක් (Zero Capital) නැතුව, හරිම Business Psychology සහ Marketing Tools පාවිච්චි කරලා සාර්ථක Entrepreneur කෙනෙක් වෙන්න ඔබට මඟපෙන්වන එකයි.</p>
             </div>
             <div class="about-content" style="background: var(--surface-dark); padding: 40px; border-radius: 20px; border: 1px solid var(--border-dark);">
-                <h3 style="font-size: 22px; margin-bottom: 25px;">This Course is Designed For </h3>
+                <h3 style="font-size: 22px; margin-bottom: 25px;">This Course is Designed For</h3>
                 
                 <div class="target-box">
                     <h4>Students & Youth</h4>
@@ -630,7 +682,7 @@
         </div>
     </section>
 
-    <!-- Why This Course Section (With Reveal Animation) -->
+    <!-- Why This Course Section -->
     <section id="why" class="reveal">
         <div class="section-header">
             <h2>Why This Course is Extremely Unique?</h2>
@@ -638,24 +690,30 @@
         </div>
         <div class="grid-cards">
             <div class="modern-card">
-                <span class="card-icon"></span>
+                <div class="card-icon-wrap">
+                    <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                </div>
                 <h3>0% Investment Required</h3>
                 <p>වාහන මිලදී ගන්න හෝ සේල් එකක් දාන්න සතයක්වත් අවශ්‍ය නැහැ. ඔබ කරන්නේ "Information Brokerage" කලාවයි.</p>
             </div>
             <div class="modern-card">
-                <span class="card-icon"></span>
+                <div class="card-icon-wrap">
+                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                </div>
                 <h3>Absolutely Zero Risk</h3>
                 <p>වාහන Stock තියාගන්නේ නැති නිසා Market එක කොච්චර බැස්සත් හෝ වෙනස් වුණත් ඔබට කිසිම මූල්‍යමය පාඩුවක් වෙන්නේ නැහැ.</p>
             </div>
             <div class="modern-card">
-                <span class="card-icon"></span>
+                <div class="card-icon-wrap">
+                    <svg viewBox="0 0 24 24"><path d="M12 2c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l2.79-2.79C10.09 18.78 11.03 19 12 19c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+                </div>
                 <h3>Stealth Approach Tactics</h3>
                 <p>කාටවත් කරදරයක් නොවී, Direct Sellers ලා සහ Buyers ලා සූක්ෂ්ම ලෙස ඩිජිටල් ක්‍රම මඟින් සම්බන්ධ කරන රහස්‍ය උපක්‍රම.</p>
             </div>
         </div>
     </section>
 
-    <!-- Course Syllabus Display (With Reveal Animation) -->
+    <!-- Course Syllabus Display -->
     <section id="curriculum" class="reveal">
         <div class="section-header">
             <h2>Course Syllabus (10 Modules)</h2>
@@ -702,7 +760,7 @@
                 <div class="module-number">06</div>
                 <div class="module-info">
                     <h4>Organic Buyer Attraction</h4>
-                    <p>Ads සඳහා එක ਰුපියලක්වත් වියදම් නොකර, නොමිලේම සැබෑ ගැනුම්කරුවන් (Hot Buyers) සිය ගණනක් ගෙන්වා ගැනීම.</p>
+                    <p>Ads සඳහා එක රුපියලක්වත් වියදම් නොකර, නොමිලේම සැබෑ ගැනුම්කරුවන් (Hot Buyers) සිය ගණනක් ගෙන්වා ගැනීම.</p>
                 </div>
             </div>
             <div class="module-row">
@@ -736,7 +794,7 @@
         </div>
     </section>
 
-    <!-- Strategic Wealth Blueprint (14 Days Calculation) - (With Reveal Animation) -->
+    <!-- Strategic Wealth Blueprint (14 Days Calculation) -->
     <section id="calculation" class="reveal" style="border-top: 1px solid var(--border-dark);">
         <div class="calc-container">
             <div class="announcement-tag" style="background: rgba(0, 230, 118, 0.08); border-color: rgba(0, 230, 118, 0.3); color: var(--brand-green);">The 14-Day Wealth Blueprint</div>
@@ -767,15 +825,17 @@
         </div>
     </section>
 
-    <!-- Pricing / Action Conversion Display (With Reveal Animation) -->
+    <!-- Pricing / Action Conversion Display -->
     <section id="pricing" class="reveal" style="padding-top: 20px;">
         <!-- Trust & Security Badges Area -->
         <div class="trust-badge-container">
-            <div class="trust-badge" style="border-color: var(--brand-green);">
-                <span style="color: var(--brand-green); font-size: 18px;"></span> <b>2-Month Money-Back Guarantee</b>
+            <div class="trust-badge" style="border-color: var(--brand-green); color: var(--brand-green);">
+                <svg viewBox="0 0 24 24"><path d="M12 22c5.52 0 10-4.48 10-10S17.52 2 12 2 2 6.48 2 12s4.48 10 10 10zm-1-15h2v6h-2V7zm0 8h2v2h-2v-2z"/></svg>
+                <span style="color: var(--text-pure);"><b>2-Month Money-Back Guarantee</b></span>
             </div>
-            <div class="trust-badge">
-                <span style="color: var(--brand-red); font-size: 18px;"></span> <b> VCA Certified Course</b>
+            <div class="trust-badge" style="color: var(--brand-red); border-color: rgba(255,51,75,0.3)">
+                <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5.47 12.5L12 16l6.53-3.5L12 9.5l-6.53 3z"/></svg>
+                <span style="color: var(--text-pure);"><b>Government approved VCA Certified Course</b></span>
             </div>
         </div>
 
@@ -791,14 +851,17 @@
                 </div>
                 
                 <ul class="feature-checklist">
-                    <li>සම්පූර්ණ High-Quality වීඩියෝ මොඩියුල 10ම ක්ෂණිකව ලැබීම</li>
-                    <li><b>Official VCA Graduation Certificate</b> (වෘත්තීය වටිනාකමක් සඳහා)</li>
-                    <li><b>Lifetime Access:</b> කෝස් එකට අනාගතයේ එන හැම Update එකක්ම නොමිලේ</li>
-                    <li><b>Dedicated WhatsApp Support:</b> ප්‍රායෝගිකව ගැටළුවක් ආවොත් කෙලින්ම අපෙන් උදව්</li>
-                    <li>Legal Brokerage Agreement Templates (නීතිමය ලියකියවිලි නිදර්ශක)</li>
+                    <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.42L9 19 21 7l-1.41-1.41z"/></svg>සම්පූර්ණ High-Quality වීඩියෝ මොඩියුල 10ම ක්ෂණිකව ලැබීම</li>
+                    <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.42L9 19 21 7l-1.41-1.41z"/></svg><b>Official VCA Graduation Certificate</b> (වෘත්තීය වටිනාකමක් සඳහා)</li>
+                    <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.42L9 19 21 7l-1.41-1.41z"/></svg><b>Lifetime Access:</b> කෝස් එකට අනාගතයේ එන හැම Update එකක්ම නොමිලේ</li>
+                    <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.42L9 19 21 7l-1.41-1.41z"/></svg><b>Dedicated WhatsApp Support:</b> ප්‍රායෝගිකව ගැටළුවක් ආවොත් කෙලින්ම අපෙන් උදව්</li>
+                    <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.42L9 19 21 7l-1.41-1.41z"/></svg>Legal Brokerage Agreement Templates (නීතිමය ලියකියවිලි නිදර්ශක)</li>
                 </ul>
                 
-                <a href="https://wa.me/94784600445?text=Hi%20VCA%2C%20I%20want%20to%20enroll%20in%20the%20Professional%20Broker%20Guide%20course." target="_blank" class="primary-btn" style="display: block; width: 100%; text-align: center;">Enroll in Masterclass Now ➡️</a>
+                <a href="https://wa.me/94784600445?text=Hi%20VCA%2C%20I%20want%20to%20enroll%20in%20the%20Professional%20Broker%20Guide%20course." target="_blank" class="primary-btn" style="display: flex; width: 100%; text-align: center;">
+                    Enroll in Masterclass Now
+                    <svg viewBox="0 0 24 24"><path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/></svg>
+                </a>
                 
                 <p style="font-size: 13px; color: #cbd5e1; margin-top: 20px; line-height: 1.5; padding: 10px; background: rgba(255, 51, 75, 0.05); border-radius: 8px; border: 1px solid rgba(255, 51, 75, 0.15);">
                     🎯 <b>100% Risk-Free Guarantee:</b> මාස 2ක් (දවස් 60ක්) ඇතුළත මේ කෝස් එකෙන් ඔයාට වටිනාකමක් සොයාගන්න බැරි වුණොත්, අපිට මැසේජ් එකක් දාන්න. කිසිම ප්‍රශ්නයකින් තොරව ඔයාගේ මුදල් <b>සම්පූර්ණයෙන්ම ආපසු ලබා දෙනවා (Full Refund)</b>.
@@ -813,46 +876,16 @@
         <p style="color: #444; font-size: 12px; margin-top: 10px;">Fueling the Next Generation of Automotive Entrepreneurs.</p>
     </footer>
 
-    <!-- INTERACTIVE JAVASCRIPT: FAQ & Scroll Animations -->
+    <!-- INTERACTIVE JAVASCRIPT: Scroll Animations -->
     <script>
-        // --- 1. FAQ Accordion Logic ---
-        document.querySelectorAll('.faq-toggle').forEach(button => {
-            button.addEventListener('click', () => {
-                const faqItem = button.parentElement;
-                const content = button.nextElementSibling;
-                const icon = button.querySelector('.faq-icon');
-                
-                document.querySelectorAll('.faq-content').forEach(otherContent => {
-                    if (otherContent !== content && otherContent.style.maxHeight !== '0px') {
-                        otherContent.style.maxHeight = '0px';
-                        otherContent.parentElement.querySelector('.faq-icon').textContent = '+';
-                        otherContent.parentElement.querySelector('.faq-icon').style.transform = 'rotate(0deg)';
-                        otherContent.parentElement.style.borderColor = 'var(--border-dark)';
-                    }
-                });
-
-                if (content.style.maxHeight && content.style.maxHeight !== '0px') {
-                    content.style.maxHeight = '0px';
-                    icon.textContent = '+';
-                    icon.style.transform = 'rotate(0deg)';
-                    faqItem.style.borderColor = 'var(--border-dark)';
-                } else {
-                    content.style.maxHeight = content.scrollHeight + "px";
-                    icon.textContent = '−';
-                    icon.style.transform = 'rotate(180deg)';
-                    faqItem.style.borderColor = 'rgba(255, 51, 75, 0.4)';
-                }
-            });
-        });
-
-        // --- 2. Smooth Scroll Reveal Animation Logic ---
+        // Smooth Scroll Reveal Animation Logic
         function revealSections() {
             const reveals = document.querySelectorAll('.reveal');
             const windowHeight = window.innerHeight;
             
             reveals.forEach(reveal => {
                 const revealTop = reveal.getBoundingClientRect().top;
-                const revealPoint = 100; // Element එකක් පෙනෙන්න පටන් ගන්නා සීමාව (px)
+                const revealPoint = 100;
 
                 if (revealTop < windowHeight - revealPoint) {
                     reveal.classList.add('active');
@@ -860,7 +893,6 @@
             });
         }
 
-        // Listeners for Scroll and Initial Load
         window.addEventListener('scroll', revealSections);
         window.addEventListener('DOMContentLoaded', revealSections);
     </script>
