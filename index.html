@@ -3,204 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartBroker | Vehicle Broker Course</title>
+    <title>SmartBroker LMS Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        .hidden { display: none; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
-        .active-lesson { background-color: #27272a !important; color: #ffffff !important; border-left: 4px solid #dc2626; }
+        .active-lesson { background-color: #dc2626 !important; color: white !important; }
     </style>
 </head>
 <body class="bg-black text-zinc-100 font-sans">
 
-    <!-- Auth Container -->
-    <div id="auth-container" class="min-h-screen flex items-center justify-center px-4 bg-zinc-950">
-        <div class="max-w-md w-full bg-zinc-900 p-8 rounded-2xl border border-zinc-800 shadow-2xl text-center">
-            <div class="bg-red-600 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black">SB</div>
-            <h2 class="text-2xl font-bold text-white mb-6">Broker Academy Login</h2>
-            <form id="auth-form" onsubmit="handleAuth(event)">
-                <input type="email" id="auth-email" placeholder="Email" required class="w-full bg-black text-white px-4 py-3 mb-4 rounded-xl border border-zinc-700">
-                <input type="password" id="auth-password" placeholder="Password" required class="w-full bg-black text-white px-4 py-3 mb-6 rounded-xl border border-zinc-700">
-                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl">Sign In</button>
+    <div id="auth-container" class="min-h-screen flex items-center justify-center bg-zinc-950">
+        <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800 text-center w-80">
+            <h2 class="text-2xl font-bold mb-6 text-white">Student Login</h2>
+            <form onsubmit="handleAuth(event)">
+                <input type="email" id="auth-email" placeholder="Email" class="w-full bg-black p-3 mb-4 rounded-xl border border-zinc-700">
+                <input type="password" id="auth-password" placeholder="Password" class="w-full bg-black p-3 mb-6 rounded-xl border border-zinc-700">
+                <button type="submit" class="w-full bg-red-600 py-3 rounded-xl font-bold">Login</button>
             </form>
         </div>
     </div>
 
-    <!-- Dashboard -->
     <div id="dashboard-container" class="hidden min-h-screen flex flex-col">
-        <!-- Header -->
         <nav class="bg-black border-b border-zinc-800 p-4 flex justify-between items-center">
-            <div class="flex items-center gap-2"><span class="bg-red-600 text-white px-2 py-1 rounded font-black text-xs">SB</span><span class="font-bold text-sm">SmartBroker</span></div>
-            <div class="flex items-center gap-2">
-                <a href="https://wa.me/94776104665" class="text-xs bg-zinc-800 px-3 py-2 rounded-lg hover:bg-zinc-700"><i class="fa-brands fa-whatsapp"></i></a>
-                <button onclick="toggleProfileModal()" class="text-xs bg-zinc-800 px-3 py-2 rounded-lg hover:bg-zinc-700"><i class="fa-solid fa-user"></i></button>
-                <button onclick="logoutUser()" class="text-xs bg-red-900/50 text-red-500 px-3 py-2 rounded-lg hover:bg-red-600 hover:text-white"><i class="fa-solid fa-right-from-bracket"></i></button>
+            <h1 class="font-bold text-lg">SmartBroker <span class="text-red-500">LMS</span></h1>
+            <div class="flex items-center gap-3">
+                <a href="https://wa.me/94776104665" class="text-xs bg-zinc-800 px-3 py-2 rounded-lg"><i class="fa-brands fa-whatsapp mr-1"></i>Support Team</a>
+                <button onclick="toggleProfileModal()" class="text-xs bg-zinc-800 px-3 py-2 rounded-lg"><i class="fa-solid fa-user mr-1"></i>Profile</button>
+                <button onclick="logoutUser()" class="text-xs bg-red-900/50 text-red-500 px-3 py-2 rounded-lg"><i class="fa-solid fa-right-from-bracket mr-1"></i>Logout</button>
             </div>
         </nav>
 
         <div class="flex-1 flex flex-col lg:flex-row">
-            <aside class="w-full lg:w-80 bg-zinc-950 border-r border-zinc-800 p-4 overflow-y-auto">
-                <div id="lessons-list" class="space-y-2"></div>
-                <div id="sidebar-cert-box" class="hidden mt-6 pt-6 border-t border-zinc-800">
-                    <button onclick="claimCertificate()" class="w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-black py-3 rounded-xl animate-pulse">Claim Certificate</button>
-                </div>
+            <aside class="w-full lg:w-80 bg-zinc-950 p-4 border-r border-zinc-800 overflow-y-auto">
+                <div id="lessons-list" class="space-y-4"></div>
             </aside>
             <main class="flex-1 p-6">
-                <div id="video-wrapper" class="aspect-video bg-zinc-900 rounded-xl overflow-hidden mb-6"><iframe id="video-player" class="w-full h-full" src=""></iframe></div>
-                <div id="lesson-info" class="mb-6">
-                    <h2 id="lesson-title" class="text-xl font-bold mb-2">Select a lesson</h2>
-                    <p id="lesson-desc" class="text-zinc-400 text-sm mb-4"></p>
-                    <a id="pdf-link" href="#" target="_blank" class="hidden bg-zinc-800 px-4 py-2 rounded-lg text-xs"><i class="fa-solid fa-file-pdf text-red-500 mr-2"></i> Download Lesson PDF</a>
-                </div>
-                <div class="flex gap-4">
-                    <button id="prev-btn" onclick="navigateLesson(-1)" class="bg-zinc-800 px-6 py-2 rounded-lg text-sm">Prev</button>
-                    <button id="complete-btn" onclick="markCurrentAsComplete()" class="bg-red-600 px-6 py-2 rounded-lg text-sm font-bold">Complete</button>
-                    <button id="next-btn" onclick="navigateLesson(1)" class="bg-zinc-800 px-6 py-2 rounded-lg text-sm">Next</button>
-                </div>
+                <div id="video-wrapper" class="aspect-video bg-zinc-900 rounded-xl mb-6"><iframe id="video-player" class="w-full h-full" src=""></iframe></div>
+                <div id="quiz-box" class="hidden bg-zinc-900 p-6 rounded-xl border border-zinc-800"></div>
             </main>
-        </div>
-    </div>
-
-    <!-- Profile Modal -->
-    <div id="profile-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
-        <div class="bg-zinc-900 w-full max-w-md p-6 rounded-2xl border border-zinc-800">
-            <h3 class="font-bold text-lg mb-4">Student Profile</h3>
-            <input type="text" id="profile-name" placeholder="Full Name" class="w-full bg-black p-3 mb-3 rounded-lg border border-zinc-700">
-            <input type="text" id="profile-address" placeholder="Address" class="w-full bg-black p-3 mb-3 rounded-lg border border-zinc-700">
-            <input type="text" id="profile-phone" placeholder="Phone Number" class="w-full bg-black p-3 mb-6 rounded-lg border border-zinc-700">
-            <button onclick="saveProfile()" class="w-full bg-red-600 py-3 rounded-lg font-bold">Save Details</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDVJKSkNv2UQ3ZdCEiZav1XsBAa3xDO10E",
-            authDomain: "lms-smartbroker.firebaseapp.com",
-            projectId: "lms-smartbroker",
-            storageBucket: "lms-smartbroker.firebasestorage.app",
-            messagingSenderId: "522489151297",
-            appId: "1:522489151297:web:ad2232a65e2c3f1a53ebc0"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let currentUser = null;
-        let completedLessons = [];
-        let currentLessonIndex = 0;
-        let profileData = { name: "", address: "", phone: "" };
         
+        // Firebase Config (ඔබේ විස්තර මෙතනට දාන්න)
+        const firebaseConfig = { /* ... */ };
+        initializeApp(firebaseConfig);
+        const auth = getAuth();
+
+        // සිංහල පාඩම් 15 සහ මොඩියුල 5
         const courseData = [
-            { id: 0, module: "MODULE 01", title: "1.1 Course Overview", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "වාහන බ්‍රෝකර් ක්ෂේත්‍රයේ මූලික සිද්ධාන්ත.", pdf: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" },
-            { id: 1, module: "MODULE 01", title: "1.2 Market Analysis", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "වාහන වෙළඳපොළ හඳුනාගැනීම.", pdf: "#" },
-            { id: 2, module: "MODULE 02", title: "2.1 Closing a Deal", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "ගනුදෙනුවක් සාර්ථකව අවසන් කරගන්නා ආකාරය.", pdf: "#" }
+            { m: "Module 1", title: "වාහන බ්‍රෝකර් හැඳින්වීම", quiz: [{q:"බ්‍රෝකර් යනු කවුද?", a:['මැදිහත්කරු', 'ගැණුම්කරු', 'විකුණුම්කරු'], c:0}, {q:"ලංකාවේ වාහන වෙළඳපොළ", a:['කුඩා', 'විශාල', 'සීමිත'], c:1}, {q:"ආදායම", a:['කොමිස්', 'පඩිය', 'ණය'], c:0}] },
+            // මෙලෙස පාඩම් 15 දක්වා ලියන්න...
         ];
 
-        window.renderSidebar = () => {
-            const container = document.getElementById('lessons-list');
-            container.innerHTML = "";
-            let lastModule = "";
-            courseData.forEach((lesson, index) => {
-                if (lesson.module !== lastModule) {
-                    lastModule = lesson.module;
-                    container.innerHTML += `<div class="text-[10px] font-black text-red-500 mt-4 mb-2 uppercase tracking-widest">${lesson.module}</div>`;
-                }
-                container.innerHTML += `
-                    <div onclick="selectLesson(${index})" class="p-3 rounded-lg ${currentLessonIndex === index ? 'active-lesson' : 'bg-zinc-900'} border border-zinc-800 cursor-pointer hover:bg-zinc-800 flex justify-between items-center text-xs">
-                        <span>${lesson.title}</span>
-                        ${completedLessons.includes(index) ? '<i class="fa-solid fa-check-circle text-green-500"></i>' : ''}
-                    </div>
-                `;
+        let currentLesson = 0;
+
+        window.selectLesson = (idx) => {
+            currentLesson = idx;
+            document.getElementById('video-player').src = "https://www.youtube.com/embed/dQw4w9WgXcQ";
+            renderQuiz();
+        };
+
+        window.renderQuiz = () => {
+            const quiz = courseData[currentLesson].quiz;
+            let html = `<h3 class="font-bold mb-4">Quiz: ${courseData[currentLesson].title}</h3>`;
+            quiz.forEach((q, i) => {
+                html += `<div class="mb-4"><div>${i+1}. ${q.q}</div>${q.a.map((a, j) => `<button onclick="checkAnswer(${i}, ${j})" class="block bg-zinc-800 w-full p-2 mt-2 rounded">${a}</button>`).join('')}</div>`;
             });
+            const box = document.getElementById('quiz-box');
+            box.innerHTML = html;
+            box.classList.remove('hidden');
         };
 
-        window.selectLesson = (index) => {
-            currentLessonIndex = index;
-            const lesson = courseData[index];
-            document.getElementById('video-player').src = lesson.video;
-            document.getElementById('lesson-title').innerText = lesson.title;
-            document.getElementById('lesson-desc').innerText = lesson.desc;
-            const pdfEl = document.getElementById('pdf-link');
-            if(lesson.pdf !== "#") { pdfEl.classList.remove('hidden'); pdfEl.href = lesson.pdf; } else { pdfEl.classList.add('hidden'); }
-            renderSidebar();
-        };
-
-        window.markCurrentAsComplete = async () => {
-            if(!completedLessons.includes(currentLessonIndex)) {
-                completedLessons.push(currentLessonIndex);
-                await setDoc(doc(db, "students", currentUser.uid), { progress: completedLessons }, { merge: true });
-                Swal.fire({ title: 'Great Job!', text: 'Lesson Completed!', icon: 'success', confirmButtonColor: '#dc2626' });
-                
-                if(completedLessons.length === courseData.length) {
-                    document.getElementById('sidebar-cert-box').classList.remove('hidden');
-                    Swal.fire({
-                        title: '🚀 Welcome to the Million Club!',
-                        html: "ඔබ පාඨමාලාව සාර්ථකව අවසන් කළා! දැන් මුල් මාසයේදීම ඔබේ පළමු මිලියනය උපයන්න ලෑස්ති වෙන්න. අපි ඔයත් එක්ක ඉන්නවා!",
-                        icon: 'success',
-                        confirmButtonText: 'Let\'s Go!'
-                    });
-                }
-                renderSidebar();
+        window.checkAnswer = (qIdx, aIdx) => {
+            if(courseData[currentLesson].quiz[qIdx].c === aIdx) {
+                Swal.fire('හරි!', 'ඊළඟට යන්න.', 'success').then(() => {
+                    if(currentLesson < 14) selectLesson(currentLesson + 1);
+                    else triggerMillionClub();
+                });
+            } else {
+                Swal.fire('වැරදියි!', 'නැවත උත්සාහ කරන්න.', 'error');
             }
         };
 
-        window.claimCertificate = () => {
-            const msg = `Hi SmartBroker, I have completed the course. Name: ${profileData.name || "Student"}. Please issue my certificate!`;
-            window.open(`https://wa.me/94776104665?text=${encodeURIComponent(msg)}`, '_blank');
-        };
+        function triggerMillionClub() {
+            Swal.fire({
+                title: '🚀 Million Club සාදරයෙන් පිළිගනිමු!',
+                text: "ඔබ සාර්ථකව පාඨමාලාව අවසන් කළා! ඔබේ පළමු මිලියනය උපයන්න අදම පටන් ගනිමු.",
+                icon: 'success'
+            });
+        }
 
-        window.handleAuth = (e) => {
-            e.preventDefault();
-            signInWithEmailAndPassword(auth, document.getElementById("auth-email").value, document.getElementById("auth-password").value)
-            .catch(err => Swal.fire('Error', err.message, 'error'));
-        };
-
-        window.saveProfile = async () => {
-            profileData = {
-                name: document.getElementById('profile-name').value,
-                address: document.getElementById('profile-address').value,
-                phone: document.getElementById('profile-phone').value
-            };
-            await setDoc(doc(db, "students", currentUser.uid), { ...profileData, progress: completedLessons }, { merge: true });
-            Swal.fire('Saved!', 'Profile updated successfully.', 'success');
-            document.getElementById('profile-modal').classList.add('hidden');
-        };
-
-        window.toggleProfileModal = () => document.getElementById('profile-modal').classList.toggle('hidden');
+        window.handleAuth = (e) => { e.preventDefault(); /* login logic */ };
         window.logoutUser = () => signOut(auth);
-        window.navigateLesson = (dir) => {
-            const next = currentLessonIndex + dir;
-            if(next >= 0 && next < courseData.length) selectLesson(next);
-        };
+        window.toggleProfileModal = () => document.getElementById('profile-modal').classList.toggle('hidden');
 
-        onAuthStateChanged(auth, async (user) => {
+        onAuthStateChanged(auth, (user) => {
             if(user) {
-                currentUser = user;
-                document.getElementById("auth-container").classList.add("hidden");
-                document.getElementById("dashboard-container").classList.remove("hidden");
-                const docSnap = await getDoc(doc(db, "students", user.uid));
-                if(docSnap.exists()) {
-                    const data = docSnap.data();
-                    completedLessons = data.progress || [];
-                    profileData = { name: data.name || "", address: data.address || "", phone: data.phone || "" };
-                    document.getElementById('profile-name').value = profileData.name;
-                    document.getElementById('profile-address').value = profileData.address;
-                    document.getElementById('profile-phone').value = profileData.phone;
-                    if(completedLessons.length === courseData.length) document.getElementById('sidebar-cert-box').classList.remove('hidden');
-                }
-                renderSidebar();
-                selectLesson(0);
-            } else {
-                document.getElementById("auth-container").classList.remove("hidden");
-                document.getElementById("dashboard-container").classList.add("hidden");
+                document.getElementById('auth-container').classList.add('hidden');
+                document.getElementById('dashboard-container').classList.remove('hidden');
             }
         });
     </script>
