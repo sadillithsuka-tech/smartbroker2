@@ -3,147 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartBroker Premium LMS</title>
-    <!-- Tailwind CSS -->
+    <title>SmartBroker LMS Pro</title>
+    <!-- Tailwind CSS & Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .hidden { display: none; }
-        /* Custom scrollbar for lessons list */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #1a1a1a; }
-        ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 4px; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #09090b; }
+        ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
+        .active-lesson { background-color: #27272a !important; color: #ffffff !important; border-left: 4px solid #dc2626; }
     </style>
 </head>
-<body class="bg-black text-white font-sans antialiased">
+<body class="bg-black text-zinc-100 font-sans antialiased">
 
-    <!-- 1. AUTH CONTAINER (LOGIN / REGISTER) -->
-    <div id="auth-container" class="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-black via-zinc-900 to-zinc-950">
+    <!-- 1. AUTH CONTAINER -->
+    <div id="auth-container" class="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-black via-zinc-950 to-zinc-900">
         <div class="max-w-md w-full bg-zinc-900 p-8 rounded-2xl border border-zinc-800 shadow-2xl">
-            <!-- Logo / Icon Style -->
             <div class="flex justify-center mb-4">
-                <div class="bg-red-600 text-white p-3 rounded-full font-bold text-xl tracking-wider shadow-lg shadow-red-600/30">SB</div>
+                <div class="bg-red-600 text-white p-3 rounded-xl font-bold text-xl tracking-wider shadow-lg shadow-red-600/30">SB</div>
             </div>
-            <h2 id="auth-title" class="text-2xl font-bold text-center text-white mb-6 tracking-wide">SmartBroker වෙත සාදරයෙන් පිළිගනිමු</h2>
+            <h2 id="auth-title" class="text-2xl font-bold text-center text-white mb-6">SmartBroker වෙත සාදරයෙන් පිළිගනිමු</h2>
             
             <form id="auth-form" onsubmit="handleAuth(event)">
                 <div class="mb-4">
                     <label class="block text-zinc-400 text-sm font-medium mb-2">Email ලිපිනය</label>
                     <input type="email" id="auth-email" required class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition">
                 </div>
-                
                 <div class="mb-6">
                     <label class="block text-zinc-400 text-sm font-medium mb-2">Password එක</label>
                     <input type="password" id="auth-password" required class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition">
                 </div>
-                
-                <button type="submit" id="auth-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg shadow-red-600/20 active:scale-95">
+                <button type="submit" id="auth-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg shadow-red-600/20">
                     ඇතුල් වන්න (Login)
                 </button>
             </form>
-            
             <div class="text-center mt-6">
-                <button id="toggle-link" onclick="toggleAuthMode()" class="text-sm text-zinc-400 hover:text-red-500 transition underline decoration-zinc-600">
+                <button id="toggle-link" onclick="toggleAuthMode()" class="text-sm text-zinc-400 hover:text-red-500 transition underline">
                     ගිණුමක් නැද්ද? මෙතනින් Register වන්න
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- 2. PREMIUM DASHBOARD -->
-    <div id="dashboard-container" class="hidden min-h-screen flex flex-col bg-zinc-950 text-zinc-100">
-        <!-- Top Navigation -->
+    <!-- 2. MAIN LMS INTERFACE -->
+    <div id="dashboard-container" class="hidden min-h-screen flex flex-col bg-zinc-950">
+        <!-- Header -->
         <nav class="bg-black border-b border-zinc-800 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
             <div class="flex items-center gap-3">
-                <span class="bg-red-600 text-white px-2.5 py-1 rounded-md font-black text-sm tracking-tighter">SB</span>
+                <span class="bg-red-600 text-white px-2.5 py-1 rounded-md font-black text-sm">SB</span>
                 <h1 class="text-lg font-bold tracking-wide text-white">SmartBroker <span class="text-red-500 font-medium text-sm">LMS PRO</span></h1>
             </div>
-            <div class="flex items-center gap-4">
-                <span id="user-display-email" class="text-xs bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg text-zinc-400"></span>
-                <button onclick="logoutUser()" class="bg-zinc-900 hover:bg-red-600 border border-zinc-800 hover:border-red-600 text-xs font-bold py-1.5 px-3 rounded-lg transition duration-300">
+            
+            <!-- Progress & Profile Shortcuts -->
+            <div class="flex items-center gap-6">
+                <!-- Course Progress (Header Screen) -->
+                <div class="hidden md:flex flex-col items-end w-48">
+                    <div class="flex justify-between w-full text-xs text-zinc-400 mb-1">
+                        <span>Course Completion</span>
+                        <span id="progress-text">0%</span>
+                    </div>
+                    <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="bg-red-600 h-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <button onclick="toggleProfileModal()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 p-2 rounded-xl text-zinc-300 transition">
+                    <i class="fa-solid fa-user-gear"></i> Profile
+                </button>
+                <button onclick="logoutUser()" class="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-900/30 text-xs font-bold py-2 px-3 rounded-xl transition">
                     Logout
                 </button>
             </div>
         </nav>
 
-        <!-- Main Workspace (Sidebar + Video Area) -->
-        <div class="flex-1 flex flex-col md:flex-row max-w-[1600px] w-full mx-auto">
+        <!-- Workspace Layout -->
+        <div class="flex-1 flex flex-col lg:flex-row w-full mx-auto max-w-[1920px]">
             
-            <!-- LEFT SIDEBAR: Modules & Lessons -->
-            <aside class="w-full md:w-80 bg-black border-r border-zinc-800 flex flex-col shrink-0">
-                <div class="p-4 border-b border-zinc-800 bg-zinc-900/30">
-                    <h3 class="font-bold text-sm uppercase tracking-wider text-zinc-400">Course Curriculum</h3>
+            <!-- SIDEBAR: Curriculum & Completion Checkboxes -->
+            <aside class="w-full lg:w-80 bg-black border-r border-zinc-800 flex flex-col shrink-0">
+                <div class="p-4 border-b border-zinc-800 bg-zinc-900/20">
+                    <h3 class="font-bold text-xs uppercase tracking-wider text-zinc-400">පාඩම් මාලාව (Curriculum)</h3>
                 </div>
-                
-                <!-- Modules Container -->
-                <div class="flex-1 overflow-y-auto p-2 space-y-4">
-                    
-                    <!-- MODULE 1 -->
-                    <div>
-                        <div class="px-3 py-2 text-xs font-bold text-red-500 bg-red-950/20 rounded border border-red-900/30 mb-1">
-                            MODULE 01: INTRODUCTION
-                        </div>
-                        <div class="space-y-1">
-                            <button onclick="changeLesson('Intro Video', 'https://www.youtube.com/embed/dQw4w9WgXcQ', 'මෙම පාඩමෙන් ඊ-කොමර්ස් වල මූලික සිද්ධාන්ත සාකච්ඡා කෙරේ.', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')" class="w-full text-left text-sm px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-zinc-300 hover:text-white transition flex items-center gap-2">
-                                <span>▶</span> 1.1 Course Overview
-                            </button>
-                            <button onclick="changeLesson('Setup Guide', 'https://www.youtube.com/embed/dQw4w9WgXcQ', 'ඔයාගේ පළවෙනි Store එක නිවැරදිව Setup කරගන්නා ආකාරය.', '#')" class="w-full text-left text-sm px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-zinc-300 hover:text-white transition flex items-center gap-2">
-                                <span>▶</span> 1.2 Shopify Basics
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- MODULE 2 -->
-                    <div>
-                        <div class="px-3 py-2 text-xs font-bold text-zinc-400 bg-zinc-900 rounded mb-1">
-                            MODULE 02: ADVANCED STRATEGIES
-                        </div>
-                        <div class="space-y-1">
-                            <button onclick="changeLesson('Marketing Tactics', 'https://www.youtube.com/embed/dQw4w9WgXcQ', 'මාර්කටින් මනෝවිද්‍යාව උපයෝගී කරගෙන විකුණුම් වැඩි කරගන්නේ කෙසේද?', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')" class="w-full text-left text-sm px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-zinc-300 hover:text-white transition flex items-center gap-2">
-                                <span>▶</span> 2.1 Consumer Psychology
-                            </button>
-                        </div>
-                    </div>
-
+                <div id="lessons-list" class="flex-1 overflow-y-auto p-3 space-y-4">
+                    <!-- Lessons items will render dynamically from Javascript -->
                 </div>
             </aside>
 
-            <!-- RIGHT CONTENT AREA: Video & PDF -->
-            <main class="flex-1 p-4 md:p-8 bg-zinc-950 flex flex-col gap-6">
-                
+            <!-- MAIN CONTENT DISPLAY -->
+            <main class="flex-1 p-4 md:p-8 flex flex-col gap-6">
                 <!-- Video Section -->
-                <div class="bg-black rounded-2xl border border-zinc-800 shadow-2xl overflow-hidden">
+                <div class="bg-black rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl">
                     <div class="aspect-video bg-zinc-900">
-                        <iframe id="video-player" class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="LMS Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        <iframe id="video-player" class="w-full h-full" src="" title="LMS Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>
                 </div>
 
-                <!-- Content Details (White Card background for contrast, or premium dark) -->
+                <!-- Control Buttons (Next & Previous) -->
+                <div class="flex justify-between items-center bg-zinc-900 border border-zinc-800 p-4 rounded-xl">
+                    <button id="prev-btn" onclick="navigateLesson(-1)" class="bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-lg disabled:opacity-30 disabled:pointer-events-none transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> කලින් පාඩම
+                    </button>
+                    
+                    <button onclick="markCurrentAsComplete()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check"></i> මෙම පාඩම අවසන් කරන්න
+                    </button>
+
+                    <button id="next-btn" onclick="navigateLesson(1)" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg disabled:opacity-30 disabled:pointer-events-none transition flex items-center gap-2">
+                        ඊළඟ පාඩම <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Lesson Info Details & PDF Notes -->
                 <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h2 id="lesson-title" class="text-xl md:text-2xl font-bold text-white mb-2">1.1 Course Overview</h2>
-                        <p id="lesson-desc" class="text-zinc-400 text-sm leading-relaxed max-w-2xl">
-                            මෙම පාඩමෙන් ඊ-කොමර්ස් වල මූලික සිද්ධාන්ත සාකච්ඡා කෙරේ.
-                        </p>
+                        <h2 id="lesson-title" class="text-xl md:text-2xl font-bold text-white mb-2">Loading...</h2>
+                        <p id="lesson-desc" class="text-zinc-400 text-sm leading-relaxed max-w-2xl">පාඩම් විස්තරය මෙතනින් දිස්වේ.</p>
                     </div>
-                    
-                    <!-- PDF / Resource Download Button -->
                     <div id="pdf-container" class="shrink-0">
-                        <a id="pdf-link" href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" target="_blank" class="inline-flex items-center gap-2 bg-white hover:bg-zinc-200 text-black font-bold py-3 px-5 rounded-xl transition duration-300 shadow-lg text-sm active:scale-95">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l3-3m-3 3l-3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            Download PDF Notes
+                        <a id="pdf-link" href="#" target="_blank" class="inline-flex items-center gap-2 bg-white hover:bg-zinc-200 text-black font-bold py-3 px-5 rounded-xl transition duration-300 shadow-lg text-sm">
+                            <i class="fa-solid fa-file-pdf text-red-600"></i> Download PDF Notes
                         </a>
                     </div>
                 </div>
-
             </main>
         </div>
     </div>
 
-    <!-- FIREBASE LOGIC -->
+    <!-- 3. STUDENT PROFILE MODAL (POPUP) -->
+    <div id="profile-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-2xl p-6 relative">
+            <button onclick="toggleProfileModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-xl font-bold mb-4 text-white border-b border-zinc-800 pb-2"><i class="fa-solid fa-id-card text-red-500"></i> Student Profile</h3>
+            
+            <form id="profile-form" onsubmit="saveProfileDetails(event)">
+                <div class="mb-4">
+                    <label class="block text-zinc-400 text-xs font-bold uppercase mb-2">සම්පූර්ණ නම (Full Name)</label>
+                    <input type="text" id="profile-name" placeholder="John Doe" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-red-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-zinc-400 text-xs font-bold uppercase mb-2">දුරකථන අංකය (Phone Number)</label>
+                    <input type="text" id="profile-phone" placeholder="07XXXXXXXX" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-red-500">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-zinc-400 text-xs font-bold uppercase mb-2">ලියාපදිංචි විස්තර (Email)</label>
+                    <input type="text" id="profile-email-readonly" readonly class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-sm text-zinc-500 cursor-not-allowed">
+                </div>
+                
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition">
+                    Save Profile Details
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FIREBASE MODULES AND LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // Firebase Setup
         const firebaseConfig = {
             apiKey: "AIzaSyDVJKSkNv2UQ3ZdCEiZav1XsBAa3xDO10E",
             authDomain: "lms-smartbroker.firebaseapp.com",
@@ -156,38 +178,162 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        let isLoginMode = true;
+        const db = getFirestore(app);
 
-        // Change Lesson Dynamic content
-        window.changeLesson = function(title, videoUrl, description, pdfUrl) {
-            document.getElementById('lesson-title').innerText = title;
-            document.getElementById('video-player').src = videoUrl;
-            document.getElementById('lesson-desc').innerText = description;
+        // COURSE DATA ARCHITECTURE (මෙතනින් ඔයාට පාඩම් ලේසියෙන්ම වෙනස් කරන්න පුළුවන්)
+        const courseData = [
+            { id: 0, module: "MODULE 01", title: "1.1 Course Overview", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "මෙම පාඩමෙන් ඊ-කොමර්ස් වල මූලික සිද්ධාන්ත සාකච්ඡා කෙරේ.", pdf: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" },
+            { id: 1, module: "MODULE 01", title: "1.2 Shopify Basics", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "ඔයාගේ පළවෙනි Store එක නිවැරදිව Setup කරගන්නා ආකාරය.", pdf: "#" },
+            { id: 2, module: "MODULE 02", title: "2.1 Consumer Psychology", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "මාර්කටින් මනෝවිද්‍යාව උපයෝගී කරගෙන විකුණුම් වැඩි කරගන්නේ කෙසේද?", pdf: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" }
+        ];
+
+        let currentLessonIndex = 0;
+        let currentUser = null;
+        let completedLessons = []; // ළමයා ඉවර කරපු පාඩම් ලිස්ට් එක Firestore එකෙන් ගන්නේ
+
+        // UI Initialization & Sidebar rendering
+        function renderSidebar() {
+            const container = document.getElementById('lessons-list');
+            container.innerHTML = "";
+            let lastModule = "";
+
+            courseData.forEach((lesson, index) => {
+                if (lesson.module !== lastModule) {
+                    lastModule = lesson.module;
+                    const modHeader = document.createElement('div');
+                    modHeader.className = "px-3 py-1.5 text-[10px] font-black text-red-500 bg-red-950/20 rounded border border-red-950 mt-4 mb-2 tracking-widest uppercase";
+                    modHeader.innerText = lesson.module;
+                    container.appendChild(modHeader);
+                }
+
+                const item = document.createElement('div');
+                item.id = `sidebar-item-${index}`;
+                item.className = "w-full flex items-center justify-between text-sm px-3 py-2.5 rounded-xl bg-zinc-900/40 border border-zinc-900 hover:bg-zinc-900 text-zinc-400 hover:text-white transition cursor-pointer mb-1";
+                item.onclick = () => selectLesson(index);
+                
+                const isChecked = completedLessons.includes(index) ? 'checked' : '';
+                item.innerHTML = `
+                    <div class="flex items-center gap-2 truncate">
+                        <i class="fa-regular fa-circle-play text-xs text-zinc-600"></i>
+                        <span class="truncate">${lesson.title}</span>
+                    </div>
+                    <input type="checkbox" ${isChecked} onclick="event.stopPropagation(); toggleCheckbox(${index})" class="w-4 h-4 accent-red-600 bg-zinc-950 border-zinc-800 rounded">
+                `;
+                container.appendChild(item);
+            });
+            updateActiveUIHighlight();
+        }
+
+        function selectLesson(index) {
+            currentLessonIndex = index;
+            const lesson = courseData[index];
             
+            document.getElementById('lesson-title').innerText = lesson.title;
+            document.getElementById('video-player').src = lesson.video;
+            document.getElementById('lesson-desc').innerText = lesson.desc;
+
             const pdfContainer = document.getElementById('pdf-container');
-            if(pdfUrl && pdfUrl !== '#') {
+            if (lesson.pdf && lesson.pdf !== '#') {
                 pdfContainer.classList.remove('hidden');
-                document.getElementById('pdf-link').href = pdfUrl;
+                document.getElementById('pdf-link').href = lesson.pdf;
             } else {
                 pdfContainer.classList.add('hidden');
             }
+
+            // Button Disable checks
+            document.getElementById('prev-btn').disabled = (index === 0);
+            document.getElementById('next-btn').disabled = (index === courseData.length - 1);
+
+            updateActiveUIHighlight();
         }
 
+        function updateActiveUIHighlight() {
+            courseData.forEach((_, index) => {
+                const el = document.getElementById(`sidebar-item-${index}`);
+                if (el) {
+                    if (index === currentLessonIndex) el.classList.add('active-lesson');
+                    else el.classList.remove('active-lesson');
+                }
+            });
+        }
+
+        // Navigation Controllers
+        window.navigateLesson = function(direction) {
+            let nextIdx = currentLessonIndex + direction;
+            if (nextIdx >= 0 && nextIdx < courseData.length) {
+                selectLesson(nextIdx);
+            }
+        }
+
+        // Sync Checkboxes & Progress calculation to Firebase Firestore
+        window.toggleCheckbox = async function(index) {
+            if (completedLessons.includes(index)) {
+                completedLessons = completedLessons.filter(i => i !== index);
+            } else {
+                completedLessons.push(index);
+            }
+            await syncProgressToFirebase();
+            renderSidebar();
+            calculateProgress();
+        }
+
+        window.markCurrentAsComplete = async function() {
+            if (!completedLessons.includes(currentLessonIndex)) {
+                completedLessons.push(currentLessonIndex);
+                await syncProgressToFirebase();
+                renderSidebar();
+                calculateProgress();
+                alert("නියමයි! මෙම පාඩම අවසන් ලකුණු කළා. 🚀");
+            }
+            // Automatically jump to next lesson if available
+            if (currentLessonIndex < courseData.length - 1) navigateLesson(1);
+        }
+
+        function calculateProgress() {
+            let percentage = Math.round((completedLessons.length / courseData.length) * 100);
+            document.getElementById('progress-text').innerText = `${percentage}%`;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+        }
+
+        // Firebase Firestore Data Sync Operations
+        async function syncProgressToFirebase() {
+            if (!currentUser) return;
+            const userDocRef = doc(db, "students", currentUser.uid);
+            await setDoc(userDocRef, { progress: completedLessons }, { merge: true });
+        }
+
+        window.saveProfileDetails = async function(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const fullName = document.getElementById('profile-name').value;
+            const phone = document.getElementById('profile-phone').value;
+
+            try {
+                await setDoc(doc(db, "students", currentUser.uid), {
+                    fullName: fullName,
+                    phone: phone,
+                    email: currentUser.email
+                }, { merge: true });
+                alert("Profile එක සාර්ථකව Update කරගත්තා මචං! 👍");
+                toggleProfileModal();
+            } catch(err) {
+                alert("Error saving: " + err.message);
+            }
+        }
+
+        // Modals Toggles
+        window.toggleProfileModal = function() {
+            document.getElementById('profile-modal').classList.toggle('hidden');
+        }
+
+        // Authentication Core Logic
+        let isLoginMode = true;
         window.toggleAuthMode = function() {
             isLoginMode = !isLoginMode;
-            const title = document.getElementById("auth-title");
-            const btn = document.getElementById("auth-btn");
-            const link = document.getElementById("toggle-link");
-
-            if (isLoginMode) {
-                title.innerText = "SmartBroker වෙත සාදරයෙන් පිළිගනිමු";
-                btn.innerText = "ඇතුල් වන්න (Login)";
-                link.innerText = "ගිණුමක් නැද්ද? මෙතනින් Register වන්න";
-            } else {
-                title.innerText = "නව ගිණුමක් සාදන්න (Register)";
-                btn.innerText = "ලියාපදිංචි වන්න (Register)";
-                link.innerText = "දැනටමත් ගිණුමක් තිබේද? Login වන්න";
-            }
+            document.getElementById("auth-title").innerText = isLoginMode ? "SmartBroker වෙත සාදරයෙන් පිළිගනිමු" : "නව ගිණුමක් සාදන්න (Register)";
+            document.getElementById("auth-btn").innerText = isLoginMode ? "ඇතුල් වන්න (Login)" : "ලියාපදිංචි වන්න (Register)";
+            document.getElementById("toggle-link").innerText = isLoginMode ? "ගිණුමක් නැද්ද? මෙතනින් Register වන්න" : "දැනටමත් ගිණුමක් තිබේද? Login වන්න";
         }
 
         window.handleAuth = function(event) {
@@ -196,32 +342,46 @@
             const password = document.getElementById("auth-password").value;
 
             if (isLoginMode) {
-                signInWithEmailAndPassword(auth, email, password)
-                    .catch((error) => alert("Error: " + error.message));
+                signInWithEmailAndPassword(auth, email, password).catch(err => alert("Error: " + err.message));
             } else {
-                createUserWithEmailAndPassword(auth, email, password)
-                    .catch((error) => alert("Error: " + error.message));
+                createUserWithEmailAndPassword(auth, email, password).catch(err => alert("Error: " + err.message));
             }
         }
 
-        onAuthStateChanged(auth, (user) => {
-            const authContainer = document.getElementById("auth-container");
-            const dashboardContainer = document.getElementById("dashboard-container");
-            const userEmailDisplay = document.getElementById("user-display-email");
+        // State Changed Listener
+        onAuthStateChanged(auth, async (user) => {
+            const authView = document.getElementById("auth-container");
+            const dashboardView = document.getElementById("dashboard-container");
 
             if (user) {
-                authContainer.classList.add("hidden");
-                dashboardContainer.classList.remove("hidden");
-                userEmailDisplay.innerText = user.email;
+                currentUser = user;
+                authView.classList.add("hidden");
+                dashboardView.classList.remove("hidden");
+                document.getElementById("user-display-email").innerText = user.email;
+                document.getElementById("profile-email-readonly").value = user.email;
+
+                // Load User Data from Firestore
+                const docSnap = await getDoc(doc(db, "students", user.uid));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    completedLessons = data.progress || [];
+                    document.getElementById('profile-name').value = data.fullName || "";
+                    document.getElementById('profile-phone').value = data.phone || "";
+                } else {
+                    completedLessons = [];
+                }
+
+                renderSidebar();
+                selectLesson(0);
+                calculateProgress();
             } else {
-                authContainer.classList.remove("hidden");
-                dashboardContainer.classList.add("hidden");
+                currentUser = null;
+                authView.classList.remove("hidden");
+                dashboardView.classList.add("hidden");
             }
         });
 
-        window.logoutUser = function() {
-            signOut(auth);
-        }
+        window.logoutUser = function() { signOut(auth); }
     </script>
 </body>
 </html>
