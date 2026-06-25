@@ -3,101 +3,517 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartBroker LMS PRO</title>
+    <title>SmartBroker Ultimate LMS</title>
+    <!-- Tailwind CSS, Google Fonts & FontAwesome Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- SweetAlert2 for beautiful messages -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght=700&family=Great+Vibes&family=Inter:wght=400;600;700&display=swap" rel="stylesheet">
+    <!-- html2pdf Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
+        .hidden { display: none; }
         ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #09090b; }
         ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
-        .active-lesson { background-color: #27272a !important; border-left: 4px solid #dc2626; }
+        .active-lesson { background-color: #27272a !important; color: #ffffff !important; border-left: 4px solid #dc2626; }
+        .cert-font-title { font-family: 'Cinzel', serif; }
+        .cert-font-sign { font-family: 'Great Vibes', cursive; }
+        
+        /* 🌟 FIXED CERTIFICATE PRINT LAYOUT STYLES (No Flexbox Mess) */
+        #certificate-template * { box-sizing: border-box; }
+        .cert-container { position: relative; width: 1120px; height: 792px; background: #000000; overflow: hidden; padding: 40px; }
+        .cert-border { position: relative; width: 100%; height: 100%; border: 6px double #d4af37; background: #0a0a0a; text-align: center; }
+        .cert-bg-decor1 { position: absolute; width: 300px; height: 300px; border: 2px solid rgba(212,175,55,0.05); transform: rotate(45deg); top: -100px; left: -100px; }
+        .cert-bg-decor2 { position: absolute; width: 300px; height: 300px; border: 2px solid rgba(220,38,38,0.05); transform: rotate(45deg); bottom: -100px; right: -100px; }
     </style>
 </head>
-<body class="bg-black text-zinc-100 font-sans">
+<body class="bg-black text-zinc-100 font-sans antialiased">
 
-    <!-- 1. AUTH -->
-    <div id="auth-container" class="min-h-screen flex items-center justify-center p-4">
-        <div class="max-w-md w-full bg-zinc-900 p-8 rounded-2xl border border-zinc-800">
-            <h2 class="text-2xl font-bold text-center mb-6">Student Login</h2>
-            <form onsubmit="handleAuth(event)">
-                <input type="email" id="auth-email" placeholder="Email" required class="w-full bg-zinc-950 p-3 mb-4 rounded-xl border border-zinc-800">
-                <input type="password" id="auth-password" placeholder="Password" required class="w-full bg-zinc-950 p-3 mb-6 rounded-xl border border-zinc-800">
-                <button type="submit" class="w-full bg-red-600 py-3 rounded-xl font-bold">Sign In</button>
+    <!-- 1. AUTH CONTAINER (LOGIN) -->
+    <div id="auth-container" class="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-black via-zinc-950 to-zinc-900">
+        <div class="max-w-md w-full bg-zinc-900 p-6 md:p-8 rounded-2xl border border-zinc-800 shadow-2xl">
+            <div class="flex justify-center mb-4">
+                <div class="bg-red-600 text-white p-3 rounded-xl font-bold text-xl tracking-wider shadow-lg shadow-red-600/30">SB</div>
+            </div>
+            <h2 class="text-2xl font-bold text-center text-white mb-6">Student Login</h2>
+            
+            <form id="auth-form" onsubmit="handleAuth(event)">
+                <div class="mb-4">
+                    <label class="block text-zinc-400 text-sm font-medium mb-2">Email Address</label>
+                    <input type="email" id="auth-email" required class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-zinc-400 text-sm font-medium mb-2">Password</label>
+                    <input type="password" id="auth-password" required class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition">
+                </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg shadow-red-600/20">
+                    Sign In
+                </button>
             </form>
         </div>
     </div>
 
-    <!-- 2. DASHBOARD -->
-    <div id="dashboard-container" class="hidden min-h-screen flex flex-col">
-        <!-- FIXED HEADER (One Line) -->
-        <nav class="bg-black border-b border-zinc-800 px-4 py-3 flex justify-between items-center sticky top-0 z-50">
-            <div class="flex items-center gap-2">
-                <span class="bg-red-600 text-white px-2 py-1 rounded font-black text-xs">SB</span>
-                <h1 class="text-sm font-bold truncate">SmartBroker</h1>
+    <!-- 2. MAIN LMS INTERFACE -->
+    <div id="dashboard-container" class="hidden min-h-screen flex flex-col bg-zinc-950">
+        <!-- Header -->
+        <nav class="bg-black border-b border-zinc-800 px-4 md:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 sticky top-0 z-50">
+            <div class="flex items-center justify-between w-full sm:w-auto gap-3">
+                <div class="flex items-center gap-3">
+                    <span class="bg-red-600 text-white px-2.5 py-1 rounded-md font-black text-sm">SB</span>
+                    <h1 class="text-base md:text-lg font-bold tracking-wide text-white">SmartBroker <span class="text-red-500 font-medium text-sm">LMS PRO</span></h1>
+                </div>
+                <!-- Mini Mobile Progress -->
+                <span id="progress-text-mobile" class="sm:hidden text-xs font-bold bg-zinc-900 border border-zinc-800 px-2 py-1 rounded text-red-500">0% Info</span>
             </div>
             
-            <div class="flex items-center gap-3">
-                <a href="https://wa.me/94776104665" target="_blank" class="bg-red-600 px-3 py-1.5 rounded-lg text-[11px] font-bold">Support</a>
-                <button onclick="toggleProfileModal()" class="text-zinc-400 text-xs hover:text-white"><i class="fa-solid fa-user"></i></button>
-                <button onclick="logoutUser()" class="text-red-500 text-xs font-bold">Out</button>
+            <!-- Header Right Menu Controls -->
+            <div class="flex flex-wrap items-center justify-center sm:justify-end gap-3 w-full sm:w-auto">
+                <!-- Course Progress (Hidden on Extra Small Screens) -->
+                <div class="hidden md:flex flex-col items-end w-36">
+                    <div class="flex justify-between w-full text-[10px] text-zinc-400 mb-1">
+                        <span>Progress</span>
+                        <span id="progress-text">0%</span>
+                    </div>
+                    <div class="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="bg-red-600 h-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- 🌟 RED PREMIUM WHATSAPP SUPPORT BUTTON -->
+                <a href="https://wa.me/94776104665" target="_blank" class="bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition flex items-center gap-2 shadow-lg shadow-red-600/20">
+                    <i class="fa-brands fa-whatsapp text-sm md:text-base"></i> Contact Support Team
+                </a>
+
+                <button onclick="toggleProfileModal()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 p-2.5 rounded-xl text-zinc-300 transition text-xs">
+                    <i class="fa-solid fa-user-gear"></i> Profile
+                </button>
+                
+                <button onclick="logoutUser()" class="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-900/30 text-xs font-bold py-2.5 px-3 rounded-xl transition">
+                    Logout
+                </button>
             </div>
         </nav>
 
-        <div class="flex flex-1 flex-col lg:flex-row">
-            <aside id="lessons-list" class="lg:w-80 border-b lg:border-r border-zinc-800 p-4 space-y-2 max-h-[300px] lg:max-h-screen overflow-y-auto"></aside>
+        <!-- Workspace Layout -->
+        <div class="flex-1 flex flex-col lg:flex-row w-full mx-auto max-w-[1920px]">
             
-            <main class="flex-1 p-4 md:p-6">
-                <div id="video-wrapper" class="aspect-video bg-zinc-900 rounded-xl overflow-hidden mb-4">
-                    <iframe id="video-player" class="w-full h-full" src=""></iframe>
+            <!-- SIDEBAR (Now on top/accordion scroll style for mobile viewports) -->
+            <aside class="w-full lg:w-80 bg-black border-b lg:border-b-0 lg:border-r border-zinc-800 flex flex-col shrink-0 max-h-[280px] lg:max-h-none">
+                <div class="p-3 border-b border-zinc-800 bg-zinc-900/20 flex justify-between items-center">
+                    <h3 class="font-bold text-xs uppercase tracking-wider text-zinc-400">Curriculum</h3>
+                    <span class="lg:hidden text-[10px] text-zinc-500">Scroll down to view lessons</span>
                 </div>
-                <div id="quiz-wrapper" class="hidden bg-zinc-900 p-6 rounded-xl border border-red-900/50"></div>
-                <button id="cert-btn" onclick="claimCertificateViaWhatsApp()" class="hidden w-full bg-amber-600 py-3 rounded-xl font-bold mt-4 shadow-lg">Claim Certificate via WhatsApp</button>
+                <div id="lessons-list" class="flex-1 overflow-y-auto p-3 space-y-1"></div>
+                
+                <!-- Certificate Download Section -->
+                <div id="sidebar-cert-box" class="hidden p-3 border-t border-zinc-800 bg-gradient-to-t from-red-950/20 to-transparent">
+                    <button onclick="generateCertificatePDF()" class="w-full bg-gradient-to-r from-amber-500 via-yellow-600 to-amber-500 text-black font-black py-2.5 px-4 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-2 text-xs">
+                        <i class="fa-solid fa-award text-sm"></i> Claim Your Certificate
+                    </button>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT DISPLAY -->
+            <main class="flex-1 p-4 md:p-6 flex flex-col gap-4 md:gap-6">
+                <!-- Video Player Container -->
+                <div id="video-wrapper" class="bg-black rounded-xl md:rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl">
+                    <div class="aspect-video bg-zinc-900">
+                        <iframe id="video-player" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- QUIZ CONTAINER -->
+                <div id="quiz-wrapper" class="hidden bg-zinc-900 border-2 border-red-900/40 p-4 md:p-8 rounded-xl md:rounded-2xl shadow-2xl">
+                    <div class="flex items-center gap-2 text-red-500 font-bold uppercase tracking-wider text-xs mb-2">
+                        <i class="fa-solid fa-brain"></i> Knowledge Assessment Quiz
+                    </div>
+                    <h2 id="quiz-title" class="text-lg md:text-2xl font-black mb-4 md:mb-6 text-white">Module Final Test</h2>
+                    <div id="quiz-questions-box" class="space-y-4 md:space-y-6"></div>
+                    <button onclick="submitQuiz()" class="mt-6 w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl transition text-sm">
+                        Submit Quiz Answers
+                    </button>
+                </div>
+
+                <!-- Control Navigation Buttons -->
+                <div class="flex flex-col sm:flex-row justify-between items-center bg-zinc-900 border border-zinc-800 p-3 md:p-4 rounded-xl gap-3">
+                    <button id="prev-btn" onclick="navigateLesson(-1)" class="w-full sm:w-auto justify-center bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-lg disabled:opacity-30 disabled:pointer-events-none transition flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-arrow-left"></i> Previous
+                    </button>
+                    <button id="complete-btn" onclick="markCurrentAsComplete()" class="w-full sm:w-auto justify-center bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-lg transition flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-circle-check"></i> Mark as Complete
+                    </button>
+                    <button id="next-btn" onclick="navigateLesson(1)" class="w-full sm:w-auto justify-center bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg disabled:opacity-30 disabled:pointer-events-none transition flex items-center gap-2 text-sm">
+                        Next <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Info Box & PDF Section -->
+                <div class="bg-zinc-900 border border-zinc-800 p-4 md:p-6 rounded-xl md:rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="w-full">
+                        <h2 id="lesson-title" class="text-lg md:text-2xl font-bold text-white mb-2">Loading...</h2>
+                        <p id="lesson-desc" class="text-zinc-400 text-xs md:text-sm leading-relaxed max-w-2xl">Description details appear here.</p>
+                    </div>
+                    <div id="pdf-container" class="shrink-0 w-full md:w-auto">
+                        <a id="pdf-link" href="#" target="_blank" class="w-full md:w-auto inline-flex justify-center items-center gap-2 bg-white hover:bg-zinc-200 text-black font-bold py-2.5 px-4 rounded-xl transition duration-300 shadow-lg text-xs md:text-sm">
+                            <i class="fa-solid fa-file-pdf text-red-600"></i> Download PDF
+                        </a>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
 
-    <!-- PROFILE MODAL (Address added) -->
-    <div id="profile-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-        <div class="bg-zinc-900 w-full max-w-md p-6 rounded-2xl border border-zinc-800">
-            <h3 class="font-bold mb-4">Update Profile</h3>
-            <input type="text" id="profile-name" placeholder="Full Name" class="w-full bg-zinc-950 p-3 mb-3 rounded-xl border border-zinc-800 text-sm">
-            <textarea id="profile-address" placeholder="Residential Address" class="w-full bg-zinc-950 p-3 mb-3 rounded-xl border border-zinc-800 text-sm"></textarea>
-            <button onclick="saveProfile()" class="w-full bg-red-600 py-3 rounded-xl text-sm font-bold">Save Details</button>
+    <!-- FLOATING WHATSAPP SUPPORT BUTTON (MATCHED TO NEW NUMBER) -->
+    <a href="https://wa.me/94776104665" target="_blank" class="fixed bottom-4 right-4 bg-red-600 hover:bg-red-700 text-white p-3.5 rounded-full shadow-2xl transition duration-300 transform hover:scale-110 flex items-center justify-center z-50 group">
+        <i class="fa-brands fa-whatsapp text-2xl"></i>
+    </a>
+
+    <!-- PROFILE MODAL -->
+    <div id="profile-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-2xl p-5 md:p-6 relative">
+            <button onclick="toggleProfileModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <h3 class="text-lg md:text-xl font-bold mb-4 text-white border-b border-zinc-800 pb-2"><i class="fa-solid fa-id-card text-red-500"></i> Student Profile</h3>
+            <form id="profile-form" onsubmit="saveProfileDetails(event)">
+                <div class="mb-4">
+                    <label class="block text-zinc-400 text-xs font-bold uppercase mb-2">Full Name (For Certificate)</label>
+                    <input type="text" id="profile-name" required placeholder="John Doe" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-red-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-zinc-400 text-xs font-bold uppercase mb-2">Phone Number</label>
+                    <input type="text" id="profile-phone" required placeholder="07XXXXXXXX" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-red-500">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-zinc-400 text-xs font-bold uppercase mb-2">Email</label>
+                    <input type="text" id="profile-email-readonly" readonly class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-sm text-zinc-500 cursor-not-allowed">
+                </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition text-sm">Save Profile Details</button>
+            </form>
         </div>
     </div>
 
+    <!-- 🌟 HIGH-FIDELITY NO-FLEXBOX PRINT CERTIFICATE TEMPLATE -->
+    <div id="certificate-template" class="hidden">
+        <div class="cert-container">
+            <div class="cert-border">
+                <div class="cert-bg-decor1"></div>
+                <div class="cert-bg-decor2"></div>
+                
+                <div style="position: absolute; width: 100%; top: 60px; left: 0; color: #d4af37; font-size: 34px;">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+                
+                <div class="cert-font-title" style="position: absolute; width: 100%; top: 120px; left: 0; color: #d4af37; font-size: 42px; font-weight: 700; letter-spacing: 4px;">
+                    CERTIFICATE OF COMPLETION
+                </div>
+                
+                <div style="position: absolute; width: 100%; top: 200px; left: 0; color: #888888; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 5px;">
+                    This honor is proudly presented to
+                </div>
+                
+                <div style="position: absolute; width: 100%; top: 250px; left: 0; text-align: center;">
+                    <span id="cert-student-name" style="color: #ffffff; font-size: 48px; font-weight: 700; border-bottom: 3px solid #dc2626; padding-bottom: 5px; display: inline-block; min-width: 550px; font-family: 'Inter', sans-serif;">
+                        John Doe
+                    </span>
+                </div>
+                
+                <div style="position: absolute; width: 800px; top: 380px; left: 120px; color: #cccccc; font-size: 16px; line-height: 1.8; font-family: 'Inter', sans-serif; text-align: center;">
+                    For successfully fulfilling all academic regulations, completing comprehensive video modules, passing evaluation examinations, and demonstrating exceptional competence in the professional master curriculum of <strong style="color: #d4af37; font-weight: 700;">SmartBroker LMS Premium Course</strong>.
+                </div>
+                
+                <!-- Bottom Metrics Data -->
+                <div style="position: absolute; width: 220px; bottom: 80px; left: 120px; text-align: center; font-family: 'Inter', sans-serif;">
+                    <div id="cert-date" style="color: #ffffff; font-size: 16px; font-weight: 600; border-bottom: 1px solid #444444; padding-bottom: 8px;">2026-06-26</div>
+                    <div style="color: #666666; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">Date of Issue</div>
+                </div>
+                
+                <div style="position: absolute; width: 100px; bottom: 75px; left: 470px; text-align: center; font-family: 'Inter', sans-serif;">
+                    <div style="width: 80px; height: 80px; margin: 0 auto; border-radius: 50%; border: 2px dashed #d4af37; line-height: 76px; color: #d4af37; font-weight: 900; font-size: 13px; background: rgba(214,175,55,0.03);">VERIFIED</div>
+                </div>
+                
+                <div style="position: absolute; width: 220px; bottom: 80px; right: 120px; text-align: center; font-family: 'Inter', sans-serif;">
+                    <div class="cert-font-sign" style="color: #d4af37; font-size: 34px; border-bottom: 1px solid #444444; padding-bottom: 0px; height: 35px; line-height: 30px;">SmartBroker</div>
+                    <div style="color: #666666; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">Authorized Signature</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE & CORE LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        
-        // Firebase config (Add your own)
-        const app = initializeApp({/*...*/});
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDVJKSkNv2UQ3ZdCEiZav1XsBAa3xDO10E",
+            authDomain: "lms-smartbroker.firebaseapp.com",
+            projectId: "lms-smartbroker",
+            storageBucket: "lms-smartbroker.firebasestorage.app",
+            messagingSenderId: "522489151297",
+            appId: "1:522489151297:web:ad2232a65e2c3f1a53ebc0",
+            measurementId: "G-S3VH4LYXZQ"
+        };
+
+        const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // Success Message Style
-        window.showSuccess = (msg) => {
-            Swal.fire({
-                title: 'Success!',
-                text: msg,
-                icon: 'success',
-                background: '#18181b',
-                color: '#fff',
-                confirmButtonColor: '#dc2626'
+        const courseData = [
+            { id: 0, type: "video", module: "MODULE 01", title: "1.1 Course Overview", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "මෙම පාඩමෙන් ඊ-කොමර්ස් වල මූලික සිද්ධාන්ත සාකච්ඡා කෙරේ.", pdf: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" },
+            { id: 1, type: "video", module: "MODULE 01", title: "1.2 Shopify Basics", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "ඔයාගේ පළවෙනි Store එක නිවැරදිව Setup කරගන්නා ආකාරය.", pdf: "#" },
+            { id: 2, type: "quiz", module: "MODULE 01 Test", title: "1.3 Module 01 Evaluation", desc: "පළමු මොඩියුලයේ ප්‍රශ්න පත්‍රය.", questions: [
+                { q: "Shopify යනු කුමන වර්ගයේ පද්ධතියක්ද?", a: ["E-commerce Platform", "Video Editor", "Operating System"], correct: 0 },
+                { q: "Dropshipping වලදී බඩු ගබඩා කර තබාගත යුතුද?", a: ["ඔව්, අනිවාර්යයි", "නැත, අවශ්‍ය නොවේ"], correct: 1 }
+            ]},
+            { id: 3, type: "video", module: "MODULE 02", title: "2.1 Consumer Psychology", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "මාර්කටින් මනෝවිද්‍යාව උපයෝගී කරගෙන විකුණුම් වැඩි කරගන්නේ කෙසේද?", pdf: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" }
+        ];
+
+        let currentLessonIndex = 0;
+        let currentUser = null;
+        let completedLessons = [];
+        let studentNameSaved = "Student";
+
+        function renderSidebar() {
+            const container = document.getElementById('lessons-list');
+            container.innerHTML = "";
+            let lastModule = "";
+
+            courseData.forEach((lesson, index) => {
+                if (lesson.module !== lastModule) {
+                    lastModule = lesson.module;
+                    const modHeader = document.createElement('div');
+                    modHeader.className = "px-3 py-1 text-[10px] font-black text-red-500 bg-red-950/20 rounded border border-red-950 mt-3 mb-1 tracking-widest uppercase";
+                    modHeader.innerText = lesson.module;
+                    container.appendChild(modHeader);
+                }
+
+                const item = document.createElement('div');
+                item.id = `sidebar-item-${index}`;
+                item.className = "w-full flex items-center justify-between text-xs md:text-sm px-3 py-2 rounded-xl bg-zinc-900/40 border border-zinc-900 hover:bg-zinc-900 text-zinc-400 hover:text-white transition cursor-pointer mb-1";
+                item.onclick = () => selectLesson(index);
+                
+                const isChecked = completedLessons.includes(index) ? 'checked' : '';
+                const icon = lesson.type === "quiz" ? "fa-solid fa-brain text-red-400" : "fa-regular fa-circle-play";
+                
+                item.innerHTML = `
+                    <div class="flex items-center gap-2 truncate">
+                        <i class="${icon} text-[11px]"></i>
+                        <span class="truncate">${lesson.title}</span>
+                    </div>
+                    <input type="checkbox" ${isChecked} onclick="event.stopPropagation(); toggleCheckbox(${index})" class="w-3.5 h-3.5 accent-red-600">
+                `;
+                container.appendChild(item);
             });
-        };
+            updateActiveUIHighlight();
+        }
 
-        // WhatsApp Certificate Logic
-        window.claimCertificateViaWhatsApp = function() {
-            const name = document.getElementById('profile-name').value || "Student";
-            const msg = `Hi, I have completed the course! My name is ${name}. Please issue my certificate.`;
-            window.open(`https://wa.me/94776104665?text=${encodeURIComponent(msg)}`, '_blank');
-        };
+        async function selectLesson(index) {
+            currentLessonIndex = index;
+            const lesson = courseData[index];
+            
+            document.getElementById('lesson-title').innerText = lesson.title;
+            document.getElementById('lesson-desc').innerText = lesson.desc;
 
-        window.toggleProfileModal = () => document.getElementById('profile-modal').classList.toggle('hidden');
-        window.logoutUser = () => signOut(auth);
+            const videoWrapper = document.getElementById('video-wrapper');
+            const quizWrapper = document.getElementById('quiz-wrapper');
+
+            if (lesson.type === "video") {
+                quizWrapper.classList.add('hidden');
+                videoWrapper.classList.remove('hidden');
+                document.getElementById('video-player').src = lesson.video;
+                document.getElementById('complete-btn').classList.remove('hidden');
+            } else if (lesson.type === "quiz") {
+                videoWrapper.classList.add('hidden');
+                quizWrapper.classList.remove('hidden');
+                document.getElementById('complete-btn').classList.add("hidden");
+                loadQuizQuestions(lesson.questions);
+            }
+
+            const pdfContainer = document.getElementById('pdf-container');
+            if (lesson.pdf && lesson.pdf !== '#') {
+                pdfContainer.classList.remove('hidden');
+                document.getElementById('pdf-link').href = lesson.pdf;
+            } else {
+                pdfContainer.classList.add('hidden');
+            }
+
+            document.getElementById('prev-btn').disabled = (index === 0);
+            document.getElementById('next-btn').disabled = (index === courseData.length - 1);
+            updateActiveUIHighlight();
+
+            if (currentUser) {
+                await setDoc(doc(db, "students", currentUser.uid), { lastViewedLesson: index }, { merge: true });
+            }
+        }
+
+        function loadQuizQuestions(questions) {
+            const qBox = document.getElementById('quiz-questions-box');
+            qBox.innerHTML = "";
+            questions.forEach((qObj, qIdx) => {
+                const div = document.createElement('div');
+                div.className = "bg-zinc-950 p-4 rounded-xl border border-zinc-800";
+                let optionsHtml = "";
+                qObj.a.forEach((opt, oIdx) => {
+                    optionsHtml += `
+                        <label class="flex items-center gap-3 p-2 bg-zinc-900 border border-zinc-800 rounded-lg cursor-pointer hover:bg-zinc-800 transition text-xs md:text-sm">
+                            <input type="radio" name="quiz-q-${qIdx}" value="${oIdx}" class="accent-red-600 w-4 h-4">
+                            <span>${opt}</span>
+                        </label>
+                    `;
+                });
+                div.innerHTML = `<h4 class="font-bold text-white mb-3 text-sm md:text-base">${qIdx+1}. ${qObj.q}</h4><div class="grid grid-cols-1 md:grid-cols-2 gap-2">${optionsHtml}</div>`;
+                qBox.appendChild(div);
+            });
+        }
+
+        window.submitQuiz = function() {
+            const lesson = courseData[currentLessonIndex];
+            let score = 0;
+            let total = lesson.questions.length;
+
+            for(let i=0; i<total; i++) {
+                const selected = document.querySelector(`input[name="quiz-q-${i}"]:checked`);
+                if(!selected) { alert("Please answer all questions before submitting!"); return; }
+                if(parseInt(selected.value) === lesson.questions[i].correct) score++;
+            }
+
+            if(score === total) {
+                alert(`🎉 Awesome! All answers are correct (${score}/${total}). Module Passed!`);
+                if(!completedLessons.includes(currentLessonIndex)) toggleCheckbox(currentLessonIndex);
+            } else {
+                alert(`❌ Some answers are incorrect (${score}/${total}). Please try again.`);
+            }
+        }
+
+        function updateActiveUIHighlight() {
+            courseData.forEach((_, index) => {
+                const el = document.getElementById(`sidebar-item-${index}`);
+                if (el) {
+                    if (index === currentLessonIndex) el.classList.add('active-lesson');
+                    else el.classList.remove('active-lesson');
+                }
+            });
+        }
+
+        window.navigateLesson = function(direction) {
+            let nextIdx = currentLessonIndex + direction;
+            if (nextIdx >= 0 && nextIdx < courseData.length) selectLesson(nextIdx);
+        }
+
+        window.toggleCheckbox = async function(index) {
+            if (completedLessons.includes(index)) completedLessons = completedLessons.filter(i => i !== index);
+            else completedLessons.push(index);
+            await syncProgressToFirebase();
+            renderSidebar();
+            calculateProgress();
+        }
+
+        window.markCurrentAsComplete = async function() {
+            if (!completedLessons.includes(currentLessonIndex)) {
+                completedLessons.push(currentLessonIndex);
+                await syncProgressToFirebase();
+                renderSidebar();
+                calculateProgress();
+            }
+            if (currentLessonIndex < courseData.length - 1) navigateLesson(1);
+        }
+
+        function calculateProgress() {
+            let percentage = Math.round((completedLessons.length / courseData.length) * 100);
+            if(document.getElementById('progress-text')) document.getElementById('progress-text').innerText = `${percentage}%`;
+            if(document.getElementById('progress-bar')) document.getElementById('progress-bar').style.width = `${percentage}%`;
+            document.getElementById('progress-text-mobile').innerText = `${percentage}% Done`;
+            
+            const certBox = document.getElementById('sidebar-cert-box');
+            if (percentage === 100) certBox.classList.remove('hidden');
+            else certBox.classList.add('hidden');
+        }
+
+        async function syncProgressToFirebase() {
+            if (!currentUser) return;
+            await setDoc(doc(db, "students", currentUser.uid), { progress: completedLessons, email: currentUser.email, fullName: studentNameSaved }, { merge: true });
+        }
+
+        window.saveProfileDetails = async function(e) {
+            e.preventDefault();
+            const fullName = document.getElementById('profile-name').value;
+            const phone = document.getElementById('profile-phone').value;
+            studentNameSaved = fullName;
+
+            await setDoc(doc(db, "students", currentUser.uid), { fullName, phone, email: currentUser.email, progress: completedLessons }, { merge: true });
+            alert("Profile Details Saved! 👍");
+            toggleProfileModal();
+            document.getElementById('cert-student-name').innerText = fullName;
+        }
+
+        window.generateCertificatePDF = function() {
+            document.getElementById('cert-student-name').innerText = studentNameSaved;
+            const element = document.getElementById('certificate-template');
+            element.classList.remove('hidden');
+            
+            const opt = {
+                margin: 0,
+                filename: `${studentNameSaved}_SmartBroker_Certificate.pdf`,
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'px', format: [1120, 792], orientation: 'landscape' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.classList.add('hidden');
+            });
+        }
+
+        window.toggleProfileModal = function() { document.getElementById('profile-modal').classList.toggle('hidden'); }
         
-        // Placeholder for Auth/Lesson rendering (Insert existing Firebase logic here)
+        window.handleAuth = function(event) {
+            event.preventDefault();
+            const email = document.getElementById("auth-email").value;
+            const password = document.getElementById("auth-password").value;
+            signInWithEmailAndPassword(auth, email, password).catch(err => alert("Login Failed: " + err.message));
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            const authView = document.getElementById("auth-container");
+            const dashboardView = document.getElementById("dashboard-container");
+
+            if (user) {
+                currentUser = user;
+                authView.classList.add("hidden");
+                dashboardView.classList.remove("hidden");
+                document.getElementById("profile-email-readonly").value = user.email;
+
+                let savedLessonIndex = 0;
+
+                const docSnap = await getDoc(doc(db, "students", user.uid));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    completedLessons = data.progress || [];
+                    studentNameSaved = data.fullName || "Student";
+                    document.getElementById('profile-name').value = studentNameSaved;
+                    document.getElementById('profile-phone').value = data.phone || "";
+                    
+                    if (data.lastViewedLesson !== undefined) {
+                        savedLessonIndex = data.lastViewedLesson;
+                    }
+                } else {
+                    completedLessons = [];
+                }
+                
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('cert-date').innerText = today;
+
+                renderSidebar();
+                selectLesson(savedLessonIndex); 
+                calculateProgress();
+            } else {
+                currentUser = null;
+                authView.classList.remove("hidden");
+                dashboardView.classList.add("hidden");
+            }
+        });
+
+        window.logoutUser = function() { signOut(auth); }
     </script>
 </body>
 </html>
