@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartBroker Ultimate LMS</title>
-    <!-- Tailwind CSS, Google Fonts & FontAwesome Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Great+Vibes&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- html2pdf Library (Certificate එක PDF කරන්න) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         .hidden { display: none; }
@@ -22,38 +20,30 @@
 </head>
 <body class="bg-black text-zinc-100 font-sans antialiased">
 
-    <!-- 1. AUTH CONTAINER -->
     <div id="auth-container" class="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-black via-zinc-950 to-zinc-900">
         <div class="max-w-md w-full bg-zinc-900 p-8 rounded-2xl border border-zinc-800 shadow-2xl">
             <div class="flex justify-center mb-4">
                 <div class="bg-red-600 text-white p-3 rounded-xl font-bold text-xl tracking-wider shadow-lg shadow-red-600/30">SB</div>
             </div>
-            <h2 id="auth-title" class="text-2xl font-bold text-center text-white mb-6">SmartBroker වෙත සාදරයෙන් පිළිගනිමු</h2>
+            <h2 class="text-2xl font-bold text-center text-white mb-6">Student Login</h2>
             
             <form id="auth-form" onsubmit="handleAuth(event)">
                 <div class="mb-4">
-                    <label class="block text-zinc-400 text-sm font-medium mb-2">Email ලිපිනය</label>
+                    <label class="block text-zinc-400 text-sm font-medium mb-2">Email Address</label>
                     <input type="email" id="auth-email" required class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition">
                 </div>
                 <div class="mb-6">
-                    <label class="block text-zinc-400 text-sm font-medium mb-2">Password එක</label>
+                    <label class="block text-zinc-400 text-sm font-medium mb-2">Password</label>
                     <input type="password" id="auth-password" required class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition">
                 </div>
-                <button type="submit" id="auth-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg shadow-red-600/20">
-                    ඇතුල් වන්න (Login)
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg shadow-red-600/20">
+                    Sign In
                 </button>
             </form>
-            <div class="text-center mt-6">
-                <button id="toggle-link" onclick="toggleAuthMode()" class="text-sm text-zinc-400 hover:text-red-500 transition underline">
-                    ගිණුමක් නැද්ද? මෙතනින් Register වන්න
-                </button>
-            </div>
         </div>
     </div>
 
-    <!-- 2. MAIN LMS INTERFACE -->
     <div id="dashboard-container" class="hidden min-h-screen flex flex-col bg-zinc-950">
-        <!-- Header -->
         <nav class="bg-black border-b border-zinc-800 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
             <div class="flex items-center gap-3">
                 <span class="bg-red-600 text-white px-2.5 py-1 rounded-md font-black text-sm">SB</span>
@@ -83,16 +73,13 @@
             </div>
         </nav>
 
-        <!-- Workspace Layout -->
         <div class="flex-1 flex flex-col lg:flex-row w-full mx-auto max-w-[1920px]">
-            <!-- SIDEBAR -->
             <aside class="w-full lg:w-80 bg-black border-r border-zinc-800 flex flex-col shrink-0">
                 <div class="p-4 border-b border-zinc-800 bg-zinc-900/20">
-                    <h3 class="font-bold text-xs uppercase tracking-wider text-zinc-400">පාඩම් මාලාව (Curriculum)</h3>
+                    <h3 class="font-bold text-xs uppercase tracking-wider text-zinc-400">Curriculum</h3>
                 </div>
                 <div id="lessons-list" class="flex-1 overflow-y-auto p-3 space-y-4"></div>
                 
-                <!-- Certificate Download Section inside sidebar (Only shows when 100%) -->
                 <div id="sidebar-cert-box" class="hidden p-4 border-t border-zinc-800 bg-gradient-to-t from-red-950/20 to-transparent">
                     <button onclick="generateCertificatePDF()" class="w-full bg-gradient-to-r from-amber-500 via-yellow-600 to-amber-500 text-black font-black py-3 px-4 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-award text-lg"></i> Claim Your Certificate
@@ -100,16 +87,13 @@
                 </div>
             </aside>
 
-            <!-- MAIN CONTENT DISPLAY -->
             <main class="flex-1 p-4 md:p-8 flex flex-col gap-6">
-                <!-- Video Player Container -->
                 <div id="video-wrapper" class="bg-black rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl">
                     <div class="aspect-video bg-zinc-900">
                         <iframe id="video-player" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
                     </div>
                 </div>
 
-                <!-- QUIZ CONTAINER (Hidden by default, loads dynamically) -->
                 <div id="quiz-wrapper" class="hidden bg-zinc-900 border-2 border-red-900/40 p-6 md:p-8 rounded-2xl shadow-2xl">
                     <div class="flex items-center gap-2 text-red-500 font-bold uppercase tracking-wider text-sm mb-2">
                         <i class="fa-solid fa-brain"></i> Knowledge Assessment Quiz
@@ -121,24 +105,22 @@
                     </button>
                 </div>
 
-                <!-- Control Buttons -->
                 <div class="flex justify-between items-center bg-zinc-900 border border-zinc-800 p-4 rounded-xl">
                     <button id="prev-btn" onclick="navigateLesson(-1)" class="bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-lg disabled:opacity-30 disabled:pointer-events-none transition flex items-center gap-2">
-                        <i class="fa-solid fa-arrow-left"></i> කලින් පාඩම
+                        <i class="fa-solid fa-arrow-left"></i> Previous Lesson
                     </button>
                     <button id="complete-btn" onclick="markCurrentAsComplete()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition flex items-center gap-2">
-                        <i class="fa-solid fa-circle-check"></i> මෙම පාඩම අවසන් කරන්න
+                        <i class="fa-solid fa-circle-check"></i> Mark as Complete
                     </button>
                     <button id="next-btn" onclick="navigateLesson(1)" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg disabled:opacity-30 disabled:pointer-events-none transition flex items-center gap-2">
-                        ඊළඟ පාඩම <i class="fa-solid fa-arrow-right"></i>
+                        Next Lesson <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
 
-                <!-- Info Box & PDF -->
                 <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h2 id="lesson-title" class="text-xl md:text-2xl font-bold text-white mb-2">Loading...</h2>
-                        <p id="lesson-desc" class="text-zinc-400 text-sm leading-relaxed max-w-2xl">පාඩම් විස්තරය මෙතනින් දිස්වේ.</p>
+                        <p id="lesson-desc" class="text-zinc-400 text-sm leading-relaxed max-w-2xl">Description details appear here.</p>
                     </div>
                     <div id="pdf-container" class="shrink-0">
                         <a id="pdf-link" href="#" target="_blank" class="inline-flex items-center gap-2 bg-white hover:bg-zinc-200 text-black font-bold py-3 px-5 rounded-xl transition duration-300 shadow-lg text-sm">
@@ -150,24 +132,22 @@
         </div>
     </div>
 
-    <!-- FLOATING WHATSAPP SUPPORT BUTTON -->
     <a href="https://wa.me/94771234567" target="_blank" class="fixed bottom-6 right-6 bg-emerald-500 hover:bg-emerald-600 text-white p-4 rounded-full shadow-2xl transition duration-300 transform hover:scale-110 flex items-center justify-center z-50 group">
         <i class="fa-brands fa-whatsapp text-3xl"></i>
         <span class="absolute right-14 bg-zinc-900 border border-zinc-800 text-xs px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">Tutor Support Online</span>
     </a>
 
-    <!-- PROFILE MODAL -->
     <div id="profile-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-2xl p-6 relative">
             <button onclick="toggleProfileModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-xl font-bold mb-4 text-white border-b border-zinc-800 pb-2"><i class="fa-solid fa-id-card text-red-500"></i> Student Profile</h3>
             <form id="profile-form" onsubmit="saveProfileDetails(event)">
                 <div class="mb-4">
-                    <label class="block text-zinc-400 text-xs font-bold uppercase mb-2">සම්පූර්ණ නම (Certificate එකට වැටෙන නම)</label>
+                    <label class="block text-zinc-400 text-xs font-bold uppercase mb-2">Full Name (For Certificate)</label>
                     <input type="text" id="profile-name" required placeholder="John Doe" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-red-500">
                 </div>
                 <div class="mb-4">
-                    <label class="block text-zinc-400 text-xs font-bold uppercase mb-2">දුරකථන අංකය</label>
+                    <label class="block text-zinc-400 text-xs font-bold uppercase mb-2">Phone Number</label>
                     <input type="text" id="profile-phone" required placeholder="07XXXXXXXX" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-red-500">
                 </div>
                 <div class="mb-6">
@@ -179,47 +159,32 @@
         </div>
     </div>
 
-    <!-- LEADERBOARD MODAL -->
     <div id="leaderboard-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-2xl p-6 relative">
             <button onclick="toggleLeaderboardModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-xl font-bold mb-4 text-white border-b border-zinc-800 pb-2 text-center text-yellow-500"><i class="fa-solid fa-ranking-star"></i> Top Students Leaderboard</h3>
-            <div id="leaderboard-list" class="space-y-2 max-h-80 overflow-y-auto pr-1">
-                <!-- Dynamically Rendered Students Rank -->
-            </div>
+            <div id="leaderboard-list" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div>
         </div>
     </div>
 
-    <!-- 🌟 UNIQUE LUXURY BLACK/GOLD CERTIFICATE TEMPLATE (Hidden from UI, used for PDF generation) -->
     <div id="certificate-template" class="hidden" style="width: 1120px; height: 792px; background: #000000; padding: 40px; position: relative;">
         <div style="width: 100%; height: 100%; border: 6px double #d4af37; padding: 50px; position: relative; display: flex; flex-col; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle, #121212 0%, #000000 100%);">
-            
-            <!-- Abstract Luxury Background Lines via CSS shapes -->
             <div style="position: absolute; width: 300px; height: 300px; border: 2px solid rgba(212,175,55,0.05); transform: rotate(45deg); top: -100px; left: -100px;"></div>
             <div style="position: absolute; width: 300px; height: 300px; border: 2px solid rgba(220,38,38,0.05); transform: rotate(45deg); bottom: -100px; right: -100px;"></div>
-
-            <!-- Top Crown Badge -->
             <div style="color: #d4af37; font-size: 32px; margin-bottom: 10px;"><i class="fa-solid fa-crown"></i></div>
-            
             <h1 class="cert-font-title" style="color: #d4af37; font-size: 42px; tracking-widest; font-weight: 700; margin-bottom: 5px;">CERTIFICATE OF COMPLETION</h1>
             <p style="color: #888; font-size: 14px; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 40px;">This honor is proudly presented to</p>
-            
             <h2 id="cert-student-name" style="color: #ffffff; font-size: 48px; font-weight: 700; border-bottom: 2px solid #dc2626; padding-bottom: 10px; display: inline-block; min-width: 500px; margin-bottom: 25px; font-family: 'Inter', sans-serif;">John Doe</h2>
-            
             <p style="color: #ccc; font-size: 18px; max-width: 750px; line-height: 1.6; margin-bottom: 50px; font-family: 'Inter', sans-serif;">
                 For successfully fulfilling all academic regulations, completing comprehensive video modules, passing evaluation examinations, and demonstrating exceptional competence in the professional master curriculum of <strong style="color: #d4af37;">SmartBroker LMS Premium Course</strong>.
             </p>
-
             <div style="width: 100%; display: flex; justify-content: space-around; align-items: center; margin-top: 30px; font-family: 'Inter', sans-serif;">
                 <div style="text-align: center;">
                     <div id="cert-date" style="color: #fff; font-size: 16px; font-weight: 600; border-bottom: 1px solid #444; width: 180px; padding-bottom: 5px;">2026-06-26</div>
                     <div style="color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">Date of Issue</div>
                 </div>
                 <div>
-                    <!-- Gold Seal Mock -->
-                    <div style="width: 80px; height: 80px; border-radius: 50%; border: 2px dashed #d4af37; display: flex; align-items: center; justify-content: center; color: #d4af37; font-weight: 900; font-size: 14px; background: rgba(214,175,55,0.05);">
-                        VERIFIED
-                    </div>
+                    <div style="width: 80px; height: 80px; border-radius: 50%; border: 2px dashed #d4af37; display: flex; align-items: center; justify-content: center; color: #d4af37; font-weight: 900; font-size: 14px; background: rgba(214,175,55,0.05);">VERIFIED</div>
                 </div>
                 <div style="text-align: center;">
                     <div class="cert-font-sign" style="color: #d4af37; font-size: 32px; border-bottom: 1px solid #444; width: 180px; line-height: 30px;">SmartBroker</div>
@@ -229,10 +194,9 @@
         </div>
     </div>
 
-    <!-- FIREBASE & CORE LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -249,7 +213,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // DATA MIX (Lessons & Quizzes)
         const courseData = [
             { id: 0, type: "video", module: "MODULE 01", title: "1.1 Course Overview", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "මෙම පාඩමෙන් ඊ-කොමර්ස් වල මූලික සිද්ධාන්ත සාකච්ඡා කෙරේ.", pdf: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" },
             { id: 1, type: "video", module: "MODULE 01", title: "1.2 Shopify Basics", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "ඔයාගේ පළවෙනි Store එක නිවැරදිව Setup කරගන්නා ආකාරය.", pdf: "#" },
@@ -299,7 +262,7 @@
             updateActiveUIHighlight();
         }
 
-        function selectLesson(index) {
+        async function selectLesson(index) {
             currentLessonIndex = index;
             const lesson = courseData[index];
             
@@ -317,7 +280,7 @@
             } else if (lesson.type === "quiz") {
                 videoWrapper.classList.add('hidden');
                 quizWrapper.classList.remove('hidden');
-                document.getElementById('complete-btn').className += " hidden";
+                document.getElementById('complete-btn').classList.add("hidden");
                 loadQuizQuestions(lesson.questions);
             }
 
@@ -332,6 +295,10 @@
             document.getElementById('prev-btn').disabled = (index === 0);
             document.getElementById('next-btn').disabled = (index === courseData.length - 1);
             updateActiveUIHighlight();
+
+            if (currentUser) {
+                await setDoc(doc(db, "students", currentUser.uid), { lastViewedLesson: index }, { merge: true });
+            }
         }
 
         function loadQuizQuestions(questions) {
@@ -361,15 +328,15 @@
 
             for(let i=0; i<total; i++) {
                 const selected = document.querySelector(`input[name="quiz-q-${i}"]:checked`);
-                if(!selected) { alert("කරුණාකර සියලුම ප්‍රශ්න වලට පිළිතුරු සපයන්න!"); return; }
+                if(!selected) { alert("Please answer all questions before submitting!"); return; }
                 if(parseInt(selected.value) === lesson.questions[i].correct) score++;
             }
 
             if(score === total) {
-                alert(`🎉 සුපිරි! සියලුම ප්‍රශ්න නිවැරදියි (${score}/${total}). මොඩියුලය සමත්!`);
+                alert(`🎉 Awesome! All answers are correct (${score}/${total}). Module Passed!`);
                 if(!completedLessons.includes(currentLessonIndex)) toggleCheckbox(currentLessonIndex);
             } else {
-                alert(`❌ වැරදීම් කිහිපයක් තිබේ (${score}/${total}). කරුණාකර නැවත උත්සාහ කරන්න.`);
+                alert(`❌ Some answers are incorrect (${score}/${total}). Please try again.`);
             }
         }
 
@@ -469,7 +436,6 @@
                     });
                 });
 
-                // Sort by highest progress
                 studentsList.sort((a, b) => b.count - a.count);
 
                 listContainer.innerHTML = "";
@@ -489,20 +455,12 @@
         }
 
         window.toggleProfileModal = function() { document.getElementById('profile-modal').classList.toggle('hidden'); }
-        let isLoginMode = true;
-        window.toggleAuthMode = function() {
-            isLoginMode = !isLoginMode;
-            document.getElementById("auth-title").innerText = isLoginMode ? "SmartBroker වෙත සාදරයෙන් පිළිගනිමු" : "නව ගිණුමක් සාදන්න (Register)";
-            document.getElementById("auth-btn").innerText = isLoginMode ? "ඇතුල් වන්න (Login)" : "ලියාපදිංචි වන්න (Register)";
-            document.getElementById("toggle-link").innerText = isLoginMode ? "ගිණුමක් නැද්ද? මෙතනින් Register වන්න" : "දැනටමත් ගිණුමක් තිබේද? Login වන්න";
-        }
-
+        
         window.handleAuth = function(event) {
             event.preventDefault();
             const email = document.getElementById("auth-email").value;
             const password = document.getElementById("auth-password").value;
-            if (isLoginMode) signInWithEmailAndPassword(auth, email, password).catch(err => alert(err.message));
-            else createUserWithEmailAndPassword(auth, email, password).catch(err => alert(err.message));
+            signInWithEmailAndPassword(auth, email, password).catch(err => alert("Login Failed: " + err.message));
         }
 
         onAuthStateChanged(auth, async (user) => {
@@ -513,8 +471,9 @@
                 currentUser = user;
                 authView.classList.add("hidden");
                 dashboardView.classList.remove("hidden");
-                document.getElementById("user-display-email").innerText = user.email;
                 document.getElementById("profile-email-readonly").value = user.email;
+
+                let savedLessonIndex = 0;
 
                 const docSnap = await getDoc(doc(db, "students", user.uid));
                 if (docSnap.exists()) {
@@ -523,16 +482,19 @@
                     studentNameSaved = data.fullName || "Student";
                     document.getElementById('profile-name').value = studentNameSaved;
                     document.getElementById('profile-phone').value = data.phone || "";
+                    
+                    if (data.lastViewedLesson !== undefined) {
+                        savedLessonIndex = data.lastViewedLesson;
+                    }
                 } else {
                     completedLessons = [];
                 }
                 
-                // Get Current Date dynamically for Certificate
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('cert-date').innerText = today;
 
                 renderSidebar();
-                selectLesson(0);
+                selectLesson(savedLessonIndex); 
                 calculateProgress();
             } else {
                 currentUser = null;
