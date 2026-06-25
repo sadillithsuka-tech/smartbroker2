@@ -3,88 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartBroker LMS</title>
-    <!-- Tailwind CSS (ලස්සන UI එකක් ක්ෂණිකව හදාගන්න) -->
+    <title>SmartBroker Premium LMS</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .hidden { display: none; }
+        /* Custom scrollbar for lessons list */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-gray-100 font-sans antialiased">
+<body class="bg-black text-white font-sans antialiased">
 
-    <!-- 1. LOGIN / REGISTER BOX -->
-    <div id="auth-container" class="min-h-screen flex items-center justify-center px-4">
-        <div class="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
+    <!-- 1. AUTH CONTAINER (LOGIN / REGISTER) -->
+    <div id="auth-container" class="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-black via-zinc-900 to-zinc-950">
+        <div class="max-w-md w-full bg-zinc-900 p-8 rounded-2xl border border-zinc-800 shadow-2xl">
+            <!-- Logo / Icon Style -->
+            <div class="flex justify-center mb-4">
+                <div class="bg-red-600 text-white p-3 rounded-full font-bold text-xl tracking-wider shadow-lg shadow-red-600/30">SB</div>
+            </div>
+            <h2 id="auth-title" class="text-2xl font-bold text-center text-white mb-6 tracking-wide">SmartBroker වෙත සාදරයෙන් පිළිගනිමු</h2>
             
-            <!-- Title -->
-            <h2 id="auth-title" class="text-2xl font-bold text-center text-gray-800 mb-6">SmartBroker වෙත සාදරයෙන් පිළිගනිමු</h2>
-            
-            <!-- Auth Form -->
             <form id="auth-form" onsubmit="handleAuth(event)">
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Email ලිපිනය</label>
-                    <input type="email" id="auth-email" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-zinc-400 text-sm font-medium mb-2">Email ලිපිනය</label>
+                    <input type="email" id="auth-email" required class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition">
                 </div>
                 
                 <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Password එක</label>
-                    <input type="password" id="auth-password" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-zinc-400 text-sm font-medium mb-2">Password එක</label>
+                    <input type="password" id="auth-password" required class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition">
                 </div>
                 
-                <button type="submit" id="auth-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
+                <button type="submit" id="auth-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg shadow-red-600/20 active:scale-95">
                     ඇතුල් වන්න (Login)
                 </button>
             </form>
             
-            <!-- Toggle Link -->
-            <div class="text-center mt-4">
-                <button id="toggle-link" onclick="toggleAuthMode()" class="text-sm text-blue-500 hover:underline">
+            <div class="text-center mt-6">
+                <button id="toggle-link" onclick="toggleAuthMode()" class="text-sm text-zinc-400 hover:text-red-500 transition underline decoration-zinc-600">
                     ගිණුමක් නැද්ද? මෙතනින් Register වන්න
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- 2. STUDENT DASHBOARD (වීඩියෝ බලන පේජ් එක) -->
-    <div id="dashboard-container" class="hidden min-h-screen flex flex-col">
-        <!-- Navigation Bar -->
-        <nav class="bg-blue-600 p-4 text-white flex justify-between items-center shadow-md">
-            <h1 class="text-xl font-bold">SmartBroker LMS Dashboard</h1>
+    <!-- 2. PREMIUM DASHBOARD -->
+    <div id="dashboard-container" class="hidden min-h-screen flex flex-col bg-zinc-950 text-zinc-100">
+        <!-- Top Navigation -->
+        <nav class="bg-black border-b border-zinc-800 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+            <div class="flex items-center gap-3">
+                <span class="bg-red-600 text-white px-2.5 py-1 rounded-md font-black text-sm tracking-tighter">SB</span>
+                <h1 class="text-lg font-bold tracking-wide text-white">SmartBroker <span class="text-red-500 font-medium text-sm">LMS PRO</span></h1>
+            </div>
             <div class="flex items-center gap-4">
-                <span id="user-display-email" class="text-sm bg-blue-700 px-3 py-1 rounded"></span>
-                <button onclick="logoutUser()" class="bg-red-500 hover:bg-red-600 text-xs font-bold py-1.5 px-3 rounded transition">
+                <span id="user-display-email" class="text-xs bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg text-zinc-400"></span>
+                <button onclick="logoutUser()" class="bg-zinc-900 hover:bg-red-600 border border-zinc-800 hover:border-red-600 text-xs font-bold py-1.5 px-3 rounded-lg transition duration-300">
                     Logout
                 </button>
             </div>
         </nav>
 
-        <!-- Main Content (Video Area) -->
-        <div class="flex-1 max-w-4xl w-full mx-auto p-4 md:p-8">
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <!-- Video Player Container -->
-                <div class="aspect-video bg-black flex items-center justify-center">
-                    <!-- 💡 සටහන: උඹේ වීඩියෝ ලින්ක් එක (YouTube / Vimeo හෝ direct mp4) පහත src එකට දාපන් මචං -->
-                    <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="LMS Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <!-- Main Workspace (Sidebar + Video Area) -->
+        <div class="flex-1 flex flex-col md:flex-row max-w-[1600px] w-full mx-auto">
+            
+            <!-- LEFT SIDEBAR: Modules & Lessons -->
+            <aside class="w-full md:w-80 bg-black border-r border-zinc-800 flex flex-col shrink-0">
+                <div class="p-4 border-b border-zinc-800 bg-zinc-900/30">
+                    <h3 class="font-bold text-sm uppercase tracking-wider text-zinc-400">Course Curriculum</h3>
                 </div>
                 
-                <!-- Video Details -->
-                <div class="p-6">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-2">පළමු පාඩම: ඊ-කොමර්ස් සහ ඩිජිටල් මාර්කටින් හැඳින්වීම</h2>
-                    <p class="text-gray-600 text-sm leading-relaxed">
-                        මෙම වීඩියෝව මගින් ඔයාගේ ඔන්ලයින් බිස්නස් එක සාර්ථකව කරගෙන යන ආකාරය පිළිබඳ මූලික පියවරවල් සරලව සාකච්ඡා කරනු ලබයි. ගැටළු පවතී නම් අපව සම්බන්ධ කරගන්න.
-                    </p>
+                <!-- Modules Container -->
+                <div class="flex-1 overflow-y-auto p-2 space-y-4">
+                    
+                    <!-- MODULE 1 -->
+                    <div>
+                        <div class="px-3 py-2 text-xs font-bold text-red-500 bg-red-950/20 rounded border border-red-900/30 mb-1">
+                            MODULE 01: INTRODUCTION
+                        </div>
+                        <div class="space-y-1">
+                            <button onclick="changeLesson('Intro Video', 'https://www.youtube.com/embed/dQw4w9WgXcQ', 'මෙම පාඩමෙන් ඊ-කොමර්ස් වල මූලික සිද්ධාන්ත සාකච්ඡා කෙරේ.', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')" class="w-full text-left text-sm px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-zinc-300 hover:text-white transition flex items-center gap-2">
+                                <span>▶</span> 1.1 Course Overview
+                            </button>
+                            <button onclick="changeLesson('Setup Guide', 'https://www.youtube.com/embed/dQw4w9WgXcQ', 'ඔයාගේ පළවෙනි Store එක නිවැරදිව Setup කරගන්නා ආකාරය.', '#')" class="w-full text-left text-sm px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-zinc-300 hover:text-white transition flex items-center gap-2">
+                                <span>▶</span> 1.2 Shopify Basics
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- MODULE 2 -->
+                    <div>
+                        <div class="px-3 py-2 text-xs font-bold text-zinc-400 bg-zinc-900 rounded mb-1">
+                            MODULE 02: ADVANCED STRATEGIES
+                        </div>
+                        <div class="space-y-1">
+                            <button onclick="changeLesson('Marketing Tactics', 'https://www.youtube.com/embed/dQw4w9WgXcQ', 'මාර්කටින් මනෝවිද්‍යාව උපයෝගී කරගෙන විකුණුම් වැඩි කරගන්නේ කෙසේද?', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')" class="w-full text-left text-sm px-3 py-2.5 rounded-xl hover:bg-zinc-900 text-zinc-300 hover:text-white transition flex items-center gap-2">
+                                <span>▶</span> 2.1 Consumer Psychology
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
+            </aside>
+
+            <!-- RIGHT CONTENT AREA: Video & PDF -->
+            <main class="flex-1 p-4 md:p-8 bg-zinc-950 flex flex-col gap-6">
+                
+                <!-- Video Section -->
+                <div class="bg-black rounded-2xl border border-zinc-800 shadow-2xl overflow-hidden">
+                    <div class="aspect-video bg-zinc-900">
+                        <iframe id="video-player" class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="LMS Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- Content Details (White Card background for contrast, or premium dark) -->
+                <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 id="lesson-title" class="text-xl md:text-2xl font-bold text-white mb-2">1.1 Course Overview</h2>
+                        <p id="lesson-desc" class="text-zinc-400 text-sm leading-relaxed max-w-2xl">
+                            මෙම පාඩමෙන් ඊ-කොමර්ස් වල මූලික සිද්ධාන්ත සාකච්ඡා කෙරේ.
+                        </p>
+                    </div>
+                    
+                    <!-- PDF / Resource Download Button -->
+                    <div id="pdf-container" class="shrink-0">
+                        <a id="pdf-link" href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" target="_blank" class="inline-flex items-center gap-2 bg-white hover:bg-zinc-200 text-black font-bold py-3 px-5 rounded-xl transition duration-300 shadow-lg text-sm active:scale-95">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l3-3m-3 3l-3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            Download PDF Notes
+                        </a>
+                    </div>
+                </div>
+
+            </main>
         </div>
     </div>
 
-    <!-- FIREBASE MODULES AND LOGIC -->
+    <!-- FIREBASE LOGIC -->
     <script type="module">
-        // Firebase සර්විස් Import කරගැනීම
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // 🔗 උඹ එවපු Firebase Config එක
         const firebaseConfig = {
             apiKey: "AIzaSyDVJKSkNv2UQ3ZdCEiZav1XsBAa3xDO10E",
             authDomain: "lms-smartbroker.firebaseapp.com",
@@ -95,14 +154,25 @@
             measurementId: "G-S3VH4LYXZQ"
         };
 
-        // Firebase Initialize කිරීම
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-
-        // දැනට ඉන්නේ Login Mode එකේද Register Mode එකේද කියා බැලීමට (Default: login)
         let isLoginMode = true;
 
-        // UI මාරු කරන Function එක (Login <-> Register)
+        // Change Lesson Dynamic content
+        window.changeLesson = function(title, videoUrl, description, pdfUrl) {
+            document.getElementById('lesson-title').innerText = title;
+            document.getElementById('video-player').src = videoUrl;
+            document.getElementById('lesson-desc').innerText = description;
+            
+            const pdfContainer = document.getElementById('pdf-container');
+            if(pdfUrl && pdfUrl !== '#') {
+                pdfContainer.classList.remove('hidden');
+                document.getElementById('pdf-link').href = pdfUrl;
+            } else {
+                pdfContainer.classList.add('hidden');
+            }
+        }
+
         window.toggleAuthMode = function() {
             isLoginMode = !isLoginMode;
             const title = document.getElementById("auth-title");
@@ -120,59 +190,38 @@
             }
         }
 
-        // Login සහ Register වැඩ පාලනය කිරීම
         window.handleAuth = function(event) {
             event.preventDefault();
             const email = document.getElementById("auth-email").value;
             const password = document.getElementById("auth-password").value;
 
             if (isLoginMode) {
-                // Login කිරීම
                 signInWithEmailAndPassword(auth, email, password)
-                    .then((userCredential) => {
-                        alert("සාර්ථකව Login වුණා මචං! 🔥");
-                    })
-                    .catch((error) => {
-                        alert("වැරදීමක් සිදුවුණා: " + error.message);
-                    });
+                    .catch((error) => alert("Error: " + error.message));
             } else {
-                // Register කිරීම
                 createUserWithEmailAndPassword(auth, email, password)
-                    .then((userCredential) => {
-                        alert("ගිණුම සාර්ථකව සෑදුවා! Dashboard එකට ඇතුල් වෙනවා.");
-                    })
-                    .catch((error) => {
-                        alert("Register වීමේදී ගැටළුවක්: " + error.message);
-                    });
+                    .catch((error) => alert("Error: " + error.message));
             }
         }
 
-        // පරිශීලකයා ලොග් වී ඇත්දැයි හැමවිටම නිරීක්ෂණය කිරීම (Auth State Observer)
         onAuthStateChanged(auth, (user) => {
             const authContainer = document.getElementById("auth-container");
             const dashboardContainer = document.getElementById("dashboard-container");
             const userEmailDisplay = document.getElementById("user-display-email");
 
             if (user) {
-                // ළමයා ලොග් වී සිටී නම්: ලොගින් ෆෝම් එක වසා ඩෑෂ්බෝඩ් එක පෙන්වන්න
                 authContainer.classList.add("hidden");
                 dashboardContainer.classList.remove("hidden");
                 userEmailDisplay.innerText = user.email;
             } else {
-                // ලොග් වී නැත්නම්: ඩෑෂ්බෝඩ් වසා ලොගින් ෆෝම් එක පෙන්වන්න
                 authContainer.classList.remove("hidden");
                 dashboardContainer.classList.add("hidden");
             }
         });
 
-        // Logout වීමේ පහසුකම
         window.logoutUser = function() {
-            signOut(auth).then(() => {
-                alert("සාර්ථකව Logout වුණා!");
-            }).catch((error) => {
-                alert("Logout වීමේ ගැටළුවක්: " + error.message);
-            });
+            signOut(auth);
         }
     </script>
 </body>
-</html>S
+</html>
