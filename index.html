@@ -453,6 +453,7 @@
             renderSidebar();
             calculateProgress();
             
+            // Check if course is now complete
             if (completedLessons.length === courseData.length && !hasShownSuccess) {
                 hasShownSuccess = true;
                 showSuccessPopup();
@@ -466,6 +467,7 @@
                 renderSidebar();
                 calculateProgress();
                 
+                // Check if course is now complete
                 if (completedLessons.length === courseData.length && !hasShownSuccess) {
                     hasShownSuccess = true;
                     showSuccessPopup();
@@ -475,24 +477,50 @@
         }
 
         function calculateProgress() {
-            let percentage = Math.round((completedLessons.length / courseData.length) * 100);
-            if(document.getElementById('progress-text')) document.getElementById('progress-text').innerText = `${percentage}%`;
-            if(document.getElementById('progress-bar')) document.getElementById('progress-bar').style.width = `${percentage}%`;
-            if(document.getElementById('progress-bar-mobile')) document.getElementById('progress-bar-mobile').style.width = `${percentage}%`;
-            document.getElementById('progress-text-mobile').innerText = `${percentage}%`;
+            const totalLessons = courseData.length;
+            const completedCount = completedLessons.length;
+            let percentage = Math.round((completedCount / totalLessons) * 100);
             
+            // Update desktop progress
+            const progressText = document.getElementById('progress-text');
+            const progressBar = document.getElementById('progress-bar');
+            if (progressText) progressText.innerText = `${percentage}%`;
+            if (progressBar) progressBar.style.width = `${percentage}%`;
+            
+            // Update mobile progress
+            const progressBarMobile = document.getElementById('progress-bar-mobile');
+            const progressTextMobile = document.getElementById('progress-text-mobile');
+            if (progressBarMobile) progressBarMobile.style.width = `${percentage}%`;
+            if (progressTextMobile) progressTextMobile.innerText = `${percentage}%`;
+            
+            // Show/hide certificate button
             const certBox = document.getElementById('sidebar-cert-box');
-            if (percentage === 100) certBox.classList.remove('hidden');
-            else certBox.classList.add('hidden');
+            if (percentage === 100) {
+                certBox.classList.remove('hidden');
+                // Check if we need to show success popup (only if not shown yet)
+                if (!hasShownSuccess && completedCount === totalLessons) {
+                    hasShownSuccess = true;
+                    showSuccessPopup();
+                }
+            } else {
+                certBox.classList.add('hidden');
+            }
+            
+            console.log(`Progress: ${completedCount}/${totalLessons} = ${percentage}%`);
         }
 
         async function syncProgressToFirebase() {
             if (!currentUser) return;
-            await setDoc(doc(db, "students", currentUser.uid), { 
-                progress: completedLessons, 
-                email: currentUser.email, 
-                fullName: studentNameSaved 
-            }, { merge: true });
+            try {
+                await setDoc(doc(db, "students", currentUser.uid), { 
+                    progress: completedLessons, 
+                    email: currentUser.email, 
+                    fullName: studentNameSaved 
+                }, { merge: true });
+                console.log("Progress synced to Firebase:", completedLessons);
+            } catch (error) {
+                console.error("Sync error:", error);
+            }
         }
 
         window.saveProfileDetails = async function(e) {
@@ -540,8 +568,10 @@
 
         function showSuccessPopup() {
             const popup = document.getElementById('success-popup');
-            popup.classList.remove('hidden');
-            createConfetti();
+            if (popup) {
+                popup.classList.remove('hidden');
+                createConfetti();
+            }
         }
 
         window.closeSuccessPopup = function() {
@@ -550,6 +580,7 @@
 
         function createConfetti() {
             const container = document.getElementById('confetti-container');
+            if (!container) return;
             const colors = ['#ff0000', '#ffd700', '#ff6b6b', '#ffd93d', '#ff8a5c', '#ff4757', '#ff6348', '#ffa502'];
             
             for (let i = 0; i < 100; i++) {
