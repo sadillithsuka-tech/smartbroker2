@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartBroker Ultimate LMS</title>
+    <!-- Tailwind CSS, Google Fonts & FontAwesome Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Great+Vibes&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght=700&family=Great+Vibes&family=Inter:wght=400;600;700&display=swap" rel="stylesheet">
+    <!-- html2pdf Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         .hidden { display: none; }
@@ -16,12 +18,20 @@
         .active-lesson { background-color: #27272a !important; color: #ffffff !important; border-left: 4px solid #dc2626; }
         .cert-font-title { font-family: 'Cinzel', serif; }
         .cert-font-sign { font-family: 'Great Vibes', cursive; }
+        
+        /* 🌟 FIXED CERTIFICATE PRINT LAYOUT STYLES (No Flexbox Mess) */
+        #certificate-template * { box-sizing: border-box; }
+        .cert-container { position: relative; width: 1120px; height: 792px; background: #000000; overflow: hidden; padding: 40px; }
+        .cert-border { position: relative; width: 100%; height: 100%; border: 6px double #d4af37; background: #0a0a0a; text-align: center; }
+        .cert-bg-decor1 { position: absolute; width: 300px; height: 300px; border: 2px solid rgba(212,175,55,0.05); transform: rotate(45deg); top: -100px; left: -100px; }
+        .cert-bg-decor2 { position: absolute; width: 300px; height: 300px; border: 2px solid rgba(220,38,38,0.05); transform: rotate(45deg); bottom: -100px; right: -100px; }
     </style>
 </head>
 <body class="bg-black text-zinc-100 font-sans antialiased">
 
+    <!-- 1. AUTH CONTAINER (LOGIN) -->
     <div id="auth-container" class="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-black via-zinc-950 to-zinc-900">
-        <div class="max-w-md w-full bg-zinc-900 p-8 rounded-2xl border border-zinc-800 shadow-2xl">
+        <div class="max-w-md w-full bg-zinc-900 p-6 md:p-8 rounded-2xl border border-zinc-800 shadow-2xl">
             <div class="flex justify-center mb-4">
                 <div class="bg-red-600 text-white p-3 rounded-xl font-bold text-xl tracking-wider shadow-lg shadow-red-600/30">SB</div>
             </div>
@@ -43,88 +53,109 @@
         </div>
     </div>
 
+    <!-- 2. MAIN LMS INTERFACE -->
     <div id="dashboard-container" class="hidden min-h-screen flex flex-col bg-zinc-950">
-        <nav class="bg-black border-b border-zinc-800 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
-            <div class="flex items-center gap-3">
-                <span class="bg-red-600 text-white px-2.5 py-1 rounded-md font-black text-sm">SB</span>
-                <h1 class="text-lg font-bold tracking-wide text-white">SmartBroker <span class="text-red-500 font-medium text-sm">LMS PRO</span></h1>
+        <!-- Header -->
+        <nav class="bg-black border-b border-zinc-800 px-4 md:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 sticky top-0 z-50">
+            <div class="flex items-center justify-between w-full sm:w-auto gap-3">
+                <div class="flex items-center gap-3">
+                    <span class="bg-red-600 text-white px-2.5 py-1 rounded-md font-black text-sm">SB</span>
+                    <h1 class="text-base md:text-lg font-bold tracking-wide text-white">SmartBroker <span class="text-red-500 font-medium text-sm">LMS PRO</span></h1>
+                </div>
+                <!-- Mini Mobile Progress -->
+                <span id="progress-text-mobile" class="sm:hidden text-xs font-bold bg-zinc-900 border border-zinc-800 px-2 py-1 rounded text-red-500">0% Info</span>
             </div>
             
-            <div class="flex items-center gap-4">
-                <div class="hidden md:flex flex-col items-end w-48">
-                    <div class="flex justify-between w-full text-xs text-zinc-400 mb-1">
-                        <span>Course Completion</span>
+            <!-- Header Right Menu Controls -->
+            <div class="flex flex-wrap items-center justify-center sm:justify-end gap-3 w-full sm:w-auto">
+                <!-- Course Progress (Hidden on Extra Small Screens) -->
+                <div class="hidden md:flex flex-col items-end w-36">
+                    <div class="flex justify-between w-full text-[10px] text-zinc-400 mb-1">
+                        <span>Progress</span>
                         <span id="progress-text">0%</span>
                     </div>
-                    <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
+                    <div class="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
                         <div id="progress-bar" class="bg-red-600 h-full transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </div>
 
-                <button onclick="toggleLeaderboardModal()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 p-2 px-3 rounded-xl text-yellow-500 transition text-sm">
-                    <i class="fa-solid fa-trophy"></i> Leaderboard
-                </button>
-                <button onclick="toggleProfileModal()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 p-2 rounded-xl text-zinc-300 transition text-sm">
+                <!-- 🌟 RED PREMIUM WHATSAPP SUPPORT BUTTON -->
+                <a href="https://wa.me/94776104665" target="_blank" class="bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition flex items-center gap-2 shadow-lg shadow-red-600/20">
+                    <i class="fa-brands fa-whatsapp text-sm md:text-base"></i> Contact Support Team
+                </a>
+
+                <button onclick="toggleProfileModal()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 p-2.5 rounded-xl text-zinc-300 transition text-xs">
                     <i class="fa-solid fa-user-gear"></i> Profile
                 </button>
-                <button onclick="logoutUser()" class="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-900/30 text-xs font-bold py-2 px-3 rounded-xl transition">
+                
+                <button onclick="logoutUser()" class="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-900/30 text-xs font-bold py-2.5 px-3 rounded-xl transition">
                     Logout
                 </button>
             </div>
         </nav>
 
+        <!-- Workspace Layout -->
         <div class="flex-1 flex flex-col lg:flex-row w-full mx-auto max-w-[1920px]">
-            <aside class="w-full lg:w-80 bg-black border-r border-zinc-800 flex flex-col shrink-0">
-                <div class="p-4 border-b border-zinc-800 bg-zinc-900/20">
+            
+            <!-- SIDEBAR (Now on top/accordion scroll style for mobile viewports) -->
+            <aside class="w-full lg:w-80 bg-black border-b lg:border-b-0 lg:border-r border-zinc-800 flex flex-col shrink-0 max-h-[280px] lg:max-h-none">
+                <div class="p-3 border-b border-zinc-800 bg-zinc-900/20 flex justify-between items-center">
                     <h3 class="font-bold text-xs uppercase tracking-wider text-zinc-400">Curriculum</h3>
+                    <span class="lg:hidden text-[10px] text-zinc-500">Scroll down to view lessons</span>
                 </div>
-                <div id="lessons-list" class="flex-1 overflow-y-auto p-3 space-y-4"></div>
+                <div id="lessons-list" class="flex-1 overflow-y-auto p-3 space-y-1"></div>
                 
-                <div id="sidebar-cert-box" class="hidden p-4 border-t border-zinc-800 bg-gradient-to-t from-red-950/20 to-transparent">
-                    <button onclick="generateCertificatePDF()" class="w-full bg-gradient-to-r from-amber-500 via-yellow-600 to-amber-500 text-black font-black py-3 px-4 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-award text-lg"></i> Claim Your Certificate
+                <!-- Certificate Download Section -->
+                <div id="sidebar-cert-box" class="hidden p-3 border-t border-zinc-800 bg-gradient-to-t from-red-950/20 to-transparent">
+                    <button onclick="generateCertificatePDF()" class="w-full bg-gradient-to-r from-amber-500 via-yellow-600 to-amber-500 text-black font-black py-2.5 px-4 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-2 text-xs">
+                        <i class="fa-solid fa-award text-sm"></i> Claim Your Certificate
                     </button>
                 </div>
             </aside>
 
-            <main class="flex-1 p-4 md:p-8 flex flex-col gap-6">
-                <div id="video-wrapper" class="bg-black rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl">
+            <!-- MAIN CONTENT DISPLAY -->
+            <main class="flex-1 p-4 md:p-6 flex flex-col gap-4 md:gap-6">
+                <!-- Video Player Container -->
+                <div id="video-wrapper" class="bg-black rounded-xl md:rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl">
                     <div class="aspect-video bg-zinc-900">
                         <iframe id="video-player" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
                     </div>
                 </div>
 
-                <div id="quiz-wrapper" class="hidden bg-zinc-900 border-2 border-red-900/40 p-6 md:p-8 rounded-2xl shadow-2xl">
-                    <div class="flex items-center gap-2 text-red-500 font-bold uppercase tracking-wider text-sm mb-2">
+                <!-- QUIZ CONTAINER -->
+                <div id="quiz-wrapper" class="hidden bg-zinc-900 border-2 border-red-900/40 p-4 md:p-8 rounded-xl md:rounded-2xl shadow-2xl">
+                    <div class="flex items-center gap-2 text-red-500 font-bold uppercase tracking-wider text-xs mb-2">
                         <i class="fa-solid fa-brain"></i> Knowledge Assessment Quiz
                     </div>
-                    <h2 id="quiz-title" class="text-xl md:text-2xl font-black mb-6 text-white">Module Final Test</h2>
-                    <div id="quiz-questions-box" class="space-y-6"></div>
-                    <button onclick="submitQuiz()" class="mt-8 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl transition">
+                    <h2 id="quiz-title" class="text-lg md:text-2xl font-black mb-4 md:mb-6 text-white">Module Final Test</h2>
+                    <div id="quiz-questions-box" class="space-y-4 md:space-y-6"></div>
+                    <button onclick="submitQuiz()" class="mt-6 w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl transition text-sm">
                         Submit Quiz Answers
                     </button>
                 </div>
 
-                <div class="flex justify-between items-center bg-zinc-900 border border-zinc-800 p-4 rounded-xl">
-                    <button id="prev-btn" onclick="navigateLesson(-1)" class="bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-lg disabled:opacity-30 disabled:pointer-events-none transition flex items-center gap-2">
-                        <i class="fa-solid fa-arrow-left"></i> Previous Lesson
+                <!-- Control Navigation Buttons -->
+                <div class="flex flex-col sm:flex-row justify-between items-center bg-zinc-900 border border-zinc-800 p-3 md:p-4 rounded-xl gap-3">
+                    <button id="prev-btn" onclick="navigateLesson(-1)" class="w-full sm:w-auto justify-center bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-lg disabled:opacity-30 disabled:pointer-events-none transition flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-arrow-left"></i> Previous
                     </button>
-                    <button id="complete-btn" onclick="markCurrentAsComplete()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition flex items-center gap-2">
+                    <button id="complete-btn" onclick="markCurrentAsComplete()" class="w-full sm:w-auto justify-center bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-lg transition flex items-center gap-2 text-sm">
                         <i class="fa-solid fa-circle-check"></i> Mark as Complete
                     </button>
-                    <button id="next-btn" onclick="navigateLesson(1)" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg disabled:opacity-30 disabled:pointer-events-none transition flex items-center gap-2">
-                        Next Lesson <i class="fa-solid fa-arrow-right"></i>
+                    <button id="next-btn" onclick="navigateLesson(1)" class="w-full sm:w-auto justify-center bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg disabled:opacity-30 disabled:pointer-events-none transition flex items-center gap-2 text-sm">
+                        Next <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
 
-                <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h2 id="lesson-title" class="text-xl md:text-2xl font-bold text-white mb-2">Loading...</h2>
-                        <p id="lesson-desc" class="text-zinc-400 text-sm leading-relaxed max-w-2xl">Description details appear here.</p>
+                <!-- Info Box & PDF Section -->
+                <div class="bg-zinc-900 border border-zinc-800 p-4 md:p-6 rounded-xl md:rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="w-full">
+                        <h2 id="lesson-title" class="text-lg md:text-2xl font-bold text-white mb-2">Loading...</h2>
+                        <p id="lesson-desc" class="text-zinc-400 text-xs md:text-sm leading-relaxed max-w-2xl">Description details appear here.</p>
                     </div>
-                    <div id="pdf-container" class="shrink-0">
-                        <a id="pdf-link" href="#" target="_blank" class="inline-flex items-center gap-2 bg-white hover:bg-zinc-200 text-black font-bold py-3 px-5 rounded-xl transition duration-300 shadow-lg text-sm">
-                            <i class="fa-solid fa-file-pdf text-red-600"></i> Download PDF Notes
+                    <div id="pdf-container" class="shrink-0 w-full md:w-auto">
+                        <a id="pdf-link" href="#" target="_blank" class="w-full md:w-auto inline-flex justify-center items-center gap-2 bg-white hover:bg-zinc-200 text-black font-bold py-2.5 px-4 rounded-xl transition duration-300 shadow-lg text-xs md:text-sm">
+                            <i class="fa-solid fa-file-pdf text-red-600"></i> Download PDF
                         </a>
                     </div>
                 </div>
@@ -132,15 +163,16 @@
         </div>
     </div>
 
-    <a href="https://wa.me/94771234567" target="_blank" class="fixed bottom-6 right-6 bg-emerald-500 hover:bg-emerald-600 text-white p-4 rounded-full shadow-2xl transition duration-300 transform hover:scale-110 flex items-center justify-center z-50 group">
-        <i class="fa-brands fa-whatsapp text-3xl"></i>
-        <span class="absolute right-14 bg-zinc-900 border border-zinc-800 text-xs px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">Tutor Support Online</span>
+    <!-- FLOATING WHATSAPP SUPPORT BUTTON (MATCHED TO NEW NUMBER) -->
+    <a href="https://wa.me/94776104665" target="_blank" class="fixed bottom-4 right-4 bg-red-600 hover:bg-red-700 text-white p-3.5 rounded-full shadow-2xl transition duration-300 transform hover:scale-110 flex items-center justify-center z-50 group">
+        <i class="fa-brands fa-whatsapp text-2xl"></i>
     </a>
 
+    <!-- PROFILE MODAL -->
     <div id="profile-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-2xl p-6 relative">
+        <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-2xl p-5 md:p-6 relative">
             <button onclick="toggleProfileModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-xl font-bold mb-4 text-white border-b border-zinc-800 pb-2"><i class="fa-solid fa-id-card text-red-500"></i> Student Profile</h3>
+            <h3 class="text-lg md:text-xl font-bold mb-4 text-white border-b border-zinc-800 pb-2"><i class="fa-solid fa-id-card text-red-500"></i> Student Profile</h3>
             <form id="profile-form" onsubmit="saveProfileDetails(event)">
                 <div class="mb-4">
                     <label class="block text-zinc-400 text-xs font-bold uppercase mb-2">Full Name (For Certificate)</label>
@@ -154,50 +186,63 @@
                     <label class="block text-zinc-400 text-xs font-bold uppercase mb-2">Email</label>
                     <input type="text" id="profile-email-readonly" readonly class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-sm text-zinc-500 cursor-not-allowed">
                 </div>
-                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition">Save Profile Details</button>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition text-sm">Save Profile Details</button>
             </form>
         </div>
     </div>
 
-    <div id="leaderboard-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-2xl p-6 relative">
-            <button onclick="toggleLeaderboardModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-xl font-bold mb-4 text-white border-b border-zinc-800 pb-2 text-center text-yellow-500"><i class="fa-solid fa-ranking-star"></i> Top Students Leaderboard</h3>
-            <div id="leaderboard-list" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div>
-        </div>
-    </div>
-
-    <div id="certificate-template" class="hidden" style="width: 1120px; height: 792px; background: #000000; padding: 40px; position: relative;">
-        <div style="width: 100%; height: 100%; border: 6px double #d4af37; padding: 50px; position: relative; display: flex; flex-col; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle, #121212 0%, #000000 100%);">
-            <div style="position: absolute; width: 300px; height: 300px; border: 2px solid rgba(212,175,55,0.05); transform: rotate(45deg); top: -100px; left: -100px;"></div>
-            <div style="position: absolute; width: 300px; height: 300px; border: 2px solid rgba(220,38,38,0.05); transform: rotate(45deg); bottom: -100px; right: -100px;"></div>
-            <div style="color: #d4af37; font-size: 32px; margin-bottom: 10px;"><i class="fa-solid fa-crown"></i></div>
-            <h1 class="cert-font-title" style="color: #d4af37; font-size: 42px; tracking-widest; font-weight: 700; margin-bottom: 5px;">CERTIFICATE OF COMPLETION</h1>
-            <p style="color: #888; font-size: 14px; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 40px;">This honor is proudly presented to</p>
-            <h2 id="cert-student-name" style="color: #ffffff; font-size: 48px; font-weight: 700; border-bottom: 2px solid #dc2626; padding-bottom: 10px; display: inline-block; min-width: 500px; margin-bottom: 25px; font-family: 'Inter', sans-serif;">John Doe</h2>
-            <p style="color: #ccc; font-size: 18px; max-width: 750px; line-height: 1.6; margin-bottom: 50px; font-family: 'Inter', sans-serif;">
-                For successfully fulfilling all academic regulations, completing comprehensive video modules, passing evaluation examinations, and demonstrating exceptional competence in the professional master curriculum of <strong style="color: #d4af37;">SmartBroker LMS Premium Course</strong>.
-            </p>
-            <div style="width: 100%; display: flex; justify-content: space-around; align-items: center; margin-top: 30px; font-family: 'Inter', sans-serif;">
-                <div style="text-align: center;">
-                    <div id="cert-date" style="color: #fff; font-size: 16px; font-weight: 600; border-bottom: 1px solid #444; width: 180px; padding-bottom: 5px;">2026-06-26</div>
-                    <div style="color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">Date of Issue</div>
+    <!-- 🌟 HIGH-FIDELITY NO-FLEXBOX PRINT CERTIFICATE TEMPLATE -->
+    <div id="certificate-template" class="hidden">
+        <div class="cert-container">
+            <div class="cert-border">
+                <div class="cert-bg-decor1"></div>
+                <div class="cert-bg-decor2"></div>
+                
+                <div style="position: absolute; width: 100%; top: 60px; left: 0; color: #d4af37; font-size: 34px;">
+                    <i class="fa-solid fa-crown"></i>
                 </div>
-                <div>
-                    <div style="width: 80px; height: 80px; border-radius: 50%; border: 2px dashed #d4af37; display: flex; align-items: center; justify-content: center; color: #d4af37; font-weight: 900; font-size: 14px; background: rgba(214,175,55,0.05);">VERIFIED</div>
+                
+                <div class="cert-font-title" style="position: absolute; width: 100%; top: 120px; left: 0; color: #d4af37; font-size: 42px; font-weight: 700; letter-spacing: 4px;">
+                    CERTIFICATE OF COMPLETION
                 </div>
-                <div style="text-align: center;">
-                    <div class="cert-font-sign" style="color: #d4af37; font-size: 32px; border-bottom: 1px solid #444; width: 180px; line-height: 30px;">SmartBroker</div>
-                    <div style="color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">Authorized Signature</div>
+                
+                <div style="position: absolute; width: 100%; top: 200px; left: 0; color: #888888; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 5px;">
+                    This honor is proudly presented to
+                </div>
+                
+                <div style="position: absolute; width: 100%; top: 250px; left: 0; text-align: center;">
+                    <span id="cert-student-name" style="color: #ffffff; font-size: 48px; font-weight: 700; border-bottom: 3px solid #dc2626; padding-bottom: 5px; display: inline-block; min-width: 550px; font-family: 'Inter', sans-serif;">
+                        John Doe
+                    </span>
+                </div>
+                
+                <div style="position: absolute; width: 800px; top: 380px; left: 120px; color: #cccccc; font-size: 16px; line-height: 1.8; font-family: 'Inter', sans-serif; text-align: center;">
+                    For successfully fulfilling all academic regulations, completing comprehensive video modules, passing evaluation examinations, and demonstrating exceptional competence in the professional master curriculum of <strong style="color: #d4af37; font-weight: 700;">SmartBroker LMS Premium Course</strong>.
+                </div>
+                
+                <!-- Bottom Metrics Data -->
+                <div style="position: absolute; width: 220px; bottom: 80px; left: 120px; text-align: center; font-family: 'Inter', sans-serif;">
+                    <div id="cert-date" style="color: #ffffff; font-size: 16px; font-weight: 600; border-bottom: 1px solid #444444; padding-bottom: 8px;">2026-06-26</div>
+                    <div style="color: #666666; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">Date of Issue</div>
+                </div>
+                
+                <div style="position: absolute; width: 100px; bottom: 75px; left: 470px; text-align: center; font-family: 'Inter', sans-serif;">
+                    <div style="width: 80px; height: 80px; margin: 0 auto; border-radius: 50%; border: 2px dashed #d4af37; line-height: 76px; color: #d4af37; font-weight: 900; font-size: 13px; background: rgba(214,175,55,0.03);">VERIFIED</div>
+                </div>
+                
+                <div style="position: absolute; width: 220px; bottom: 80px; right: 120px; text-align: center; font-family: 'Inter', sans-serif;">
+                    <div class="cert-font-sign" style="color: #d4af37; font-size: 34px; border-bottom: 1px solid #444444; padding-bottom: 0px; height: 35px; line-height: 30px;">SmartBroker</div>
+                    <div style="color: #666666; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">Authorized Signature</div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- FIREBASE & CORE LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDVJKSkNv2UQ3ZdCEiZav1XsBAa3xDO10E",
@@ -237,14 +282,14 @@
                 if (lesson.module !== lastModule) {
                     lastModule = lesson.module;
                     const modHeader = document.createElement('div');
-                    modHeader.className = "px-3 py-1.5 text-[10px] font-black text-red-500 bg-red-950/20 rounded border border-red-950 mt-4 mb-2 tracking-widest uppercase";
+                    modHeader.className = "px-3 py-1 text-[10px] font-black text-red-500 bg-red-950/20 rounded border border-red-950 mt-3 mb-1 tracking-widest uppercase";
                     modHeader.innerText = lesson.module;
                     container.appendChild(modHeader);
                 }
 
                 const item = document.createElement('div');
                 item.id = `sidebar-item-${index}`;
-                item.className = "w-full flex items-center justify-between text-sm px-3 py-2.5 rounded-xl bg-zinc-900/40 border border-zinc-900 hover:bg-zinc-900 text-zinc-400 hover:text-white transition cursor-pointer mb-1";
+                item.className = "w-full flex items-center justify-between text-xs md:text-sm px-3 py-2 rounded-xl bg-zinc-900/40 border border-zinc-900 hover:bg-zinc-900 text-zinc-400 hover:text-white transition cursor-pointer mb-1";
                 item.onclick = () => selectLesson(index);
                 
                 const isChecked = completedLessons.includes(index) ? 'checked' : '';
@@ -252,10 +297,10 @@
                 
                 item.innerHTML = `
                     <div class="flex items-center gap-2 truncate">
-                        <i class="${icon} text-xs"></i>
+                        <i class="${icon} text-[11px]"></i>
                         <span class="truncate">${lesson.title}</span>
                     </div>
-                    <input type="checkbox" ${isChecked} onclick="event.stopPropagation(); toggleCheckbox(${index})" class="w-4 h-4 accent-red-600">
+                    <input type="checkbox" ${isChecked} onclick="event.stopPropagation(); toggleCheckbox(${index})" class="w-3.5 h-3.5 accent-red-600">
                 `;
                 container.appendChild(item);
             });
@@ -310,13 +355,13 @@
                 let optionsHtml = "";
                 qObj.a.forEach((opt, oIdx) => {
                     optionsHtml += `
-                        <label class="flex items-center gap-3 p-2 bg-zinc-900 border border-zinc-800 rounded-lg cursor-pointer hover:bg-zinc-800 transition text-sm">
+                        <label class="flex items-center gap-3 p-2 bg-zinc-900 border border-zinc-800 rounded-lg cursor-pointer hover:bg-zinc-800 transition text-xs md:text-sm">
                             <input type="radio" name="quiz-q-${qIdx}" value="${oIdx}" class="accent-red-600 w-4 h-4">
                             <span>${opt}</span>
                         </label>
                     `;
                 });
-                div.innerHTML = `<h4 class="font-bold text-white mb-3 text-base">${qIdx+1}. ${qObj.q}</h4><div class="grid grid-cols-1 md:grid-cols-2 gap-2">${optionsHtml}</div>`;
+                div.innerHTML = `<h4 class="font-bold text-white mb-3 text-sm md:text-base">${qIdx+1}. ${qObj.q}</h4><div class="grid grid-cols-1 md:grid-cols-2 gap-2">${optionsHtml}</div>`;
                 qBox.appendChild(div);
             });
         }
@@ -375,8 +420,9 @@
 
         function calculateProgress() {
             let percentage = Math.round((completedLessons.length / courseData.length) * 100);
-            document.getElementById('progress-text').innerText = `${percentage}%`;
-            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            if(document.getElementById('progress-text')) document.getElementById('progress-text').innerText = `${percentage}%`;
+            if(document.getElementById('progress-bar')) document.getElementById('progress-bar').style.width = `${percentage}%`;
+            document.getElementById('progress-text-mobile').innerText = `${percentage}% Done`;
             
             const certBox = document.getElementById('sidebar-cert-box');
             if (percentage === 100) certBox.classList.remove('hidden');
@@ -409,49 +455,13 @@
                 margin: 0,
                 filename: `${studentNameSaved}_SmartBroker_Certificate.pdf`,
                 image: { type: 'jpeg', quality: 1 },
-                html2canvas: { scale: 2, useCORS: true },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
                 jsPDF: { unit: 'px', format: [1120, 792], orientation: 'landscape' }
             };
 
             html2pdf().set(opt).from(element).save().then(() => {
                 element.classList.add('hidden');
             });
-        }
-
-        window.toggleLeaderboardModal = async function() {
-            const modal = document.getElementById('leaderboard-modal');
-            modal.classList.toggle('hidden');
-            
-            if(!modal.classList.contains('hidden')) {
-                const listContainer = document.getElementById('leaderboard-list');
-                listContainer.innerHTML = "<p class='text-xs text-zinc-500 text-center py-4'>Loading ranks...</p>";
-                
-                const querySnapshot = await getDocs(collection(db, "students"));
-                let studentsList = [];
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    studentsList.push({
-                        name: data.fullName || "Anonymous Student",
-                        count: data.progress ? data.progress.length : 0
-                    });
-                });
-
-                studentsList.sort((a, b) => b.count - a.count);
-
-                listContainer.innerHTML = "";
-                studentsList.forEach((stud, idx) => {
-                    let medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `#${idx+1}`;
-                    listContainer.innerHTML += `
-                        <div class="flex justify-between items-center bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-                            <div class="flex items-center gap-3">
-                                <span class="font-bold text-sm text-yellow-500 w-6">${medal}</span>
-                                <span class="text-sm font-semibold text-white">${stud.name}</span>
-                            </div>
-                            <span class="text-xs bg-red-950/40 text-red-400 border border-red-900/40 px-2 py-1 rounded-md font-bold">${stud.count} Lessons Completed</span>
-                        </div>
-                    `;
-                });
-            }
         }
 
         window.toggleProfileModal = function() { document.getElementById('profile-modal').classList.toggle('hidden'); }
