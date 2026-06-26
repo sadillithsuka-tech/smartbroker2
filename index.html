@@ -370,8 +370,8 @@
                         <div id="video-fields">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                 <div>
-                                    <label>Video URL (YouTube Embed)</label>
-                                    <input type="text" id="lesson-video" placeholder="https://www.youtube.com/embed/VIDEO_ID">
+                                    <label>Video URL</label>
+                                    <input type="text" id="lesson-video" placeholder="https://iframe.mediadelivery.net/embed/...">
                                     <p class="text-zinc-500 text-[10px] mt-1">Use Bunny.net embed link or YouTube embed link</p>
                                 </div>
                                 <div>
@@ -551,9 +551,15 @@
                 const docRef = doc(db, "admin", "modules");
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
-                    modulesData = docSnap.data().modules || [];
+                    const data = docSnap.data();
+                    if (data.modules && Array.isArray(data.modules)) {
+                        modulesData = data.modules;
+                    } else if (data.modules) {
+                        modulesData = Object.values(data.modules);
+                        await setDoc(docRef, { modules: modulesData });
+                    }
                 }
-                if (modulesData.length === 0) {
+                if (!modulesData || modulesData.length === 0) {
                     modulesData = defaultModules;
                     await setDoc(docRef, { modules: modulesData });
                 }
@@ -576,9 +582,15 @@
                 const docRef = doc(db, "admin", "lessons");
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
-                    lessonsData = docSnap.data().lessons || [];
+                    const data = docSnap.data();
+                    if (data.lessons && Array.isArray(data.lessons)) {
+                        lessonsData = data.lessons;
+                    } else if (data.lessons) {
+                        lessonsData = Object.values(data.lessons);
+                        await setDoc(docRef, { lessons: lessonsData });
+                    }
                 }
-                if (lessonsData.length === 0) {
+                if (!lessonsData || lessonsData.length === 0) {
                     lessonsData = defaultLessons;
                     await setDoc(docRef, { lessons: lessonsData });
                 }
