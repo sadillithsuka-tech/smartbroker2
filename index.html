@@ -502,25 +502,18 @@
         ];
 
         const defaultLessons = [
-            { id: 0, type: "video", module: "MODULE 01 - Introduction", title: "1.1 What is Vehicle Brokerage?", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Learn the basics of vehicle brokerage and how the industry works.", pdf: "#" },
-            { id: 1, type: "video", module: "MODULE 01 - Introduction", title: "1.2 Types of Vehicles & Their Values", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Understand different vehicle types and how to determine their market value.", pdf: "#" },
-            { id: 2, type: "quiz", module: "MODULE 01 - Introduction", title: "1.3 Module 01 - Knowledge Check", desc: "Test your knowledge from Module 01.", questions: [
-                { q: "What is a vehicle broker?", a: ["A person who buys/sells vehicles", "A car mechanic", "A driving instructor"], correct: 0 },
-                { q: "Which factor is most important for vehicle valuation?", a: ["Age and condition", "Color", "Owner's age"], correct: 0 }
-            ]},
-            { id: 3, type: "video", module: "MODULE 02 - Sales & Marketing", title: "2.1 Effective Sales Techniques", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Learn proven sales techniques for vehicle brokers.", pdf: "#" },
-            { id: 4, type: "video", module: "MODULE 02 - Sales & Marketing", title: "2.2 Customer Relationship Management", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Build strong customer relationships for repeat business.", pdf: "#" },
-            { id: 5, type: "quiz", module: "MODULE 02 - Sales & Marketing", title: "2.3 Module 02 - Knowledge Check", desc: "Test your knowledge from Module 02.", questions: [
-                { q: "What does CRM stand for?", a: ["Customer Relationship Management", "Car Repair Method", "Credit Risk Management"], correct: 0 },
-                { q: "What is the most important factor in sales?", a: ["Building trust", "Low price", "Fast delivery"], correct: 0 }
-            ]},
-            { id: 6, type: "video", module: "MODULE 03 - Legal & Compliance", title: "3.1 Legal Requirements for Brokers", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Understand the legal requirements and regulations for vehicle brokers.", pdf: "#" },
-            { id: 7, type: "video", module: "MODULE 03 - Legal & Compliance", title: "3.2 Contracts and Agreements", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Learn how to create and manage contracts and agreements.", pdf: "#" },
-            { id: 8, type: "video", module: "MODULE 04 - Business Growth", title: "4.1 Scaling Your Broker Business", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Strategies to scale and grow your vehicle broker business.", pdf: "#" },
-            { id: 9, type: "quiz", module: "MODULE 04 - Business Growth", title: "4.2 Final Comprehensive Exam", desc: "Final exam covering all modules.", questions: [
-                { q: "What is the key to successful vehicle brokering?", a: ["Knowledge and trust", "Low prices only", "Fast cars"], correct: 0 },
-                { q: "Which of these is a legal requirement for brokers?", a: ["Proper licensing", "Fancy office", "Company car"], correct: 0 },
-                { q: "How can you grow your broker business?", a: ["Build network and reputation", "Sell only expensive cars", "Work alone"], correct: 0 }
+            { id: 0, type: "video", module: "MODULE 01 - Introduction", title: "1.1 What is Vehicle Brokerage?", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Learn the basics of vehicle brokerage.", pdf: "#" },
+            { id: 1, type: "video", module: "MODULE 01 - Introduction", title: "1.2 Types of Vehicles", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Understand different vehicle types.", pdf: "#" },
+            { id: 2, type: "quiz", module: "MODULE 01 - Introduction", title: "1.3 Module 01 Quiz", desc: "Test your knowledge.", questions: [{ q: "What is a vehicle broker?", a: ["A person who buys/sells vehicles", "A car mechanic"], correct: 0 }] },
+            { id: 3, type: "video", module: "MODULE 02 - Sales & Marketing", title: "2.1 Effective Sales Techniques", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Learn proven sales techniques.", pdf: "#" },
+            { id: 4, type: "video", module: "MODULE 02 - Sales & Marketing", title: "2.2 Customer Relationship Management", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Build strong customer relationships.", pdf: "#" },
+            { id: 5, type: "quiz", module: "MODULE 02 - Sales & Marketing", title: "2.3 Module 02 Quiz", desc: "Test your knowledge.", questions: [{ q: "What does CRM stand for?", a: ["Customer Relationship Management", "Car Repair Method"], correct: 0 }] },
+            { id: 6, type: "video", module: "MODULE 03 - Legal & Compliance", title: "3.1 Legal Requirements", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Understand legal requirements.", pdf: "#" },
+            { id: 7, type: "video", module: "MODULE 03 - Legal & Compliance", title: "3.2 Contracts and Agreements", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Learn about contracts.", pdf: "#" },
+            { id: 8, type: "video", module: "MODULE 04 - Business Growth", title: "4.1 Scaling Your Business", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Strategies to grow your business.", pdf: "#" },
+            { id: 9, type: "quiz", module: "MODULE 04 - Business Growth", title: "4.2 Final Exam", desc: "Final comprehensive exam.", questions: [
+                { q: "What is the key to successful brokering?", a: ["Knowledge and trust", "Low prices"], correct: 0 },
+                { q: "How can you grow your business?", a: ["Build network and reputation", "Work alone"], correct: 0 }
             ]}
         ];
 
@@ -547,15 +540,26 @@
         // ============ LOAD DATA ============
         async function loadModules() {
             try {
+                console.log("📚 Loading modules...");
                 const docRef = doc(db, "admin", "modules");
                 const docSnap = await getDoc(docRef);
+                
                 if (docSnap.exists()) {
-                    modulesData = docSnap.data().modules || [];
+                    const data = docSnap.data();
+                    if (data.modules && Array.isArray(data.modules)) {
+                        modulesData = data.modules;
+                    } else if (data.modules && typeof data.modules === 'object') {
+                        modulesData = Object.values(data.modules);
+                        await setDoc(docRef, { modules: modulesData });
+                    }
                 }
-                if (modulesData.length === 0) {
+                
+                if (!modulesData || modulesData.length === 0) {
                     modulesData = defaultModules;
                     await setDoc(docRef, { modules: modulesData });
                 }
+                
+                console.log("✅ Modules loaded:", modulesData.length);
                 renderModulesTable();
                 updateModuleDropdown();
                 updateStats();
@@ -572,15 +576,26 @@
 
         async function loadLessons() {
             try {
+                console.log("📚 Loading lessons...");
                 const docRef = doc(db, "admin", "lessons");
                 const docSnap = await getDoc(docRef);
+                
                 if (docSnap.exists()) {
-                    lessonsData = docSnap.data().lessons || [];
+                    const data = docSnap.data();
+                    if (data.lessons && Array.isArray(data.lessons)) {
+                        lessonsData = data.lessons;
+                    } else if (data.lessons && typeof data.lessons === 'object') {
+                        lessonsData = Object.values(data.lessons);
+                        await setDoc(docRef, { lessons: lessonsData });
+                    }
                 }
-                if (lessonsData.length === 0) {
+                
+                if (!lessonsData || lessonsData.length === 0) {
                     lessonsData = defaultLessons;
                     await setDoc(docRef, { lessons: lessonsData });
                 }
+                
+                console.log("✅ Lessons loaded:", lessonsData.length);
                 renderLessonsTable();
                 updateStats();
                 return lessonsData;
@@ -595,12 +610,14 @@
 
         async function loadStudents() {
             try {
+                console.log("👥 Loading students...");
                 const querySnapshot = await getDocs(collection(db, "students"));
                 studentsData = [];
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     studentsData.push({ uid: doc.id, ...data });
                 });
+                console.log("✅ Students loaded:", studentsData.length);
                 renderStudentsTable();
                 updateStats();
                 return studentsData;
@@ -637,16 +654,18 @@
             }
         }
 
-        // ============ RENDER MODULES ============
+        // ============ RENDER FUNCTIONS ============
         function renderModulesTable() {
             const tbody = document.getElementById('modules-table-body');
-            if (modulesData.length === 0) {
+            if (!tbody) return;
+            
+            if (!modulesData || modulesData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" class="text-center text-zinc-500 py-4">No modules yet</td></tr>';
                 return;
             }
 
             tbody.innerHTML = modulesData.map((m, i) => {
-                const lessonCount = lessonsData.filter(l => l.module === m.name).length;
+                const lessonCount = lessonsData ? lessonsData.filter(l => l.module === m.name).length : 0;
                 return `
                     <tr class="table-row drag-item-module" draggable="true" data-index="${i}" 
                         ondragstart="onModuleDragStart(event, ${i})" 
@@ -656,7 +675,7 @@
                         <td class="py-3 text-zinc-500 drag-handle">
                             <i class="fa-solid fa-grip-vertical text-zinc-600"></i> ${i+1}
                         </td>
-                        <td class="py-3 text-white font-medium">${m.name}</td>
+                        <td class="py-3 text-white font-medium">${m.name || 'Unnamed'}</td>
                         <td class="py-3"><span class="module-tag">${lessonCount} lessons</span></td>
                         <td class="py-3">
                             <div class="flex gap-1">
@@ -669,10 +688,11 @@
             }).join('');
         }
 
-        // ============ RENDER LESSONS ============
         function renderLessonsTable() {
             const tbody = document.getElementById('lessons-table-body');
-            if (lessonsData.length === 0) {
+            if (!tbody) return;
+            
+            if (!lessonsData || lessonsData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center text-zinc-500 py-4">No lessons yet</td></tr>';
                 return;
             }
@@ -686,8 +706,8 @@
                     <td class="py-3 text-zinc-500 drag-handle">
                         <i class="fa-solid fa-grip-vertical text-zinc-600"></i> ${i+1}
                     </td>
-                    <td class="py-3 text-white font-medium">${l.title}</td>
-                    <td class="py-3 text-zinc-400 hidden md:table-cell"><span class="module-tag">${l.module}</span></td>
+                    <td class="py-3 text-white font-medium">${l.title || 'Untitled'}</td>
+                    <td class="py-3 text-zinc-400 hidden md:table-cell"><span class="module-tag">${l.module || 'No Module'}</span></td>
                     <td class="py-3 hidden sm:table-cell">
                         <span class="text-xs px-2 py-1 rounded-full ${l.type === 'video' ? 'bg-blue-600/20 text-blue-400' : 'bg-yellow-600/20 text-yellow-400'}">
                             ${l.type === 'video' ? '🎬 Video' : '📝 Quiz'}
@@ -703,16 +723,16 @@
             `).join('');
         }
 
-        // ============ RENDER STUDENTS ============
         function renderStudentsTable() {
             const tbody = document.getElementById('students-table-body');
-            const total = lessonsData.length || 1;
-
-            if (studentsData.length === 0) {
+            if (!tbody) return;
+            
+            if (!studentsData || studentsData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" class="text-center text-zinc-500 py-4">No students yet</td></tr>';
                 return;
             }
 
+            const total = lessonsData ? lessonsData.length : 1;
             tbody.innerHTML = studentsData.map((s, i) => {
                 const progress = s.progress ? s.progress.length : 0;
                 const pct = Math.round((progress / total) * 100);
@@ -738,8 +758,8 @@
                         <td class="py-3">
                             <div class="flex gap-1">
                                 <button onclick="editStudent('${s.uid}')" class="btn-edit"><i class="fa-solid fa-pen"></i></button>
-                                <button onclick="toggleStudentStatus('${s.uid}')" class="${s.status === 'disabled' ? 'btn-success' : 'btn-warning'}" style="background:#4a1a1a;color:#fca5a5;padding:6px 12px;border-radius:8px;font-size:12px;border:none;cursor:pointer;">
-                                    <i class="fa-solid ${s.status === 'disabled' ? 'fa-check' : 'fa-pause'}"></i>
+                                <button onclick="toggleStudentStatus('${s.uid}')" class="btn-warning" style="background:#4a1a1a;color:#fca5a5;padding:6px 12px;border-radius:8px;font-size:12px;border:none;cursor:pointer;">
+                                    <i class="fa-solid fa-pause"></i>
                                 </button>
                                 <button onclick="deleteStudent('${s.uid}')" class="btn-danger"><i class="fa-solid fa-trash"></i></button>
                             </div>
@@ -749,28 +769,20 @@
             }).join('');
         }
 
-        // ============ UPDATE STATS (FIXED) ============
+        // ============ UPDATE STATS ============
         function updateStats() {
-            const total = lessonsData.length || 1;
+            const total = lessonsData ? lessonsData.length : 1;
             
-            // Active students only (status !== 'disabled')
-            const activeStudents = studentsData.filter(s => s.status !== 'disabled');
+            const activeStudents = studentsData ? studentsData.filter(s => s.status !== 'disabled') : [];
             const totalStudents = activeStudents.length;
-            
-            // Completed courses (100% progress)
             const completed = activeStudents.filter(s => s.progress && s.progress.length === total).length;
-            
-            // Average progress
             const avg = totalStudents > 0 ? 
                 Math.round(activeStudents.reduce((sum, s) => sum + ((s.progress ? s.progress.length : 0) / total * 100), 0) / totalStudents) : 0;
-            
-            // Total income
             const income = totalStudents * COURSE_PRICE;
             
-            // Update DOM
             document.getElementById('total-students').textContent = totalStudents;
-            document.getElementById('total-modules').textContent = modulesData.length;
-            document.getElementById('total-lessons').textContent = lessonsData.length;
+            document.getElementById('total-modules').textContent = modulesData ? modulesData.length : 0;
+            document.getElementById('total-lessons').textContent = lessonsData ? lessonsData.length : 0;
             document.getElementById('completed-courses').textContent = completed;
             document.getElementById('avg-progress').textContent = avg + '%';
             document.getElementById('total-income').textContent = `Rs. ${income.toLocaleString()}`;
@@ -779,15 +791,18 @@
         // ============ UPDATE MODULE DROPDOWN ============
         function updateModuleDropdown() {
             const select = document.getElementById('lesson-module-select');
+            if (!select) return;
             const currentValue = select.value;
             select.innerHTML = '<option value="">-- Select Module --</option>';
-            modulesData.forEach(m => {
-                const option = document.createElement('option');
-                option.value = m.name;
-                option.textContent = m.name;
-                select.appendChild(option);
-            });
-            if (currentValue && modulesData.some(m => m.name === currentValue)) {
+            if (modulesData) {
+                modulesData.forEach(m => {
+                    const option = document.createElement('option');
+                    option.value = m.name;
+                    option.textContent = m.name;
+                    select.appendChild(option);
+                });
+            }
+            if (currentValue && modulesData && modulesData.some(m => m.name === currentValue)) {
                 select.value = currentValue;
             }
         }
