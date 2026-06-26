@@ -537,74 +537,100 @@
 
         window.logoutUser = function() { signOut(auth); showToast("Logged out!", "info"); };
 
-        // ============ LOAD DATA ============
-        async function loadModules() {
-            try {
-                console.log("📚 Loading modules...");
-                const docRef = doc(db, "admin", "modules");
-                const docSnap = await getDoc(docRef);
-                
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    if (data.modules && Array.isArray(data.modules)) {
-                        modulesData = data.modules;
-                    } else if (data.modules && typeof data.modules === 'object') {
-                        modulesData = Object.values(data.modules);
-                        await setDoc(docRef, { modules: modulesData });
-                    }
-                }
-                
-                if (!modulesData || modulesData.length === 0) {
-                    modulesData = defaultModules;
-                    await setDoc(docRef, { modules: modulesData });
-                }
-                
-                console.log("✅ Modules loaded:", modulesData.length);
-                renderModulesTable();
-                updateModuleDropdown();
-                updateStats();
-                return modulesData;
-            } catch (error) {
-                console.error("Error loading modules:", error);
-                modulesData = defaultModules;
-                renderModulesTable();
-                updateModuleDropdown();
-                updateStats();
-                return modulesData;
-            }
-        }
-
+        // ============ FIX: Load Lessons with proper array conversion ============
         async function loadLessons() {
             try {
-                console.log("📚 Loading lessons...");
+                console.log("📚 Loading lessons from Firestore...");
                 const docRef = doc(db, "admin", "lessons");
                 const docSnap = await getDoc(docRef);
                 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    if (data.lessons && Array.isArray(data.lessons)) {
-                        lessonsData = data.lessons;
-                    } else if (data.lessons && typeof data.lessons === 'object') {
-                        lessonsData = Object.values(data.lessons);
+                    console.log("📚 Raw data:", data);
+                    
+                    // Check if lessons exists and is an array
+                    if (data.lessons) {
+                        if (Array.isArray(data.lessons)) {
+                            lessonsData = data.lessons;
+                            console.log("✅ Lessons is array, length:", lessonsData.length);
+                        } else {
+                            // Convert object to array
+                            console.log("🔄 Converting lessons object to array...");
+                            lessonsData = Object.values(data.lessons);
+                            console.log("✅ Converted, length:", lessonsData.length);
+                            // Save back as array
+                            await setDoc(docRef, { lessons: lessonsData });
+                            console.log("✅ Saved as array");
+                        }
+                    } else {
+                        console.log("⚠️ No lessons field, using defaults");
+                        lessonsData = defaultLessons;
                         await setDoc(docRef, { lessons: lessonsData });
                     }
-                }
-                
-                if (!lessonsData || lessonsData.length === 0) {
+                } else {
+                    console.log("⚠️ No document, using defaults");
                     lessonsData = defaultLessons;
                     await setDoc(docRef, { lessons: lessonsData });
                 }
                 
-                console.log("✅ Lessons loaded:", lessonsData.length);
+                console.log("📚 Final lessonsData:", lessonsData);
                 renderLessonsTable();
                 updateStats();
                 return lessonsData;
             } catch (error) {
-                console.error("Error loading lessons:", error);
+                console.error("❌ Error loading lessons:", error);
                 lessonsData = defaultLessons;
                 renderLessonsTable();
                 updateStats();
                 return lessonsData;
+            }
+        }
+
+        // ============ FIX: Load Modules with proper array conversion ============
+        async function loadModules() {
+            try {
+                console.log("📚 Loading modules from Firestore...");
+                const docRef = doc(db, "admin", "modules");
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    console.log("📚 Modules raw data:", data);
+                    
+                    if (data.modules) {
+                        if (Array.isArray(data.modules)) {
+                            modulesData = data.modules;
+                            console.log("✅ Modules is array, length:", modulesData.length);
+                        } else {
+                            console.log("🔄 Converting modules object to array...");
+                            modulesData = Object.values(data.modules);
+                            console.log("✅ Converted, length:", modulesData.length);
+                            await setDoc(docRef, { modules: modulesData });
+                            console.log("✅ Saved as array");
+                        }
+                    } else {
+                        console.log("⚠️ No modules field, using defaults");
+                        modulesData = defaultModules;
+                        await setDoc(docRef, { modules: modulesData });
+                    }
+                } else {
+                    console.log("⚠️ No modules document, using defaults");
+                    modulesData = defaultModules;
+                    await setDoc(docRef, { modules: modulesData });
+                }
+                
+                console.log("📚 Final modulesData:", modulesData);
+                renderModulesTable();
+                updateModuleDropdown();
+                updateStats();
+                return modulesData;
+            } catch (error) {
+                console.error("❌ Error loading modules:", error);
+                modulesData = defaultModules;
+                renderModulesTable();
+                updateModuleDropdown();
+                updateStats();
+                return modulesData;
             }
         }
 
@@ -627,30 +653,36 @@
             }
         }
 
+        // ============ SAVE FUNCTIONS ============
+        async function saveLessonsToFirestore(lessons) {
+            try {
+                // Ensure lessons is an array
+                const lessonsArray = Array.isArray(lessons) ? lessons : Object.values(lessons);
+                await setDoc(doc(db, "admin", "lessons"), { lessons: lessonsArray });
+                lessonsData = lessonsArray;
+                renderLessonsTable();
+                updateStats();
+                showToast("Lessons saved!", "success");
+                console.log("✅ Lessons saved:", lessonsArray.length);
+            } catch (error) {
+                console.error("Error saving lessons:", error);
+                showToast("Error saving lessons!", "error");
+            }
+        }
+
         async function saveModulesToFirestore(modules) {
             try {
-                await setDoc(doc(db, "admin", "modules"), { modules: modules });
-                modulesData = modules;
+                const modulesArray = Array.isArray(modules) ? modules : Object.values(modules);
+                await setDoc(doc(db, "admin", "modules"), { modules: modulesArray });
+                modulesData = modulesArray;
                 renderModulesTable();
                 updateModuleDropdown();
                 updateStats();
                 showToast("Modules saved!", "success");
+                console.log("✅ Modules saved:", modulesArray.length);
             } catch (error) {
                 console.error("Error saving modules:", error);
                 showToast("Error saving modules!", "error");
-            }
-        }
-
-        async function saveLessonsToFirestore(lessons) {
-            try {
-                await setDoc(doc(db, "admin", "lessons"), { lessons: lessons });
-                lessonsData = lessons;
-                renderLessonsTable();
-                updateStats();
-                showToast("Lessons saved!", "success");
-            } catch (error) {
-                console.error("Error saving lessons:", error);
-                showToast("Error saving lessons!", "error");
             }
         }
 
@@ -694,6 +726,7 @@
             
             if (!lessonsData || lessonsData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center text-zinc-500 py-4">No lessons yet</td></tr>';
+                document.getElementById('total-lessons').textContent = '0';
                 return;
             }
 
@@ -721,6 +754,8 @@
                     </td>
                 </tr>
             `).join('');
+
+            document.getElementById('total-lessons').textContent = lessonsData.length;
         }
 
         function renderStudentsTable() {
@@ -786,6 +821,8 @@
             document.getElementById('completed-courses').textContent = completed;
             document.getElementById('avg-progress').textContent = avg + '%';
             document.getElementById('total-income').textContent = `Rs. ${income.toLocaleString()}`;
+            
+            console.log("📊 Stats updated:", { totalStudents, totalModules: modulesData?.length, totalLessons: lessonsData?.length });
         }
 
         // ============ UPDATE MODULE DROPDOWN ============
@@ -1232,10 +1269,14 @@
                 authView.classList.add('hidden');
                 dashboard.classList.remove('hidden');
                 document.getElementById('admin-email').textContent = user.email;
+                
+                // Load data with fixes
                 await loadModules();
                 await loadLessons();
                 await loadStudents();
+                
                 switchTab('students');
+                console.log("✅ Admin panel loaded successfully!");
             } else if (user && user.email !== ADMIN_EMAIL) {
                 showToast("Access Denied. Admin only.", "error");
                 signOut(auth);
