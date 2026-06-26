@@ -41,6 +41,12 @@
             z-index: 9999;
         }
 
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .welcome-animate { animation: fadeInUp 0.8s ease-out forwards; }
+
         @media (max-width: 640px) {
             .mobile-header-row { flex-wrap: nowrap !important; gap: 0.25rem !important; }
             .mobile-header-row .btn-text { font-size: 0.6rem !important; padding: 0.4rem 0.5rem !important; }
@@ -69,6 +75,45 @@
         .toast-error { background: #dc2626; border-color: #ef4444; }
         .toast-warning { background: #d97706; border-color: #f59e0b; }
         .toast-info { background: #2563eb; border-color: #3b82f6; }
+
+        /* Welcome Graphic Styles */
+        .welcome-graphic {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+        .welcome-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 60px rgba(220, 38, 38, 0.3);
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        .welcome-circle-inner {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(220, 38, 38, 0.3);
+        }
+        .welcome-icon {
+            font-size: 40px;
+            color: #dc2626;
+        }
+        .welcome-line {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #dc2626, transparent);
+            margin: 10px auto;
+        }
     </style>
 </head>
 <body class="bg-black text-zinc-100 font-sans antialiased">
@@ -135,10 +180,10 @@
             <aside class="w-full lg:w-80 bg-black border-b lg:border-b-0 lg:border-r border-zinc-800 flex flex-col shrink-0 max-h-[280px] lg:max-h-none">
                 <!-- Course Header in Sidebar -->
                 <div class="p-4 border-b border-zinc-800 bg-gradient-to-r from-red-950/20 to-transparent">
-                    <h2 class="text-xs font-bold text-amber-400 tracking-wider uppercase text-center">
-                        <i class="fa-solid fa-graduation-cap mr-2"></i>SmartBroker LMS PRO
+                    <h2 class="text-xs font-bold text-red-500 tracking-wider uppercase text-center">
+                        <i class="fa-solid fa-graduation-cap mr-2"></i>Professional Vehicle Broker Guide
                     </h2>
-                    <p class="text-[9px] text-zinc-500 text-center mt-0.5">Vehicle Broker Master Course</p>
+                    <p class="text-[9px] text-zinc-500 text-center mt-0.5">SmartBroker LMS PRO</p>
                 </div>
                 
                 <div class="p-3 border-b border-zinc-800 bg-zinc-900/20 flex justify-between items-center">
@@ -234,25 +279,65 @@
         </div>
     </div>
 
-    <!-- WELCOME POPUP -->
-    <div id="welcome-popup" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[9998]">
-        <div class="bg-gradient-to-br from-zinc-900 to-black border border-amber-500/30 rounded-2xl p-6 md:p-8 max-w-md w-full text-center shadow-2xl success-popup">
-            <div class="text-5xl md:text-6xl mb-3">🚗</div>
-            <h2 class="text-2xl md:text-3xl font-bold text-white mb-2" id="welcome-greeting">ආයුබෝවන්!</h2>
-            <p class="text-zinc-300 text-sm md:text-base leading-relaxed mb-4">
-                <span id="welcome-student-name" class="text-amber-400 font-bold">Student</span>!
-            </p>
-            <div class="bg-zinc-800/50 rounded-xl p-4 mb-5 border border-amber-500/20">
-                <p class="text-zinc-400 text-xs uppercase tracking-wider">🎯 <span id="welcome-message-text">ඔබගේ පැතිකඩ සම්පූර්ණ කර ඉගෙනුම ආරම්භ කරන්න!</span></p>
+    <!-- WELCOME POPUP - FIRST TIME (Profile Required) -->
+    <div id="welcome-popup-first" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[9998]">
+        <div class="welcome-animate bg-gradient-to-br from-zinc-900 to-black border-2 border-red-600/40 rounded-2xl p-6 md:p-10 max-w-md w-full text-center shadow-2xl">
+            <!-- Graphic -->
+            <div class="welcome-graphic">
+                <div class="welcome-circle">
+                    <div class="welcome-circle-inner">
+                        <i class="fa-solid fa-user-plus welcome-icon"></i>
+                    </div>
+                </div>
             </div>
+            <div class="welcome-line"></div>
+            
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">Welcome to SmartBroker</h2>
+            <p class="text-red-500 text-sm font-medium uppercase tracking-wider mb-3">Professional Vehicle Broker Guide</p>
+            
+            <div class="bg-zinc-800/50 rounded-xl p-4 mb-6 border border-red-600/20">
+                <p class="text-zinc-300 text-sm leading-relaxed">
+                    <span class="text-white font-bold">Complete your profile</span> to start your learning journey. 
+                    This will help us personalize your experience.
+                </p>
+            </div>
+            
             <div class="flex flex-col sm:flex-row gap-3">
-                <button onclick="closeWelcomePopupAndOpenProfile()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-black font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm">
-                    <i class="fa-solid fa-user-pen"></i> පැතිකඩ පුරවන්න
+                <button onclick="closeWelcomeFirstAndOpenProfile()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-pen"></i> Complete Profile
                 </button>
-                <button onclick="closeWelcomePopup()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 px-4 rounded-xl transition text-sm">
-                    පසුව කරන්න
+                <button onclick="closeWelcomeFirst()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 px-4 rounded-xl transition text-sm">
+                    Skip for Now
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- WELCOME POPUP - Regular (After Profile is filled) -->
+    <div id="welcome-popup-regular" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[9998]">
+        <div class="welcome-animate bg-gradient-to-br from-zinc-900 to-black border border-red-600/30 rounded-2xl p-6 md:p-8 max-w-md w-full text-center shadow-2xl">
+            <!-- Graphic -->
+            <div class="welcome-graphic" style="width:100px;height:100px;">
+                <div class="welcome-circle" style="width:100px;height:100px;">
+                    <div class="welcome-circle-inner" style="width:70px;height:70px;">
+                        <i class="fa-solid fa-graduation-cap welcome-icon" style="font-size:32px;"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="welcome-line"></div>
+            
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-1" id="regular-greeting">Good Morning</h2>
+            <p class="text-red-400 font-bold text-lg mb-3" id="regular-student-name">Student</p>
+            
+            <div class="bg-zinc-800/50 rounded-xl p-4 border border-red-600/20">
+                <p class="text-zinc-300 text-sm leading-relaxed">
+                    <span id="regular-message-text" class="text-white font-medium">Continue your learning journey from where you left off.</span>
+                </p>
+            </div>
+            
+            <button onclick="closeWelcomeRegular()" class="mt-5 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-8 rounded-xl transition text-sm">
+                Continue Learning
+            </button>
         </div>
     </div>
 
@@ -342,7 +427,7 @@
         let completedLessons = [];
         let studentNameSaved = "Student";
         let hasShownSuccess = false;
-        let hasShownWelcome = false;
+        let isFirstLogin = true;
 
         function renderSidebar() {
             const container = document.getElementById('lessons-list');
@@ -559,12 +644,18 @@
                 address,
                 nic,
                 email: currentUser.email, 
-                progress: completedLessons 
+                progress: completedLessons,
+                profileCompleted: true
             }, { merge: true });
             
-            showToast("✅ පැතිකඩ සාර්ථකව සුරකින ලදී!", "success");
+            showToast("Profile saved successfully!", "success");
             toggleProfileModal();
             document.getElementById('cert-student-name').innerText = fullName;
+            
+            // After saving profile, show regular welcome
+            setTimeout(() => {
+                showRegularWelcome(fullName);
+            }, 500);
         }
 
         window.claimCertificate = function() {
@@ -632,37 +723,41 @@
         }
 
         // Welcome Popup Functions
-        function showWelcomePopup(studentName) {
-            const popup = document.getElementById('welcome-popup');
+        function showFirstTimeWelcome(studentName) {
+            const popup = document.getElementById('welcome-popup-first');
+            if (!popup) return;
+            popup.classList.remove('hidden');
+        }
+
+        function showRegularWelcome(studentName) {
+            const popup = document.getElementById('welcome-popup-regular');
             if (!popup) return;
             
             const hour = new Date().getHours();
-            let greeting = "ආයුබෝවන්";
-            if (hour >= 5 && hour < 12) greeting = "🌅 සුබ උදෑසනක්";
-            else if (hour >= 12 && hour < 18) greeting = "☀️ සුබ මධ්‍යාහ්නයක්";
-            else greeting = "🌙 සුබ සන්ධ්‍යාවක්";
+            let greeting = "Good Morning";
+            if (hour >= 12 && hour < 18) greeting = "Good Afternoon";
+            else if (hour >= 18) greeting = "Good Evening";
             
-            document.getElementById('welcome-greeting').innerText = greeting;
-            document.getElementById('welcome-student-name').innerText = studentName || "Student";
+            document.getElementById('regular-greeting').innerText = greeting;
+            document.getElementById('regular-student-name').innerText = studentName || "Student";
             
-            const hasProfile = document.getElementById('profile-name').value.trim() !== "";
-            if (!hasProfile) {
-                document.getElementById('welcome-message-text').innerHTML = '📝 කරුණාකර ඔබගේ පැතිකඩ සම්පූර්ණ කරන්න. ඉන්පසු ඔබගේ පාඨමාලාව ආරම්භ කරන්න!';
-            } else {
-                const lastLesson = document.getElementById('lesson-title')?.innerText || "පාඩම";
-                document.getElementById('welcome-message-text').innerHTML = `📚 ඔබ අවසන් වරට බැලූ "${lastLesson}" පාඩමේ සිට ඉදිරියට යන්න!`;
-            }
+            const lastLesson = document.getElementById('lesson-title')?.innerText || "Lesson";
+            document.getElementById('regular-message-text').innerHTML = `Continue your learning journey from <span class="text-red-400">"${lastLesson}"</span> lesson.`;
             
             popup.classList.remove('hidden');
         }
 
-        window.closeWelcomePopup = function() {
-            document.getElementById('welcome-popup').classList.add('hidden');
+        window.closeWelcomeFirst = function() {
+            document.getElementById('welcome-popup-first').classList.add('hidden');
         }
 
-        window.closeWelcomePopupAndOpenProfile = function() {
-            closeWelcomePopup();
+        window.closeWelcomeFirstAndOpenProfile = function() {
+            document.getElementById('welcome-popup-first').classList.add('hidden');
             toggleProfileModal();
+        }
+
+        window.closeWelcomeRegular = function() {
+            document.getElementById('welcome-popup-regular').classList.add('hidden');
         }
 
         function showToast(message, type = 'info') {
@@ -690,24 +785,24 @@
             const email = document.getElementById("auth-email").value;
             const password = document.getElementById("auth-password").value;
             
-            showToast("⏳ පිවිසෙමින්... කරුණාකර රැඳී සිටින්න", "info");
+            showToast("Signing in... Please wait", "info");
             
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    showToast("🎉 සාදරයෙන් පිළිගනිමු! පද්ධතියට පිවිසෙමින්...", "success");
+                    showToast("Welcome! Redirecting...", "success");
                 })
                 .catch((error) => {
-                    let msg = "❌ පිවිසුම අසාර්ථකයි!";
+                    let msg = "Login failed!";
                     if (error.code === 'auth/user-not-found') {
-                        msg = "❌ මෙම Email එක සඳහා ගිණුමක් නොමැත.";
+                        msg = "No account found with this email.";
                     } else if (error.code === 'auth/wrong-password') {
-                        msg = "❌ මුරපදය වැරදියි. නැවත උත්සාහ කරන්න.";
+                        msg = "Incorrect password. Please try again.";
                     } else if (error.code === 'auth/invalid-email') {
-                        msg = "❌ වලංගු Email ලිපිනයක් ඇතුළත් කරන්න.";
+                        msg = "Please enter a valid email address.";
                     } else if (error.code === 'auth/too-many-requests') {
-                        msg = "⚠️ බොහෝ උත්සාහයන් සිදු කර ඇත. කරුණාකර පසුව නැවත උත්සාහ කරන්න.";
+                        msg = "Too many attempts. Please try again later.";
                     } else {
-                        msg = `❌ දෝෂය: ${error.message}`;
+                        msg = `Error: ${error.message}`;
                     }
                     showToast(msg, "error");
                     console.error("Login Error:", error);
@@ -725,6 +820,7 @@
                 document.getElementById("profile-email-readonly").value = user.email;
 
                 let savedLessonIndex = 0;
+                let profileCompleted = false;
 
                 try {
                     const docSnap = await getDoc(doc(db, "students", user.uid));
@@ -732,6 +828,7 @@
                         const data = docSnap.data();
                         completedLessons = data.progress || [];
                         studentNameSaved = data.fullName || "Student";
+                        profileCompleted = data.profileCompleted || false;
                         document.getElementById('profile-name').value = studentNameSaved;
                         document.getElementById('profile-phone').value = data.phone || "";
                         document.getElementById('profile-address').value = data.address || "";
@@ -742,16 +839,18 @@
                         }
                     } else {
                         completedLessons = [];
+                        profileCompleted = false;
                         await setDoc(doc(db, "students", user.uid), {
                             email: user.email,
                             fullName: "Student",
                             progress: [],
+                            profileCompleted: false,
                             createdAt: new Date().toISOString()
                         });
                     }
                 } catch (error) {
                     console.error("Firestore Error:", error);
-                    showToast("⚠️ දත්ත සමුදායට සම්බන්ධ වීමේ ගැටළුවක්!", "warning");
+                    showToast("⚠️ Database connection issue!", "warning");
                 }
                 
                 const today = new Date().toISOString().split('T')[0];
@@ -761,24 +860,29 @@
                 selectLesson(savedLessonIndex); 
                 calculateProgress();
                 
-                // Show welcome popup after login
+                // Show welcome popup based on profile status
                 setTimeout(() => {
-                    showWelcomePopup(studentNameSaved || "Student");
+                    if (!profileCompleted || studentNameSaved === "Student") {
+                        // First time or profile not completed
+                        showFirstTimeWelcome(studentNameSaved);
+                    } else {
+                        // Profile already completed, show regular welcome
+                        showRegularWelcome(studentNameSaved);
+                    }
                 }, 1500);
                 
-                showToast(`👋 සාදරයෙන් පිළිගනිමු ${studentNameSaved}!`, "success");
+                showToast(`Welcome ${studentNameSaved}!`, "success");
             } else {
                 currentUser = null;
                 authView.classList.remove("hidden");
                 dashboardView.classList.add("hidden");
                 hasShownSuccess = false;
-                hasShownWelcome = false;
             }
         });
 
         window.logoutUser = function() { 
             signOut(auth);
-            showToast("👋 නැවත හමුවෙමු!", "info");
+            showToast("Goodbye!", "info");
         }
 
         document.getElementById('success-popup').addEventListener('click', function(e) {
@@ -787,7 +891,13 @@
             }
         });
 
-        document.getElementById('welcome-popup').addEventListener('click', function(e) {
+        document.getElementById('welcome-popup-first').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('welcome-popup-regular').addEventListener('click', function(e) {
             if (e.target === this) {
                 this.classList.add('hidden');
             }
