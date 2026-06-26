@@ -642,7 +642,6 @@
             const tbody = document.getElementById('modules-table-body');
             if (modulesData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" class="text-center text-zinc-500 py-4">No modules yet</td></tr>';
-                document.getElementById('total-modules').textContent = '0';
                 return;
             }
 
@@ -668,8 +667,6 @@
                     </tr>
                 `;
             }).join('');
-
-            document.getElementById('total-modules').textContent = modulesData.length;
         }
 
         // ============ RENDER LESSONS ============
@@ -677,7 +674,6 @@
             const tbody = document.getElementById('lessons-table-body');
             if (lessonsData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center text-zinc-500 py-4">No lessons yet</td></tr>';
-                document.getElementById('total-lessons').textContent = '0';
                 return;
             }
 
@@ -705,33 +701,21 @@
                     </td>
                 </tr>
             `).join('');
-
-            document.getElementById('total-lessons').textContent = lessonsData.length;
         }
 
         // ============ RENDER STUDENTS ============
         function renderStudentsTable() {
             const tbody = document.getElementById('students-table-body');
             const total = lessonsData.length || 1;
-            let completed = 0;
-            let totalProgress = 0;
-            let income = 0;
 
             if (studentsData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" class="text-center text-zinc-500 py-4">No students yet</td></tr>';
-                document.getElementById('total-students').textContent = '0';
-                document.getElementById('completed-courses').textContent = '0';
-                document.getElementById('avg-progress').textContent = '0%';
-                document.getElementById('total-income').textContent = 'Rs. 0';
                 return;
             }
 
             tbody.innerHTML = studentsData.map((s, i) => {
                 const progress = s.progress ? s.progress.length : 0;
                 const pct = Math.round((progress / total) * 100);
-                totalProgress += pct;
-                if (pct === 100) completed++;
-                if (s.status !== 'disabled') income += COURSE_PRICE;
 
                 const statusClass = s.status === 'disabled' ? 'badge-disabled' : (pct === 100 ? 'badge-completed' : 'badge-incomplete');
                 const statusText = s.status === 'disabled' ? 'Disabled ⛔' : (pct === 100 ? 'Completed ✅' : `${pct}%`);
@@ -763,10 +747,32 @@
                     </tr>
                 `;
             }).join('');
+        }
 
-            document.getElementById('total-students').textContent = studentsData.length;
+        // ============ UPDATE STATS (FIXED) ============
+        function updateStats() {
+            const total = lessonsData.length || 1;
+            
+            // Active students only (status !== 'disabled')
+            const activeStudents = studentsData.filter(s => s.status !== 'disabled');
+            const totalStudents = activeStudents.length;
+            
+            // Completed courses (100% progress)
+            const completed = activeStudents.filter(s => s.progress && s.progress.length === total).length;
+            
+            // Average progress
+            const avg = totalStudents > 0 ? 
+                Math.round(activeStudents.reduce((sum, s) => sum + ((s.progress ? s.progress.length : 0) / total * 100), 0) / totalStudents) : 0;
+            
+            // Total income
+            const income = totalStudents * COURSE_PRICE;
+            
+            // Update DOM
+            document.getElementById('total-students').textContent = totalStudents;
+            document.getElementById('total-modules').textContent = modulesData.length;
+            document.getElementById('total-lessons').textContent = lessonsData.length;
             document.getElementById('completed-courses').textContent = completed;
-            document.getElementById('avg-progress').textContent = studentsData.length > 0 ? Math.round(totalProgress / studentsData.length) + '%' : '0%';
+            document.getElementById('avg-progress').textContent = avg + '%';
             document.getElementById('total-income').textContent = `Rs. ${income.toLocaleString()}`;
         }
 
@@ -889,17 +895,14 @@
             
             if (!name) { showToast("Please enter module name!", "error"); return; }
             
-            // Check if module name already exists
             if (modulesData.some((m, i) => m.name === name && i !== editId)) {
                 showToast("Module name already exists!", "error");
                 return;
             }
 
             if (editId >= 0) {
-                // Update - also update lessons with this module name
                 const oldName = modulesData[editId].name;
                 modulesData[editId].name = name;
-                // Update lessons with this module
                 lessonsData.forEach(l => {
                     if (l.module === oldName) l.module = name;
                 });
@@ -917,7 +920,6 @@
             const m = modulesData[index];
             if (!confirm(`Delete module "${m.name}" and all its lessons?`)) return;
             
-            // Remove all lessons with this module
             lessonsData = lessonsData.filter(l => l.module !== m.name);
             modulesData.splice(index, 1);
             modulesData.forEach((m, i) => m.id = i);
@@ -1195,23 +1197,6 @@
             await saveLessonsToFirestore(lessonsData);
             showToast("Lesson deleted!", "success");
         };
-
-        // ============ UPDATE STATS ============
-        function updateStats() {
-            const total = lessonsData.length || 1;
-            const completed = studentsData.filter(s => s.progress && s.progress.length === total && s.status !== 'disabled').length;
-            const avg = studentsData.filter(s => s.status !== 'disabled').length > 0 ? 
-                Math.round(studentsData.filter(s => s.status !== 'disabled').reduce((sum, s) => sum + ((s.progress ? s.progress.length : 0) / total * 100), 0) / studentsData.filter(s => s.status !== 'disabled').length) : 0;
-            
-            document.getElementById('total-students').textContent = studentsData.filter(s => s.status !== 'disabled').length;
-            document.getElementById('total-modules').textContent = modulesData.length;
-            document.getElementById('total-lessons').textContent = lessonsData.length;
-            document.getElementById('completed-courses').textContent = completed;
-            document.getElementById('avg-progress').textContent = avg + '%';
-            
-            const income = studentsData.filter(s => s.status !== 'disabled').length * COURSE_PRICE;
-            document.getElementById('total-income').textContent = `Rs. ${income.toLocaleString()}`;
-        }
 
         // ============ TOAST ============
         function showToast(msg, type = 'info') {
