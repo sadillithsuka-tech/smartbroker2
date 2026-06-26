@@ -3,56 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartBroker Ultimate LMS</title>
+    <title>SmartBroker - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Great+Vibes&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         .hidden { display: none; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #09090b; }
         ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
-        .active-lesson { background-color: #27272a !important; color: #ffffff !important; border-left: 4px solid #dc2626; }
-        .cert-font-title { font-family: 'Cinzel', serif; }
-        .cert-font-sign { font-family: 'Great Vibes', cursive; }
         
-        .cert-container { position: relative; width: 1120px; height: 792px; background: #000000; overflow: hidden; padding: 40px; }
-        .cert-border { position: relative; width: 100%; height: 100%; border: 6px double #d4af37; background: #0a0a0a; text-align: center; }
-        .cert-bg-decor1 { position: absolute; width: 300px; height: 300px; border: 2px solid rgba(212,175,55,0.05); transform: rotate(45deg); top: -100px; left: -100px; }
-        .cert-bg-decor2 { position: absolute; width: 300px; height: 300px; border: 2px solid rgba(220,38,38,0.05); transform: rotate(45deg); bottom: -100px; right: -100px; }
-
-        @keyframes successPop {
-            0% { transform: scale(0.5); opacity: 0; }
-            50% { transform: scale(1.1); }
-            70% { transform: scale(0.95); }
-            100% { transform: scale(1); opacity: 1; }
+        .admin-card {
+            background: linear-gradient(145deg, #1a1a1e, #0d0d0f);
+            border: 1px solid #27272a;
+            border-radius: 16px;
+            transition: all 0.3s ease;
         }
-        @keyframes confettiDrop {
-            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        .admin-card:hover {
+            border-color: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(220, 38, 38, 0.1);
         }
-        .success-popup { animation: successPop 0.6s ease-out forwards; }
-        .confetti-piece {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            animation: confettiDrop 3s linear forwards;
-            pointer-events: none;
-            z-index: 9999;
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
         }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
+        .tab-active {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+        .tab-inactive {
+            background: transparent;
+            color: #a1a1aa;
+            border-color: #27272a;
+        }
+        .tab-inactive:hover {
+            background: #27272a;
+            color: white;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .welcome-animate { animation: fadeInUp 0.8s ease-out forwards; }
-
-        @media (max-width: 640px) {
-            .mobile-header-row { flex-wrap: nowrap !important; gap: 0.25rem !important; }
-            .mobile-header-row .btn-text { font-size: 0.6rem !important; padding: 0.4rem 0.5rem !important; }
-            .mobile-header-row .btn-icon { font-size: 0.75rem !important; }
-        }
-
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        
         .toast-notification {
             position: fixed;
             top: 20px;
@@ -75,44 +76,120 @@
         .toast-error { background: #dc2626; border-color: #ef4444; }
         .toast-warning { background: #d97706; border-color: #f59e0b; }
         .toast-info { background: #2563eb; border-color: #3b82f6; }
-
-        /* Welcome Graphic Styles */
-        .welcome-graphic {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 20px;
-            position: relative;
+        
+        /* Modal styles */
+        .modal-overlay {
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
         }
-        .welcome-circle {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #dc2626, #991b1b);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 60px rgba(220, 38, 38, 0.3);
-            border: 2px solid rgba(255,255,255,0.1);
+        .modal-content {
+            background: linear-gradient(145deg, #1a1a1e, #0d0d0f);
+            border: 1px solid #27272a;
+            border-radius: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
-        .welcome-circle-inner {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #000000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid rgba(220, 38, 38, 0.3);
+        input, select, textarea {
+            background: #0d0d0f;
+            border: 1px solid #27272a;
+            color: white;
+            border-radius: 10px;
+            padding: 10px 14px;
+            width: 100%;
+            transition: border-color 0.3s;
         }
-        .welcome-icon {
-            font-size: 40px;
-            color: #dc2626;
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #dc2626;
         }
-        .welcome-line {
-            width: 60px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #dc2626, transparent);
-            margin: 10px auto;
+        label {
+            color: #a1a1aa;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .btn-primary {
+            background: #dc2626;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            background: #b91c1c;
+            transform: scale(1.02);
+        }
+        .btn-secondary {
+            background: #27272a;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-secondary:hover {
+            background: #3f3f46;
+        }
+        .btn-danger {
+            background: #7f1d1d;
+            color: #fca5a5;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-danger:hover {
+            background: #991b1b;
+            color: white;
+        }
+        .btn-edit {
+            background: #1a3a5c;
+            color: #93c5fd;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-edit:hover {
+            background: #1e4a7a;
+            color: white;
+        }
+        .table-row {
+            border-bottom: 1px solid #1a1a1e;
+            transition: background 0.3s;
+        }
+        .table-row:hover {
+            background: #1a1a1e;
+        }
+        .badge-completed {
+            background: #065f46;
+            color: #6ee7b7;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-incomplete {
+            background: #451a1a;
+            color: #fca5a5;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -124,277 +201,266 @@
             <div class="flex justify-center mb-4">
                 <div class="bg-red-600 text-white p-3 rounded-xl font-bold text-xl tracking-wider shadow-lg shadow-red-600/30">SB</div>
             </div>
-            <h2 class="text-2xl font-bold text-center text-white mb-6">Student Login</h2>
+            <h2 class="text-2xl font-bold text-center text-white mb-2">Admin Login</h2>
+            <p class="text-zinc-500 text-center text-sm mb-6">Enter your admin credentials</p>
             
             <form id="auth-form" onsubmit="handleAuth(event)">
                 <div class="mb-4">
                     <label class="block text-zinc-400 text-sm font-medium mb-2">Email Address</label>
-                    <input type="email" id="auth-email" required placeholder="Enter your email" class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition">
+                    <input type="email" id="auth-email" required placeholder="admin@example.com" class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition">
                 </div>
                 <div class="mb-6">
                     <label class="block text-zinc-400 text-sm font-medium mb-2">Password</label>
                     <input type="password" id="auth-password" required placeholder="Enter your password" class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition">
                 </div>
                 <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg shadow-red-600/20">
-                    Sign In
+                    Sign In as Admin
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- DASHBOARD -->
-    <div id="dashboard-container" class="hidden min-h-screen flex flex-col bg-zinc-950">
-        <nav class="bg-black border-b border-zinc-800 px-2 md:px-6 py-2 md:py-4 sticky top-0 z-50">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-1 sm:gap-4">
-                <div class="flex items-center justify-between w-full sm:w-auto gap-2">
-                    <div class="flex items-center gap-2">
-                        <span class="bg-red-600 text-white px-2 py-1 rounded-md font-black text-xs md:text-sm">SB</span>
-                        <h1 class="text-sm md:text-lg font-bold tracking-wide text-white">SmartBroker <span class="text-red-500 font-medium text-[10px] md:text-sm">LMS PRO</span></h1>
+    <!-- ADMIN DASHBOARD -->
+    <div id="admin-dashboard" class="hidden min-h-screen flex flex-col bg-black">
+        <!-- Top Navbar -->
+        <nav class="bg-black border-b border-zinc-800 px-4 md:px-8 py-3 sticky top-0 z-50">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="bg-red-600 text-white p-2 rounded-lg font-black text-sm">SB</div>
+                    <div>
+                        <h1 class="text-lg font-bold text-white">Admin Panel</h1>
+                        <p class="text-[10px] text-zinc-500">Professional Vehicle Broker Guide</p>
                     </div>
-                    <span id="progress-text-mobile" class="sm:hidden text-[10px] font-bold bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded text-red-500">0%</span>
                 </div>
-                
-                <div class="mobile-header-row flex items-center justify-center gap-1 w-full sm:w-auto">
-                    <a href="https://wa.me/94776104665" target="_blank" class="btn-text flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white font-bold text-[10px] md:text-xs py-1.5 px-2 md:py-2.5 md:px-4 rounded-lg transition shadow-lg shadow-red-600/20">
-                        <i class="fa-brands fa-whatsapp btn-icon text-xs md:text-sm"></i>
-                        <span class="hidden xs:inline">Support</span>
-                    </a>
-                    <button onclick="toggleProfileModal()" class="btn-text flex items-center gap-1 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 py-1.5 px-2 md:py-2.5 md:px-3 rounded-lg text-zinc-300 transition text-[10px] md:text-xs">
-                        <i class="fa-solid fa-user-gear btn-icon text-xs md:text-sm"></i>
-                        <span class="hidden xs:inline">Profile</span>
+                <div class="flex items-center gap-3">
+                    <span class="text-zinc-400 text-sm hidden md:inline">
+                        <i class="fa-solid fa-user-shield text-red-500 mr-1"></i>
+                        <span id="admin-email">admin@example.com</span>
+                    </span>
+                    <button onclick="logoutUser()" class="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-900/30 text-xs font-bold py-2 px-4 rounded-lg transition">
+                        <i class="fa-solid fa-sign-out-alt mr-1"></i> Logout
                     </button>
-                    <button onclick="logoutUser()" class="btn-text flex items-center gap-1 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-900/30 text-[10px] md:text-xs font-bold py-1.5 px-2 md:py-2.5 md:px-3 rounded-lg transition">
-                        <i class="fa-solid fa-sign-out-alt btn-icon text-xs md:text-sm"></i>
-                        <span class="hidden xs:inline">Logout</span>
-                    </button>
-                </div>
-            </div>
-            <div class="sm:hidden mt-1">
-                <div class="w-full bg-zinc-800 h-1 rounded-full overflow-hidden">
-                    <div id="progress-bar-mobile" class="bg-red-600 h-full transition-all duration-500" style="width: 0%"></div>
                 </div>
             </div>
         </nav>
 
-        <div class="flex-1 flex flex-col lg:flex-row w-full mx-auto max-w-[1920px]">
-            <aside class="w-full lg:w-80 bg-black border-b lg:border-b-0 lg:border-r border-zinc-800 flex flex-col shrink-0 max-h-[280px] lg:max-h-none">
-                <!-- Course Header in Sidebar -->
-                <div class="p-4 border-b border-zinc-800 bg-gradient-to-r from-red-950/20 to-transparent">
-                    <h2 class="text-xs font-bold text-red-500 tracking-wider uppercase text-center">
-                        <i class="fa-solid fa-graduation-cap mr-2"></i>Professional Vehicle Broker Guide
-                    </h2>
-                    <!-- SmartBroker LMS PRO removed from here -->
-                </div>
-                
-                <div class="p-3 border-b border-zinc-800 bg-zinc-900/20 flex justify-between items-center">
-                    <h3 class="font-bold text-xs uppercase tracking-wider text-zinc-400">Curriculum</h3>
-                    <span class="lg:hidden text-[10px] text-zinc-500">Scroll down to view lessons</span>
-                </div>
-                <div id="lessons-list" class="flex-1 overflow-y-auto p-3 space-y-1"></div>
-                <div id="sidebar-cert-box" class="hidden p-3 border-t border-zinc-800 bg-gradient-to-t from-red-950/20 to-transparent">
-                    <button onclick="claimCertificate()" class="w-full bg-gradient-to-r from-amber-500 via-yellow-600 to-amber-500 text-black font-black py-2.5 px-4 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-2 text-xs">
-                        <i class="fa-solid fa-award text-sm"></i> Claim Your Certificate
-                    </button>
-                </div>
-            </aside>
-
-            <main class="flex-1 p-2 md:p-6 flex flex-col gap-2 md:gap-6">
-                <div id="video-wrapper" class="bg-black rounded-xl md:rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl">
-                    <div class="aspect-video bg-zinc-900">
-                        <iframe id="video-player" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
+        <!-- Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 md:p-6">
+            <div class="admin-card p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-zinc-500 text-xs uppercase tracking-wider">Total Students</p>
+                        <p class="text-2xl font-bold text-white mt-1" id="total-students">0</p>
                     </div>
-                </div>
-
-                <div id="quiz-wrapper" class="hidden bg-zinc-900 border-2 border-red-900/40 p-3 md:p-8 rounded-xl md:rounded-2xl shadow-2xl">
-                    <div class="flex items-center gap-2 text-red-500 font-bold uppercase tracking-wider text-xs mb-2">
-                        <i class="fa-solid fa-brain"></i> Knowledge Assessment Quiz
-                    </div>
-                    <h2 id="quiz-title" class="text-lg md:text-2xl font-black mb-4 md:mb-6 text-white">Module Final Test</h2>
-                    <div id="quiz-questions-box" class="space-y-4 md:space-y-6"></div>
-                    <button onclick="submitQuiz()" class="mt-6 w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl transition text-sm">
-                        Submit Quiz Answers
-                    </button>
-                </div>
-
-                <div class="flex flex-col sm:flex-row justify-between items-center bg-zinc-900 border border-zinc-800 p-2 md:p-4 rounded-xl gap-2 md:gap-3">
-                    <button id="prev-btn" onclick="navigateLesson(-1)" class="w-full sm:w-auto justify-center bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-2 px-3 md:px-4 rounded-lg disabled:opacity-30 disabled:pointer-events-none transition flex items-center gap-2 text-xs md:text-sm">
-                        <i class="fa-solid fa-arrow-left"></i> Previous
-                    </button>
-                    <button id="complete-btn" onclick="markCurrentAsComplete()" class="w-full sm:w-auto justify-center bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 md:px-5 rounded-lg transition flex items-center gap-2 text-xs md:text-sm">
-                        <i class="fa-solid fa-circle-check"></i> Mark Complete
-                    </button>
-                    <button id="next-btn" onclick="navigateLesson(1)" class="w-full sm:w-auto justify-center bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-3 md:px-4 rounded-lg disabled:opacity-30 disabled:pointer-events-none transition flex items-center gap-2 text-xs md:text-sm">
-                        Next <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                </div>
-
-                <div class="bg-zinc-900 border border-zinc-800 p-3 md:p-6 rounded-xl md:rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3 md:gap-4">
-                    <div class="w-full">
-                        <h2 id="lesson-title" class="text-base md:text-2xl font-bold text-white mb-1 md:mb-2">Loading...</h2>
-                        <p id="lesson-desc" class="text-zinc-400 text-[10px] md:text-sm leading-relaxed max-w-2xl">Description details appear here.</p>
-                    </div>
-                    <div id="pdf-container" class="shrink-0 w-full md:w-auto">
-                        <a id="pdf-link" href="#" target="_blank" class="w-full md:w-auto inline-flex justify-center items-center gap-2 bg-white hover:bg-zinc-200 text-black font-bold py-2 px-3 md:px-4 rounded-xl transition duration-300 shadow-lg text-xs md:text-sm">
-                            <i class="fa-solid fa-file-pdf text-red-600"></i> Download PDF
-                        </a>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <!-- Floating WhatsApp -->
-    <a href="https://wa.me/94776104665" target="_blank" class="fixed bottom-4 right-4 bg-red-600 hover:bg-red-700 text-white p-3.5 rounded-full shadow-2xl transition duration-300 transform hover:scale-110 flex items-center justify-center z-50 group">
-        <i class="fa-brands fa-whatsapp text-2xl"></i>
-    </a>
-
-    <!-- PROFILE MODAL -->
-    <div id="profile-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-2xl p-4 md:p-6 relative max-h-[90vh] overflow-y-auto">
-            <button onclick="toggleProfileModal()" class="absolute top-3 right-3 md:top-4 md:right-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-lg md:text-xl font-bold mb-4 text-white border-b border-zinc-800 pb-2"><i class="fa-solid fa-id-card text-red-500"></i> Student Profile</h3>
-            <form id="profile-form" onsubmit="saveProfileDetails(event)">
-                <div class="mb-3">
-                    <label class="block text-zinc-400 text-[10px] md:text-xs font-bold uppercase mb-1">Full Name</label>
-                    <input type="text" id="profile-name" required placeholder="John Doe" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 md:p-3 text-sm text-white focus:outline-none focus:border-red-500">
-                </div>
-                <div class="mb-3">
-                    <label class="block text-zinc-400 text-[10px] md:text-xs font-bold uppercase mb-1">Phone Number</label>
-                    <input type="text" id="profile-phone" required placeholder="07XXXXXXXX" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 md:p-3 text-sm text-white focus:outline-none focus:border-red-500">
-                </div>
-                <div class="mb-3">
-                    <label class="block text-zinc-400 text-[10px] md:text-xs font-bold uppercase mb-1">Email</label>
-                    <input type="text" id="profile-email-readonly" readonly class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 md:p-3 text-sm text-zinc-500 cursor-not-allowed">
-                </div>
-                <div class="mb-3">
-                    <label class="block text-zinc-400 text-[10px] md:text-xs font-bold uppercase mb-1">Full Address</label>
-                    <textarea id="profile-address" rows="3" placeholder="Enter your full address..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 md:p-3 text-sm text-white focus:outline-none focus:border-red-500 resize-none"></textarea>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-zinc-400 text-[10px] md:text-xs font-bold uppercase mb-1">NIC Number</label>
-                    <input type="text" id="profile-nic" placeholder="XXXXXXXXX" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 md:p-3 text-sm text-white focus:outline-none focus:border-red-500">
-                </div>
-                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 md:py-3 rounded-xl transition text-sm">Save Profile Details</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- WELCOME POPUP - FIRST TIME (Profile Required) -->
-    <div id="welcome-popup-first" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[9998]">
-        <div class="welcome-animate bg-gradient-to-br from-zinc-900 to-black border-2 border-red-600/40 rounded-2xl p-6 md:p-10 max-w-md w-full text-center shadow-2xl">
-            <!-- Graphic -->
-            <div class="welcome-graphic">
-                <div class="welcome-circle">
-                    <div class="welcome-circle-inner">
-                        <i class="fa-solid fa-user-plus welcome-icon"></i>
+                    <div class="stat-icon bg-blue-600/20 text-blue-400">
+                        <i class="fa-solid fa-users"></i>
                     </div>
                 </div>
             </div>
-            <div class="welcome-line"></div>
-            
-            <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">Welcome to SmartBroker</h2>
-            <p class="text-red-500 text-sm font-medium uppercase tracking-wider mb-3">Professional Vehicle Broker Guide</p>
-            
-            <div class="bg-zinc-800/50 rounded-xl p-4 mb-6 border border-red-600/20">
-                <p class="text-zinc-300 text-sm leading-relaxed">
-                    <span class="text-white font-bold">Complete your profile</span> to start your learning journey. 
-                    This will help us personalize your experience.
-                </p>
+            <div class="admin-card p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-zinc-500 text-xs uppercase tracking-wider">Total Lessons</p>
+                        <p class="text-2xl font-bold text-white mt-1" id="total-lessons">0</p>
+                    </div>
+                    <div class="stat-icon bg-green-600/20 text-green-400">
+                        <i class="fa-solid fa-book"></i>
+                    </div>
+                </div>
             </div>
-            
-            <div class="flex flex-col sm:flex-row gap-3">
-                <button onclick="closeWelcomeFirstAndOpenProfile()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm">
-                    <i class="fa-solid fa-pen"></i> Complete Profile
+            <div class="admin-card p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-zinc-500 text-xs uppercase tracking-wider">Completed Courses</p>
+                        <p class="text-2xl font-bold text-white mt-1" id="completed-courses">0</p>
+                    </div>
+                    <div class="stat-icon bg-yellow-600/20 text-yellow-400">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-card p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-zinc-500 text-xs uppercase tracking-wider">Avg Progress</p>
+                        <p class="text-2xl font-bold text-white mt-1" id="avg-progress">0%</p>
+                    </div>
+                    <div class="stat-icon bg-purple-600/20 text-purple-400">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="px-4 md:px-6">
+            <div class="flex flex-wrap gap-2 border-b border-zinc-800 pb-2">
+                <button onclick="switchTab('students')" id="tab-students" class="tab-active px-4 py-2 rounded-lg text-sm font-medium transition border">
+                    <i class="fa-solid fa-users mr-2"></i> Students
                 </button>
-                <button onclick="closeWelcomeFirst()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 px-4 rounded-xl transition text-sm">
-                    Skip for Now
+                <button onclick="switchTab('lessons')" id="tab-lessons" class="tab-inactive px-4 py-2 rounded-lg text-sm font-medium transition border">
+                    <i class="fa-solid fa-book mr-2"></i> Lessons
+                </button>
+                <button onclick="switchTab('add-lesson')" id="tab-add-lesson" class="tab-inactive px-4 py-2 rounded-lg text-sm font-medium transition border">
+                    <i class="fa-solid fa-plus mr-2"></i> Add Lesson
                 </button>
             </div>
         </div>
-    </div>
 
-    <!-- WELCOME POPUP - Regular (After Profile is filled) -->
-    <div id="welcome-popup-regular" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[9998]">
-        <div class="welcome-animate bg-gradient-to-br from-zinc-900 to-black border border-red-600/30 rounded-2xl p-6 md:p-8 max-w-md w-full text-center shadow-2xl">
-            <!-- Graphic -->
-            <div class="welcome-graphic" style="width:100px;height:100px;">
-                <div class="welcome-circle" style="width:100px;height:100px;">
-                    <div class="welcome-circle-inner" style="width:70px;height:70px;">
-                        <i class="fa-solid fa-graduation-cap welcome-icon" style="font-size:32px;"></i>
+        <!-- Tab Content -->
+        <div class="flex-1 p-4 md:p-6">
+            <!-- STUDENTS TAB -->
+            <div id="content-students" class="fade-in">
+                <div class="admin-card p-4 md:p-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                        <h3 class="text-lg font-bold text-white">All Students</h3>
+                        <div class="flex gap-2">
+                            <input type="text" id="student-search" placeholder="Search students..." class="bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-white w-full md:w-64 focus:border-red-500">
+                            <button onclick="refreshStudents()" class="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm transition">
+                                <i class="fa-solid fa-rotate"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left text-zinc-500 border-b border-zinc-800">
+                                    <th class="pb-3 font-semibold">#</th>
+                                    <th class="pb-3 font-semibold">Student Name</th>
+                                    <th class="pb-3 font-semibold hidden md:table-cell">Email</th>
+                                    <th class="pb-3 font-semibold">Progress</th>
+                                    <th class="pb-3 font-semibold hidden sm:table-cell">Phone</th>
+                                    <th class="pb-3 font-semibold">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="students-table-body">
+                                <!-- Students will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="no-students" class="text-center text-zinc-500 py-8 hidden">
+                        <i class="fa-solid fa-users-slash text-3xl mb-3 block"></i>
+                        <p>No students found. Students will appear here when they register.</p>
                     </div>
                 </div>
             </div>
-            <div class="welcome-line"></div>
-            
-            <h2 class="text-xl md:text-2xl font-bold text-white mb-1" id="regular-greeting">Good Morning</h2>
-            <p class="text-red-400 font-bold text-lg mb-3" id="regular-student-name">Student</p>
-            
-            <div class="bg-zinc-800/50 rounded-xl p-4 border border-red-600/20">
-                <p class="text-zinc-300 text-sm leading-relaxed">
-                    <span id="regular-message-text" class="text-white font-medium">Continue your learning journey from where you left off.</span>
-                </p>
+
+            <!-- LESSONS TAB -->
+            <div id="content-lessons" class="hidden fade-in">
+                <div class="admin-card p-4 md:p-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                        <h3 class="text-lg font-bold text-white">All Lessons</h3>
+                        <button onclick="switchTab('add-lesson')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition">
+                            <i class="fa-solid fa-plus mr-1"></i> Add New Lesson
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left text-zinc-500 border-b border-zinc-800">
+                                    <th class="pb-3 font-semibold">#</th>
+                                    <th class="pb-3 font-semibold">Title</th>
+                                    <th class="pb-3 font-semibold hidden md:table-cell">Module</th>
+                                    <th class="pb-3 font-semibold hidden sm:table-cell">Type</th>
+                                    <th class="pb-3 font-semibold">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lessons-table-body">
+                                <!-- Lessons will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="no-lessons" class="text-center text-zinc-500 py-8 hidden">
+                        <i class="fa-solid fa-book-open text-3xl mb-3 block"></i>
+                        <p>No lessons found. Add your first lesson now!</p>
+                    </div>
+                </div>
             </div>
-            
-            <button onclick="closeWelcomeRegular()" class="mt-5 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-8 rounded-xl transition text-sm">
-                Continue Learning
-            </button>
+
+            <!-- ADD LESSON TAB -->
+            <div id="content-add-lesson" class="hidden fade-in">
+                <div class="admin-card p-4 md:p-6 max-w-3xl mx-auto">
+                    <h3 class="text-lg font-bold text-white mb-4">
+                        <i class="fa-solid fa-plus-circle text-red-500 mr-2"></i>
+                        <span id="add-lesson-title">Add New Lesson</span>
+                    </h3>
+                    <form id="lesson-form" onsubmit="saveLesson(event)">
+                        <input type="hidden" id="edit-lesson-id" value="-1">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label>Lesson Type</label>
+                                <select id="lesson-type" required onchange="toggleLessonFields()">
+                                    <option value="video">Video Lesson</option>
+                                    <option value="quiz">Quiz / MCQ</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Module Name</label>
+                                <input type="text" id="lesson-module" placeholder="e.g., MODULE 01 - Basics" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label>Lesson Title</label>
+                            <input type="text" id="lesson-title-input" placeholder="e.g., 1.1 Course Overview" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label>Description</label>
+                            <textarea id="lesson-desc-input" rows="2" placeholder="Lesson description..." required></textarea>
+                        </div>
+                        
+                        <!-- Video Fields -->
+                        <div id="video-fields">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label>YouTube Video URL (Embed)</label>
+                                    <input type="text" id="lesson-video" placeholder="https://www.youtube.com/embed/VIDEO_ID">
+                                </div>
+                                <div>
+                                    <label>PDF Link (Optional)</label>
+                                    <input type="text" id="lesson-pdf" placeholder="https://example.com/file.pdf or #">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quiz Fields -->
+                        <div id="quiz-fields" class="hidden">
+                            <div class="mb-4">
+                                <label class="text-sm font-bold text-white">Quiz Questions</label>
+                                <div id="questions-container" class="space-y-3">
+                                    <!-- Questions will be added here -->
+                                </div>
+                                <button type="button" onclick="addQuestionField()" class="mt-3 bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-lg text-sm transition">
+                                    <i class="fa-solid fa-plus mr-1"></i> Add Question
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3 mt-6">
+                            <button type="submit" class="btn-primary flex-1 md:flex-none px-8">
+                                <i class="fa-solid fa-save mr-2"></i> Save Lesson
+                            </button>
+                            <button type="button" onclick="resetLessonForm()" class="btn-secondary">
+                                <i class="fa-solid fa-times mr-1"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- SUCCESS POPUP - Updated with English, Course Name, and Date -->
-    <div id="success-popup" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[9999]">
-        <div class="success-popup bg-gradient-to-br from-zinc-900 to-black border-2 border-amber-500 rounded-2xl p-6 md:p-10 max-w-md w-full text-center shadow-2xl">
-            <div class="text-6xl md:text-7xl mb-4">🏆</div>
-            <h2 class="text-3xl md:text-4xl font-bold text-amber-400 mb-2">Congratulations!</h2>
-            <p class="text-zinc-300 text-sm md:text-base leading-relaxed mb-2">
-                You have successfully completed the
-            </p>
-            <p class="text-white font-bold text-lg md:text-xl mb-4 text-red-400">
-                Professional Vehicle Broker Guide
-            </p>
-            <p class="text-zinc-400 text-sm mb-1">Course Completed on:</p>
-            <p class="text-amber-400 font-bold text-lg mb-6" id="completion-date">
-                June 26, 2026
-            </p>
-            <div class="bg-zinc-800/50 rounded-xl p-4 mb-6 border border-amber-500/20">
-                <p class="text-zinc-400 text-xs uppercase tracking-wider">To claim your certificate</p>
-                <p class="text-white font-bold text-sm mt-1">👇 Click the button below</p>
+    <!-- VIEW STUDENT DETAILS MODAL -->
+    <div id="student-modal" class="hidden fixed inset-0 modal-overlay flex items-center justify-center p-4 z-[9999]">
+        <div class="modal-content p-6 max-w-md w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-white">Student Details</h3>
+                <button onclick="closeStudentModal()" class="text-zinc-500 hover:text-white text-xl">&times;</button>
             </div>
-            <button onclick="claimCertificate()" class="w-full bg-gradient-to-r from-amber-500 via-yellow-600 to-amber-500 text-black font-black py-3.5 px-6 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-3 text-sm">
-                <i class="fa-solid fa-certificate text-lg"></i> Get Certificate
-            </button>
-            <button onclick="closeSuccessPopup()" class="mt-4 text-zinc-500 hover:text-white text-xs transition">Close</button>
-        </div>
-    </div>
-
-    <div id="confetti-container"></div>
-
-    <!-- CERTIFICATE TEMPLATE -->
-    <div id="certificate-template" class="hidden">
-        <div class="cert-container">
-            <div class="cert-border">
-                <div class="cert-bg-decor1"></div>
-                <div class="cert-bg-decor2"></div>
-                <div style="position: absolute; width: 100%; top: 60px; left: 0; color: #d4af37; font-size: 34px;"><i class="fa-solid fa-crown"></i></div>
-                <div class="cert-font-title" style="position: absolute; width: 100%; top: 120px; left: 0; color: #d4af37; font-size: 42px; font-weight: 700; letter-spacing: 4px;">CERTIFICATE OF COMPLETION</div>
-                <div style="position: absolute; width: 100%; top: 200px; left: 0; color: #888888; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 5px;">This honor is proudly presented to</div>
-                <div style="position: absolute; width: 100%; top: 250px; left: 0; text-align: center;">
-                    <span id="cert-student-name" style="color: #ffffff; font-size: 48px; font-weight: 700; border-bottom: 3px solid #dc2626; padding-bottom: 5px; display: inline-block; min-width: 550px; font-family: 'Inter', sans-serif;">John Doe</span>
-                </div>
-                <div style="position: absolute; width: 800px; top: 380px; left: 120px; color: #cccccc; font-size: 16px; line-height: 1.8; font-family: 'Inter', sans-serif; text-align: center;">
-                    For successfully fulfilling all academic regulations, completing comprehensive video modules, passing evaluation examinations, and demonstrating exceptional competence in the professional master curriculum of <strong style="color: #d4af37; font-weight: 700;">Professional Vehicle Broker Guide</strong>.
-                </div>
-                <div style="position: absolute; width: 220px; bottom: 80px; left: 120px; text-align: center; font-family: 'Inter', sans-serif;">
-                    <div id="cert-date" style="color: #ffffff; font-size: 16px; font-weight: 600; border-bottom: 1px solid #444444; padding-bottom: 8px;">2026-06-26</div>
-                    <div style="color: #666666; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">Date of Issue</div>
-                </div>
-                <div style="position: absolute; width: 100px; bottom: 75px; left: 470px; text-align: center; font-family: 'Inter', sans-serif;">
-                    <div style="width: 80px; height: 80px; margin: 0 auto; border-radius: 50%; border: 2px dashed #d4af37; line-height: 76px; color: #d4af37; font-weight: 900; font-size: 13px; background: rgba(214,175,55,0.03);">VERIFIED</div>
-                </div>
-                <div style="position: absolute; width: 220px; bottom: 80px; right: 120px; text-align: center; font-family: 'Inter', sans-serif;">
-                    <div class="cert-font-sign" style="color: #d4af37; font-size: 34px; border-bottom: 1px solid #444444; padding-bottom: 0px; height: 35px; line-height: 30px;">SmartBroker</div>
-                    <div style="color: #666666; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">Authorized Signature</div>
-                </div>
+            <div id="student-details-content">
+                <!-- Student details will be loaded here -->
             </div>
         </div>
     </div>
@@ -402,7 +468,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, getDocs, collection, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDVJKSkNv2UQ3ZdCEiZav1XsBAa3xDO10E",
@@ -418,7 +484,15 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const courseData = [
+        // Admin email (only this email can access admin panel)
+        const ADMIN_EMAIL = "admin@example.com";
+
+        let currentUser = null;
+        let lessonsData = [];
+        let studentsData = [];
+
+        // Default lessons data (stored in Firestore)
+        const defaultLessons = [
             { id: 0, type: "video", module: "MODULE 01", title: "1.1 Course Overview", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "මෙම පාඩමෙන් ඊ-කොමර්ස් වල මූලික සිද්ධාන්ත සාකච්ඡා කෙරේ.", pdf: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" },
             { id: 1, type: "video", module: "MODULE 01", title: "1.2 Shopify Basics", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "ඔයාගේ පළවෙනි Store එක නිවැරදිව Setup කරගන්නා ආකාරය.", pdf: "#" },
             { id: 2, type: "quiz", module: "MODULE 01 Test", title: "1.3 Module 01 Evaluation", desc: "පළමු මොඩියුලයේ ප්‍රශ්න පත්‍රය.", questions: [
@@ -428,346 +502,366 @@
             { id: 3, type: "video", module: "MODULE 02", title: "2.1 Consumer Psychology", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "මාර්කටින් මනෝවිද්‍යාව උපයෝගී කරගෙන විකුණුම් වැඩි කරගන්නේ කෙසේද?", pdf: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" }
         ];
 
-        let currentLessonIndex = 0;
-        let currentUser = null;
-        let completedLessons = [];
-        let studentNameSaved = "Student";
-        let hasShownSuccess = false;
-        let isFirstLogin = true;
-
-        function renderSidebar() {
-            const container = document.getElementById('lessons-list');
-            container.innerHTML = "";
-            let lastModule = "";
-
-            courseData.forEach((lesson, index) => {
-                if (lesson.module !== lastModule) {
-                    lastModule = lesson.module;
-                    const modHeader = document.createElement('div');
-                    modHeader.className = "px-3 py-1 text-[10px] font-black text-red-500 bg-red-950/20 rounded border border-red-950 mt-3 mb-1 tracking-widest uppercase";
-                    modHeader.innerText = lesson.module;
-                    container.appendChild(modHeader);
-                }
-
-                const item = document.createElement('div');
-                item.id = `sidebar-item-${index}`;
-                item.className = "w-full flex items-center justify-between text-xs md:text-sm px-3 py-2 rounded-xl bg-zinc-900/40 border border-zinc-900 hover:bg-zinc-900 text-zinc-400 hover:text-white transition cursor-pointer mb-1";
-                item.onclick = () => selectLesson(index);
-                
-                const isChecked = completedLessons.includes(index) ? 'checked' : '';
-                const icon = lesson.type === "quiz" ? "fa-solid fa-brain text-red-400" : "fa-regular fa-circle-play";
-                
-                item.innerHTML = `
-                    <div class="flex items-center gap-2 truncate">
-                        <i class="${icon} text-[11px]"></i>
-                        <span class="truncate">${lesson.title}</span>
-                    </div>
-                    <input type="checkbox" ${isChecked} onclick="event.stopPropagation(); toggleCheckbox(${index})" class="w-3.5 h-3.5 accent-red-600">
-                `;
-                container.appendChild(item);
-            });
-            updateActiveUIHighlight();
-        }
-
-        async function selectLesson(index) {
-            currentLessonIndex = index;
-            const lesson = courseData[index];
-            
-            document.getElementById('lesson-title').innerText = lesson.title;
-            document.getElementById('lesson-desc').innerText = lesson.desc;
-
-            const videoWrapper = document.getElementById('video-wrapper');
-            const quizWrapper = document.getElementById('quiz-wrapper');
-
-            if (lesson.type === "video") {
-                quizWrapper.classList.add('hidden');
-                videoWrapper.classList.remove('hidden');
-                document.getElementById('video-player').src = lesson.video;
-                document.getElementById('complete-btn').classList.remove('hidden');
-            } else if (lesson.type === "quiz") {
-                videoWrapper.classList.add('hidden');
-                quizWrapper.classList.remove('hidden');
-                document.getElementById('complete-btn').classList.add("hidden");
-                loadQuizQuestions(lesson.questions);
-            }
-
-            const pdfContainer = document.getElementById('pdf-container');
-            if (lesson.pdf && lesson.pdf !== '#') {
-                pdfContainer.classList.remove('hidden');
-                document.getElementById('pdf-link').href = lesson.pdf;
-            } else {
-                pdfContainer.classList.add('hidden');
-            }
-
-            document.getElementById('prev-btn').disabled = (index === 0);
-            document.getElementById('next-btn').disabled = (index === courseData.length - 1);
-            updateActiveUIHighlight();
-
-            if (currentUser) {
-                await setDoc(doc(db, "students", currentUser.uid), { lastViewedLesson: index }, { merge: true });
-            }
-        }
-
-        function loadQuizQuestions(questions) {
-            const qBox = document.getElementById('quiz-questions-box');
-            qBox.innerHTML = "";
-            questions.forEach((qObj, qIdx) => {
-                const div = document.createElement('div');
-                div.className = "bg-zinc-950 p-4 rounded-xl border border-zinc-800";
-                let optionsHtml = "";
-                qObj.a.forEach((opt, oIdx) => {
-                    optionsHtml += `
-                        <label class="flex items-center gap-3 p-2 bg-zinc-900 border border-zinc-800 rounded-lg cursor-pointer hover:bg-zinc-800 transition text-xs md:text-sm">
-                            <input type="radio" name="quiz-q-${qIdx}" value="${oIdx}" class="accent-red-600 w-4 h-4">
-                            <span>${opt}</span>
-                        </label>
-                    `;
-                });
-                div.innerHTML = `<h4 class="font-bold text-white mb-3 text-sm md:text-base">${qIdx+1}. ${qObj.q}</h4><div class="grid grid-cols-1 md:grid-cols-2 gap-2">${optionsHtml}</div>`;
-                qBox.appendChild(div);
-            });
-        }
-
-        window.submitQuiz = function() {
-            const lesson = courseData[currentLessonIndex];
-            let score = 0;
-            let total = lesson.questions.length;
-
-            for(let i=0; i<total; i++) {
-                const selected = document.querySelector(`input[name="quiz-q-${i}"]:checked`);
-                if(!selected) { 
-                    showToast("කරුණාකර සියලු ප්‍රශ්න වලට පිළිතුරු සලකුණු කරන්න!", "warning");
-                    return; 
-                }
-                if(parseInt(selected.value) === lesson.questions[i].correct) score++;
-            }
-
-            if(score === total) {
-                showToast(`🎉 සුපිරි! සියල්ලම නිවැරදියි! (${score}/${total}) මොඩියුලය සමත් විය!`, "success");
-                if(!completedLessons.includes(currentLessonIndex)) toggleCheckbox(currentLessonIndex);
-            } else {
-                showToast(`😅 සමහර ප්‍රශ්න වැරදියි (${score}/${total}). නැවත උත්සාහ කරන්න!`, "error");
-            }
-        }
-
-        function updateActiveUIHighlight() {
-            courseData.forEach((_, index) => {
-                const el = document.getElementById(`sidebar-item-${index}`);
-                if (el) {
-                    if (index === currentLessonIndex) el.classList.add('active-lesson');
-                    else el.classList.remove('active-lesson');
-                }
-            });
-        }
-
-        window.navigateLesson = function(direction) {
-            let nextIdx = currentLessonIndex + direction;
-            if (nextIdx >= 0 && nextIdx < courseData.length) selectLesson(nextIdx);
-        }
-
-        window.toggleCheckbox = async function(index) {
-            if (completedLessons.includes(index)) {
-                completedLessons = completedLessons.filter(i => i !== index);
-            } else {
-                completedLessons.push(index);
-            }
-            await syncProgressToFirebase();
-            renderSidebar();
-            calculateProgress();
-            
-            if (completedLessons.length === courseData.length && !hasShownSuccess) {
-                hasShownSuccess = true;
-                showSuccessPopup();
-            }
-        }
-
-        window.markCurrentAsComplete = async function() {
-            if (!completedLessons.includes(currentLessonIndex)) {
-                completedLessons.push(currentLessonIndex);
-                await syncProgressToFirebase();
-                renderSidebar();
-                calculateProgress();
-                
-                if (completedLessons.length === courseData.length && !hasShownSuccess) {
-                    hasShownSuccess = true;
-                    showSuccessPopup();
-                }
-            }
-            if (currentLessonIndex < courseData.length - 1) navigateLesson(1);
-        }
-
-        function calculateProgress() {
-            const totalLessons = courseData.length;
-            const completedCount = completedLessons.length;
-            let percentage = Math.round((completedCount / totalLessons) * 100);
-            
-            const progressText = document.getElementById('progress-text');
-            const progressBar = document.getElementById('progress-bar');
-            if (progressText) progressText.innerText = `${percentage}%`;
-            if (progressBar) progressBar.style.width = `${percentage}%`;
-            
-            const progressBarMobile = document.getElementById('progress-bar-mobile');
-            const progressTextMobile = document.getElementById('progress-text-mobile');
-            if (progressBarMobile) progressBarMobile.style.width = `${percentage}%`;
-            if (progressTextMobile) progressTextMobile.innerText = `${percentage}%`;
-            
-            const certBox = document.getElementById('sidebar-cert-box');
-            if (percentage === 100) {
-                certBox.classList.remove('hidden');
-                if (!hasShownSuccess && completedCount === totalLessons) {
-                    hasShownSuccess = true;
-                    showSuccessPopup();
-                }
-            } else {
-                certBox.classList.add('hidden');
-            }
-        }
-
-        async function syncProgressToFirebase() {
-            if (!currentUser) return;
+        // Load lessons from Firestore or initialize with defaults
+        async function loadLessons() {
             try {
-                await setDoc(doc(db, "students", currentUser.uid), { 
-                    progress: completedLessons, 
-                    email: currentUser.email, 
-                    fullName: studentNameSaved 
-                }, { merge: true });
+                const docRef = doc(db, "admin", "lessons");
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    lessonsData = docSnap.data().lessons || [];
+                } else {
+                    lessonsData = defaultLessons;
+                    await setDoc(docRef, { lessons: defaultLessons });
+                }
+                renderLessonsTable();
+                updateStats();
+                return lessonsData;
             } catch (error) {
-                console.error("Sync error:", error);
+                console.error("Error loading lessons:", error);
+                showToast("Error loading lessons!", "error");
+                return [];
             }
         }
 
-        window.saveProfileDetails = async function(e) {
-            e.preventDefault();
-            const fullName = document.getElementById('profile-name').value;
-            const phone = document.getElementById('profile-phone').value;
-            const address = document.getElementById('profile-address').value;
-            const nic = document.getElementById('profile-nic').value;
-            studentNameSaved = fullName;
-
-            await setDoc(doc(db, "students", currentUser.uid), { 
-                fullName, 
-                phone, 
-                address,
-                nic,
-                email: currentUser.email, 
-                progress: completedLessons,
-                profileCompleted: true
-            }, { merge: true });
-            
-            showToast("Profile saved successfully!", "success");
-            toggleProfileModal();
-            document.getElementById('cert-student-name').innerText = fullName;
-            
-            setTimeout(() => {
-                showRegularWelcome(fullName);
-            }, 500);
-        }
-
-        window.claimCertificate = function() {
-            const phone = "94776104665";
-            const name = studentNameSaved || "Student";
-            const message = `🎓 *Professional Vehicle Broker Guide - Certificate Request*
-
-Hello SmartBroker Team,
-
-I have successfully completed the Professional Vehicle Broker Guide course.
-
-🔹 *Full Name:* ${name}
-🔹 *Course:* Professional Vehicle Broker Guide
-🔹 *Status:* Completed ✅
-
-Thank you! 🚗🏆`;
-
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
-            window.open(whatsappUrl, '_blank');
-        }
-
-        function showSuccessPopup() {
-            const popup = document.getElementById('success-popup');
-            if (popup) {
-                // Set completion date
-                const now = new Date();
-                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                document.getElementById('completion-date').innerText = now.toLocaleDateString('en-US', options);
-                popup.classList.remove('hidden');
-                createConfetti();
+        // Save lessons to Firestore
+        async function saveLessonsToFirestore(lessons) {
+            try {
+                await setDoc(doc(db, "admin", "lessons"), { lessons: lessons });
+                lessonsData = lessons;
+                renderLessonsTable();
+                updateStats();
+                showToast("Lessons saved successfully!", "success");
+            } catch (error) {
+                console.error("Error saving lessons:", error);
+                showToast("Error saving lessons!", "error");
             }
         }
 
-        window.closeSuccessPopup = function() {
-            document.getElementById('success-popup').classList.add('hidden');
+        // Load students from Firestore
+        async function loadStudents() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "students"));
+                studentsData = [];
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    studentsData.push({
+                        uid: doc.id,
+                        ...data
+                    });
+                });
+                renderStudentsTable();
+                updateStats();
+                return studentsData;
+            } catch (error) {
+                console.error("Error loading students:", error);
+                showToast("Error loading students!", "error");
+                return [];
+            }
         }
 
-        function createConfetti() {
-            const container = document.getElementById('confetti-container');
-            if (!container) return;
-            const colors = ['#ff0000', '#ffd700', '#ff6b6b', '#ffd93d', '#ff8a5c', '#ff4757', '#ff6348', '#ffa502'];
+        // Render Students Table
+        function renderStudentsTable() {
+            const tbody = document.getElementById('students-table-body');
+            const noStudents = document.getElementById('no-students');
             
-            for (let i = 0; i < 100; i++) {
-                const piece = document.createElement('div');
-                piece.className = 'confetti-piece';
-                const size = Math.random() * 8 + 4;
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const left = Math.random() * 100;
-                const delay = Math.random() * 2;
-                const duration = Math.random() * 2 + 2;
+            if (studentsData.length === 0) {
+                tbody.innerHTML = '';
+                noStudents.classList.remove('hidden');
+                document.getElementById('total-students').innerText = '0';
+                return;
+            }
+            noStudents.classList.add('hidden');
+            
+            const totalLessons = lessonsData.length;
+            let completed = 0;
+            let totalProgress = 0;
+            
+            tbody.innerHTML = studentsData.map((student, index) => {
+                const progress = student.progress ? student.progress.length : 0;
+                const percentage = totalLessons > 0 ? Math.round((progress / totalLessons) * 100) : 0;
+                totalProgress += percentage;
+                if (percentage === 100) completed++;
                 
-                piece.style.cssText = `
-                    left: ${left}%;
-                    width: ${size}px;
-                    height: ${size * 1.5}px;
-                    background: ${color};
-                    animation-delay: ${delay}s;
-                    animation-duration: ${duration}s;
-                    border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+                const status = percentage === 100 ? 
+                    '<span class="badge-completed">Completed ✅</span>' : 
+                    `<span class="badge-incomplete">${percentage}%</span>`;
+                
+                return `
+                    <tr class="table-row">
+                        <td class="py-3 text-zinc-500">${index + 1}</td>
+                        <td class="py-3 font-medium text-white">${student.fullName || 'N/A'}</td>
+                        <td class="py-3 text-zinc-400 hidden md:table-cell">${student.email || 'N/A'}</td>
+                        <td class="py-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-24 bg-zinc-800 rounded-full h-1.5">
+                                    <div class="bg-red-600 h-1.5 rounded-full" style="width: ${percentage}%"></div>
+                                </div>
+                                <span class="text-xs text-zinc-400">${percentage}%</span>
+                            </div>
+                        </td>
+                        <td class="py-3 text-zinc-400 hidden sm:table-cell">${student.phone || 'N/A'}</td>
+                        <td class="py-3">${status}</td>
+                    </tr>
                 `;
-                container.appendChild(piece);
-                
-                setTimeout(() => {
-                    piece.remove();
-                }, (delay + duration) * 1000 + 500);
+            }).join('');
+            
+            document.getElementById('total-students').innerText = studentsData.length;
+            document.getElementById('completed-courses').innerText = completed;
+            document.getElementById('avg-progress').innerText = studentsData.length > 0 ? Math.round(totalProgress / studentsData.length) + '%' : '0%';
+        }
+
+        // Render Lessons Table
+        function renderLessonsTable() {
+            const tbody = document.getElementById('lessons-table-body');
+            const noLessons = document.getElementById('no-lessons');
+            
+            if (lessonsData.length === 0) {
+                tbody.innerHTML = '';
+                noLessons.classList.remove('hidden');
+                document.getElementById('total-lessons').innerText = '0';
+                return;
+            }
+            noLessons.classList.add('hidden');
+            
+            tbody.innerHTML = lessonsData.map((lesson, index) => `
+                <tr class="table-row">
+                    <td class="py-3 text-zinc-500">${index + 1}</td>
+                    <td class="py-3 text-white font-medium">${lesson.title}</td>
+                    <td class="py-3 text-zinc-400 hidden md:table-cell">${lesson.module}</td>
+                    <td class="py-3 hidden sm:table-cell">
+                        <span class="text-xs px-2 py-1 rounded-full ${lesson.type === 'video' ? 'bg-blue-600/20 text-blue-400' : 'bg-yellow-600/20 text-yellow-400'}">
+                            ${lesson.type === 'video' ? '🎬 Video' : '📝 Quiz'}
+                        </span>
+                    </td>
+                    <td class="py-3">
+                        <div class="flex gap-2">
+                            <button onclick="editLesson(${index})" class="btn-edit">
+                                <i class="fa-solid fa-pen"></i> Edit
+                            </button>
+                            <button onclick="deleteLesson(${index})" class="btn-danger">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }).join('');
+            
+            document.getElementById('total-lessons').innerText = lessonsData.length;
+        }
+
+        // Update Stats
+        function updateStats() {
+            // Stats are updated in render functions
+        }
+
+        // Switch Tabs
+        window.switchTab = function(tab) {
+            const tabs = ['students', 'lessons', 'add-lesson'];
+            tabs.forEach(t => {
+                document.getElementById(`tab-${t}`).className = `px-4 py-2 rounded-lg text-sm font-medium transition border ${t === tab ? 'tab-active' : 'tab-inactive'}`;
+                document.getElementById(`content-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`content-${tab}`).classList.remove('hidden');
+            
+            if (tab === 'add-lesson') {
+                document.getElementById('add-lesson-title').innerText = 'Add New Lesson';
+                document.getElementById('edit-lesson-id').value = '-1';
+                resetLessonForm();
             }
         }
 
-        // Welcome Popup Functions
-        function showFirstTimeWelcome(studentName) {
-            const popup = document.getElementById('welcome-popup-first');
-            if (!popup) return;
-            popup.classList.remove('hidden');
+        // Toggle Lesson Fields
+        window.toggleLessonFields = function() {
+            const type = document.getElementById('lesson-type').value;
+            document.getElementById('video-fields').classList.toggle('hidden', type === 'quiz');
+            document.getElementById('quiz-fields').classList.toggle('hidden', type === 'video');
         }
 
-        function showRegularWelcome(studentName) {
-            const popup = document.getElementById('welcome-popup-regular');
-            if (!popup) return;
+        // Add Question Field
+        let questionCounter = 0;
+        window.addQuestionField = function() {
+            const container = document.getElementById('questions-container');
+            const qDiv = document.createElement('div');
+            qDiv.className = 'bg-zinc-950 p-4 rounded-lg border border-zinc-800';
+            qDiv.id = `question-${questionCounter}`;
+            qDiv.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-sm font-bold text-white">Question ${questionCounter + 1}</span>
+                    <button type="button" onclick="removeQuestion('question-${questionCounter}')" class="text-red-500 hover:text-red-400 text-sm">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+                <div class="mb-2">
+                    <input type="text" class="question-text" placeholder="Enter question..." style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:8px 12px;width:100%;">
+                </div>
+                <div class="grid grid-cols-1 gap-1 mb-2">
+                    <input type="text" class="question-option" placeholder="Option 1" style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:6px 12px;width:100%;">
+                    <input type="text" class="question-option" placeholder="Option 2" style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:6px 12px;width:100%;">
+                    <input type="text" class="question-option" placeholder="Option 3 (Optional)" style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:6px 12px;width:100%;">
+                    <input type="text" class="question-option" placeholder="Option 4 (Optional)" style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:6px 12px;width:100%;">
+                </div>
+                <div>
+                    <label style="font-size:11px;color:#a1a1aa;">Correct Answer (0 = first option, 1 = second, etc.)</label>
+                    <input type="number" class="question-correct" min="0" max="3" value="0" style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:6px 12px;width:100px;">
+                </div>
+            `;
+            container.appendChild(qDiv);
+            questionCounter++;
+        }
+
+        window.removeQuestion = function(id) {
+            document.getElementById(id).remove();
+        }
+
+        // Reset Lesson Form
+        window.resetLessonForm = function() {
+            document.getElementById('lesson-form').reset();
+            document.getElementById('edit-lesson-id').value = '-1';
+            document.getElementById('add-lesson-title').innerText = 'Add New Lesson';
+            document.getElementById('questions-container').innerHTML = '';
+            questionCounter = 0;
+            toggleLessonFields();
+        }
+
+        // Save Lesson
+        window.saveLesson = async function(event) {
+            event.preventDefault();
             
-            const hour = new Date().getHours();
-            let greeting = "Good Morning";
-            if (hour >= 12 && hour < 18) greeting = "Good Afternoon";
-            else if (hour >= 18) greeting = "Good Evening";
+            const editId = parseInt(document.getElementById('edit-lesson-id').value);
+            const type = document.getElementById('lesson-type').value;
+            const module = document.getElementById('lesson-module').value;
+            const title = document.getElementById('lesson-title-input').value;
+            const desc = document.getElementById('lesson-desc-input').value;
             
-            document.getElementById('regular-greeting').innerText = greeting;
-            document.getElementById('regular-student-name').innerText = studentName || "Student";
+            let lesson = {
+                id: editId >= 0 ? editId : lessonsData.length,
+                type: type,
+                module: module,
+                title: title,
+                desc: desc
+            };
             
-            const lastLesson = document.getElementById('lesson-title')?.innerText || "Lesson";
-            document.getElementById('regular-message-text').innerHTML = `Continue your learning journey from <span class="text-red-400">"${lastLesson}"</span> lesson.`;
+            if (type === 'video') {
+                lesson.video = document.getElementById('lesson-video').value || 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+                lesson.pdf = document.getElementById('lesson-pdf').value || '#';
+            } else {
+                // Collect questions
+                const qTexts = document.querySelectorAll('.question-text');
+                const qOptions = document.querySelectorAll('.question-option');
+                const qCorrects = document.querySelectorAll('.question-correct');
+                
+                const questions = [];
+                let qIndex = 0;
+                qTexts.forEach((q, idx) => {
+                    const options = [];
+                    const startIdx = idx * 4;
+                    for (let i = 0; i < 4; i++) {
+                        const opt = qOptions[startIdx + i];
+                        if (opt && opt.value.trim()) {
+                            options.push(opt.value.trim());
+                        }
+                    }
+                    if (options.length >= 2 && q.value.trim()) {
+                        questions.push({
+                            q: q.value.trim(),
+                            a: options,
+                            correct: parseInt(qCorrects[idx]?.value || 0)
+                        });
+                    }
+                });
+                lesson.questions = questions;
+            }
             
-            popup.classList.remove('hidden');
+            if (editId >= 0) {
+                // Edit existing lesson
+                lessonsData[editId] = lesson;
+            } else {
+                // Add new lesson
+                lessonsData.push(lesson);
+            }
+            
+            await saveLessonsToFirestore(lessonsData);
+            resetLessonForm();
+            switchTab('lessons');
         }
 
-        window.closeWelcomeFirst = function() {
-            document.getElementById('welcome-popup-first').classList.add('hidden');
+        // Edit Lesson
+        window.editLesson = function(index) {
+            const lesson = lessonsData[index];
+            if (!lesson) return;
+            
+            document.getElementById('edit-lesson-id').value = index;
+            document.getElementById('add-lesson-title').innerText = 'Edit Lesson';
+            document.getElementById('lesson-type').value = lesson.type;
+            document.getElementById('lesson-module').value = lesson.module || '';
+            document.getElementById('lesson-title-input').value = lesson.title || '';
+            document.getElementById('lesson-desc-input').value = lesson.desc || '';
+            document.getElementById('lesson-video').value = lesson.video || '';
+            document.getElementById('lesson-pdf').value = lesson.pdf || '#';
+            
+            if (lesson.type === 'quiz' && lesson.questions) {
+                document.getElementById('questions-container').innerHTML = '';
+                questionCounter = 0;
+                lesson.questions.forEach((q, idx) => {
+                    const container = document.getElementById('questions-container');
+                    const qDiv = document.createElement('div');
+                    qDiv.className = 'bg-zinc-950 p-4 rounded-lg border border-zinc-800';
+                    qDiv.id = `question-${questionCounter}`;
+                    
+                    let optionsHtml = '';
+                    for (let i = 0; i < 4; i++) {
+                        const val = q.a[i] || '';
+                        optionsHtml += `<input type="text" class="question-option" placeholder="Option ${i+1}" value="${val}" style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:6px 12px;width:100%;">`;
+                    }
+                    
+                    qDiv.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-sm font-bold text-white">Question ${questionCounter + 1}</span>
+                            <button type="button" onclick="removeQuestion('question-${questionCounter}')" class="text-red-500 hover:text-red-400 text-sm">
+                                <i class="fa-solid fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" class="question-text" placeholder="Enter question..." value="${q.q || ''}" style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:8px 12px;width:100%;">
+                        </div>
+                        <div class="grid grid-cols-1 gap-1 mb-2">
+                            ${optionsHtml}
+                        </div>
+                        <div>
+                            <label style="font-size:11px;color:#a1a1aa;">Correct Answer (0 = first option, 1 = second, etc.)</label>
+                            <input type="number" class="question-correct" min="0" max="3" value="${q.correct || 0}" style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:6px 12px;width:100px;">
+                        </div>
+                    `;
+                    container.appendChild(qDiv);
+                    questionCounter++;
+                });
+            }
+            
+            toggleLessonFields();
+            switchTab('add-lesson');
         }
 
-        window.closeWelcomeFirstAndOpenProfile = function() {
-            document.getElementById('welcome-popup-first').classList.add('hidden');
-            toggleProfileModal();
+        // Delete Lesson
+        window.deleteLesson = async function(index) {
+            if (!confirm('Are you sure you want to delete this lesson?')) return;
+            lessonsData.splice(index, 1);
+            // Re-index
+            lessonsData.forEach((l, i) => l.id = i);
+            await saveLessonsToFirestore(lessonsData);
         }
 
-        window.closeWelcomeRegular = function() {
-            document.getElementById('welcome-popup-regular').classList.add('hidden');
+        // Refresh Students
+        window.refreshStudents = function() {
+            loadStudents();
+            showToast('Students refreshed!', 'success');
         }
 
+        // Close Student Modal
+        window.closeStudentModal = function() {
+            document.getElementById('student-modal').classList.add('hidden');
+        }
+
+        // Show Toast
         function showToast(message, type = 'info') {
             const existing = document.querySelector('.toast-notification');
             if (existing) existing.remove();
@@ -784,20 +878,22 @@ Thank you! 🚗🏆`;
             }, 4000);
         }
 
-        window.toggleProfileModal = function() { 
-            document.getElementById('profile-modal').classList.toggle('hidden'); 
-        }
-        
+        // Handle Authentication
         window.handleAuth = function(event) {
             event.preventDefault();
             const email = document.getElementById("auth-email").value;
             const password = document.getElementById("auth-password").value;
             
-            showToast("Signing in... Please wait", "info");
+            if (email !== ADMIN_EMAIL) {
+                showToast("Access Denied. Admin only!", "error");
+                return;
+            }
+            
+            showToast("Signing in as Admin...", "info");
             
             signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    showToast("Welcome! Redirecting...", "success");
+                .then(() => {
+                    showToast("Welcome Admin!", "success");
                 })
                 .catch((error) => {
                     let msg = "Login failed!";
@@ -807,106 +903,48 @@ Thank you! 🚗🏆`;
                         msg = "Incorrect password. Please try again.";
                     } else if (error.code === 'auth/invalid-email') {
                         msg = "Please enter a valid email address.";
-                    } else if (error.code === 'auth/too-many-requests') {
-                        msg = "Too many attempts. Please try again later.";
                     } else {
                         msg = `Error: ${error.message}`;
                     }
                     showToast(msg, "error");
-                    console.error("Login Error:", error);
                 });
         }
 
+        // Logout
+        window.logoutUser = function() {
+            signOut(auth);
+            showToast("Logged out!", "info");
+        }
+
+        // Auth State Listener
         onAuthStateChanged(auth, async (user) => {
             const authView = document.getElementById("auth-container");
-            const dashboardView = document.getElementById("dashboard-container");
+            const adminView = document.getElementById("admin-dashboard");
 
-            if (user) {
+            if (user && user.email === ADMIN_EMAIL) {
                 currentUser = user;
                 authView.classList.add("hidden");
-                dashboardView.classList.remove("hidden");
-                document.getElementById("profile-email-readonly").value = user.email;
-
-                let savedLessonIndex = 0;
-                let profileCompleted = false;
-
-                try {
-                    const docSnap = await getDoc(doc(db, "students", user.uid));
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        completedLessons = data.progress || [];
-                        studentNameSaved = data.fullName || "Student";
-                        profileCompleted = data.profileCompleted || false;
-                        document.getElementById('profile-name').value = studentNameSaved;
-                        document.getElementById('profile-phone').value = data.phone || "";
-                        document.getElementById('profile-address').value = data.address || "";
-                        document.getElementById('profile-nic').value = data.nic || "";
-                        
-                        if (data.lastViewedLesson !== undefined) {
-                            savedLessonIndex = data.lastViewedLesson;
-                        }
-                    } else {
-                        completedLessons = [];
-                        profileCompleted = false;
-                        await setDoc(doc(db, "students", user.uid), {
-                            email: user.email,
-                            fullName: "Student",
-                            progress: [],
-                            profileCompleted: false,
-                            createdAt: new Date().toISOString()
-                        });
-                    }
-                } catch (error) {
-                    console.error("Firestore Error:", error);
-                    showToast("⚠️ Database connection issue!", "warning");
-                }
+                adminView.classList.remove("hidden");
+                document.getElementById("admin-email").innerText = user.email;
                 
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('cert-date').innerText = today;
-
-                renderSidebar();
-                selectLesson(savedLessonIndex); 
-                calculateProgress();
+                await loadLessons();
+                await loadStudents();
                 
-                setTimeout(() => {
-                    if (!profileCompleted || studentNameSaved === "Student") {
-                        showFirstTimeWelcome(studentNameSaved);
-                    } else {
-                        showRegularWelcome(studentNameSaved);
-                    }
-                }, 1500);
-                
-                showToast(`Welcome ${studentNameSaved}!`, "success");
+                // Show students tab by default
+                switchTab('students');
+            } else if (user && user.email !== ADMIN_EMAIL) {
+                showToast("Access Denied. This is an admin panel.", "error");
+                signOut(auth);
             } else {
                 currentUser = null;
                 authView.classList.remove("hidden");
-                dashboardView.classList.add("hidden");
-                hasShownSuccess = false;
+                adminView.classList.add("hidden");
             }
         });
 
-        window.logoutUser = function() { 
-            signOut(auth);
-            showToast("Goodbye!", "info");
-        }
+        // Initialize the form
+        toggleLessonFields();
 
-        document.getElementById('success-popup').addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.add('hidden');
-            }
-        });
-
-        document.getElementById('welcome-popup-first').addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.add('hidden');
-            }
-        });
-
-        document.getElementById('welcome-popup-regular').addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.add('hidden');
-            }
-        });
     </script>
 </body>
 </html>
