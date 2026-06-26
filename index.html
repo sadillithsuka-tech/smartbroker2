@@ -3,199 +3,405 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
+    <title>SmartBroker - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         .hidden { display: none; }
-        body { background: #0a0a0a; }
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 99999;
-            padding: 12px 24px;
-            border-radius: 12px;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-            background: #dc2626;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #09090b; }
+        ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
+        
+        .admin-card {
+            background: linear-gradient(145deg, #1a1a1e, #0d0d0f);
+            border: 1px solid #27272a;
+            border-radius: 16px;
+            transition: all 0.3s ease;
         }
-        .toast-success { background: #16a34a; }
+        .admin-card:hover { border-color: #dc2626; transform: translateY(-2px); }
+        
+        .stat-icon {
+            width: 48px; height: 48px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+        .tab-active { background: #dc2626; color: white; }
+        .tab-inactive { background: transparent; color: #a1a1aa; border-color: #27272a; }
+        .tab-inactive:hover { background: #27272a; color: white; }
+        
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .toast-notification {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 99999; padding: 12px 24px; border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); color: white;
+            font-weight: 600; font-size: 14px; max-width: 90%; text-align: center;
+            transition: all 0.5s ease; border: 2px solid rgba(255,255,255,0.1);
+        }
+        .toast-success { background: #16a34a; border-color: #22c55e; }
+        .toast-error { background: #dc2626; border-color: #ef4444; }
+        .toast-warning { background: #d97706; border-color: #f59e0b; }
+        .toast-info { background: #2563eb; border-color: #3b82f6; }
+
+        .drag-handle { cursor: grab; }
+        .drag-handle:active { cursor: grabbing; }
+        .drag-over { border-color: #dc2626 !important; background: #1a1a1e !important; }
+        .dragging { opacity: 0.5; }
+
+        input, select, textarea {
+            background: #0d0d0f;
+            border: 1px solid #27272a;
+            color: white;
+            border-radius: 10px;
+            padding: 10px 14px;
+            width: 100%;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #dc2626;
+        }
+        label {
+            color: #a1a1aa;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .btn-primary {
+            background: #dc2626; color: white; padding: 10px 20px;
+            border-radius: 10px; font-weight: 600; transition: all 0.3s;
+            border: none; cursor: pointer;
+        }
+        .btn-primary:hover { background: #b91c1c; transform: scale(1.02); }
+        .btn-secondary {
+            background: #27272a; color: white; padding: 10px 20px;
+            border-radius: 10px; font-weight: 600; transition: all 0.3s;
+            border: none; cursor: pointer;
+        }
+        .btn-secondary:hover { background: #3f3f46; }
+        .btn-danger {
+            background: #7f1d1d; color: #fca5a5; padding: 6px 12px;
+            border-radius: 8px; font-weight: 600; font-size: 12px;
+            border: none; cursor: pointer; transition: all 0.3s;
+        }
+        .btn-danger:hover { background: #991b1b; color: white; }
+        .btn-edit {
+            background: #1a3a5c; color: #93c5fd; padding: 6px 12px;
+            border-radius: 8px; font-weight: 600; font-size: 12px;
+            border: none; cursor: pointer; transition: all 0.3s;
+        }
+        .btn-edit:hover { background: #1e4a7a; color: white; }
+        .btn-success {
+            background: #065f46; color: #6ee7b7; padding: 6px 12px;
+            border-radius: 8px; font-weight: 600; font-size: 12px;
+            border: none; cursor: pointer; transition: all 0.3s;
+        }
+        .btn-success:hover { background: #047857; color: white; }
+        
+        .badge-completed { background: #065f46; color: #6ee7b7; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .badge-incomplete { background: #451a1a; color: #fca5a5; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .badge-disabled { background: #1a1a2e; color: #818cf8; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+
+        .table-row { border-bottom: 1px solid #1a1a1e; transition: background 0.3s; }
+        .table-row:hover { background: #1a1a1e; }
+
+        .modal-overlay {
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+        }
+        .modal-content {
+            background: linear-gradient(145deg, #1a1a1e, #0d0d0f);
+            border: 1px solid #27272a;
+            border-radius: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
     </style>
 </head>
-<body>
+<body class="bg-black text-zinc-100 font-sans antialiased">
 
-    <!-- LOGIN PAGE -->
-    <div id="login-page" class="min-h-screen flex items-center justify-center px-4">
-        <div class="max-w-md w-full bg-zinc-900 p-8 rounded-2xl border border-zinc-800">
-            <div class="text-center mb-6">
-                <div class="bg-red-600 text-white w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-4">SB</div>
-                <h2 class="text-2xl font-bold text-white">Admin Login</h2>
-                <p class="text-zinc-500 text-sm mt-1">Enter your credentials to continue</p>
+    <!-- AUTH CONTAINER -->
+    <div id="auth-container" class="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-black via-zinc-950 to-zinc-900">
+        <div class="max-w-md w-full bg-zinc-900 p-8 rounded-2xl border border-zinc-800 shadow-2xl">
+            <div class="flex justify-center mb-4">
+                <div class="bg-red-600 text-white p-3 rounded-xl font-bold text-xl shadow-lg shadow-red-600/30">SB</div>
             </div>
-            
-            <form id="login-form" onsubmit="handleLogin(event)">
+            <h2 class="text-2xl font-bold text-center text-white mb-2">Admin Login</h2>
+            <p class="text-zinc-500 text-center text-sm mb-6">Enter your admin credentials</p>
+            <form id="auth-form" onsubmit="handleAuth(event)">
                 <div class="mb-4">
                     <label class="block text-zinc-400 text-sm font-medium mb-2">Email Address</label>
-                    <input type="email" id="login-email" value="admin@example.com" required class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <input type="email" id="auth-email" required placeholder="admin@example.com" class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500">
                 </div>
                 <div class="mb-6">
                     <label class="block text-zinc-400 text-sm font-medium mb-2">Password</label>
-                    <input type="password" id="login-password" value="Admin@123" required class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <input type="password" id="auth-password" required placeholder="Enter your password" class="w-full bg-zinc-950 text-white px-4 py-3 border border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500">
                 </div>
-                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition">
-                    <i class="fa-solid fa-sign-in-alt mr-2"></i> Sign In
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-red-600/20">
+                    <i class="fa-solid fa-sign-in-alt mr-2"></i> Sign In as Admin
                 </button>
             </form>
-            
-            <p class="text-center text-zinc-500 text-xs mt-4">
-                Default: admin@example.com / Admin@123
-            </p>
         </div>
     </div>
 
     <!-- ADMIN DASHBOARD -->
-    <div id="admin-dashboard" class="hidden min-h-screen">
-        <!-- Navbar -->
-        <nav class="bg-black border-b border-zinc-800 px-6 py-4">
-            <div class="flex justify-between items-center">
+    <div id="admin-dashboard" class="hidden min-h-screen flex flex-col bg-black">
+        <!-- Top Navbar -->
+        <nav class="bg-black border-b border-zinc-800 px-4 md:px-8 py-3 sticky top-0 z-50">
+            <div class="flex flex-wrap items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
-                    <div class="bg-red-600 text-white px-3 py-2 rounded-lg font-bold">SB</div>
+                    <div class="bg-red-600 text-white p-2 rounded-lg font-black text-sm">SB</div>
                     <div>
-                        <h1 class="text-lg font-bold text-white">Admin Panel</h1>
-                        <p class="text-xs text-zinc-500">Professional Vehicle Broker Guide</p>
+                        <h1 class="text-lg font-bold text-white">SmartBroker <span class="text-red-500">Admin</span></h1>
+                        <p class="text-[10px] text-zinc-500">Professional Vehicle Broker Guide</p>
                     </div>
                 </div>
-                <button onclick="handleLogout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-4 py-2 rounded-lg text-sm transition">
-                    <i class="fa-solid fa-sign-out-alt mr-1"></i> Logout
-                </button>
+                <div class="flex items-center gap-3">
+                    <span class="text-zinc-400 text-sm hidden md:inline">
+                        <i class="fa-solid fa-user-shield text-red-500 mr-1"></i>
+                        <span id="admin-email">admin@example.com</span>
+                    </span>
+                    <button onclick="logoutUser()" class="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-900/30 text-xs font-bold py-2 px-4 rounded-lg transition">
+                        <i class="fa-solid fa-sign-out-alt mr-1"></i> Logout
+                    </button>
+                </div>
             </div>
         </nav>
 
         <!-- Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-6">
-            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-                <p class="text-zinc-500 text-xs">Total Students</p>
-                <p class="text-2xl font-bold text-white" id="stat-students">0</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 p-4 md:p-6">
+            <div class="admin-card p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-zinc-500 text-xs uppercase tracking-wider">Total Students</p>
+                        <p class="text-2xl font-bold text-white mt-1" id="total-students">0</p>
+                    </div>
+                    <div class="stat-icon bg-blue-600/20 text-blue-400"><i class="fa-solid fa-users"></i></div>
+                </div>
             </div>
-            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-                <p class="text-zinc-500 text-xs">Total Lessons</p>
-                <p class="text-2xl font-bold text-white" id="stat-lessons">0</p>
+            <div class="admin-card p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-zinc-500 text-xs uppercase tracking-wider">Total Lessons</p>
+                        <p class="text-2xl font-bold text-white mt-1" id="total-lessons">0</p>
+                    </div>
+                    <div class="stat-icon bg-green-600/20 text-green-400"><i class="fa-solid fa-book"></i></div>
+                </div>
             </div>
-            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-                <p class="text-zinc-500 text-xs">Completed</p>
-                <p class="text-2xl font-bold text-white" id="stat-completed">0</p>
+            <div class="admin-card p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-zinc-500 text-xs uppercase tracking-wider">Completed</p>
+                        <p class="text-2xl font-bold text-white mt-1" id="completed-courses">0</p>
+                    </div>
+                    <div class="stat-icon bg-yellow-600/20 text-yellow-400"><i class="fa-solid fa-trophy"></i></div>
+                </div>
             </div>
-            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-                <p class="text-zinc-500 text-xs">Avg Progress</p>
-                <p class="text-2xl font-bold text-white" id="stat-progress">0%</p>
+            <div class="admin-card p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-zinc-500 text-xs uppercase tracking-wider">Avg Progress</p>
+                        <p class="text-2xl font-bold text-white mt-1" id="avg-progress">0%</p>
+                    </div>
+                    <div class="stat-icon bg-purple-600/20 text-purple-400"><i class="fa-solid fa-chart-line"></i></div>
+                </div>
+            </div>
+            <div class="admin-card p-4 border-red-900/30 bg-red-950/10">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-zinc-500 text-xs uppercase tracking-wider">Total Income</p>
+                        <p class="text-2xl font-bold text-green-400 mt-1" id="total-income">Rs. 0</p>
+                    </div>
+                    <div class="stat-icon bg-green-600/20 text-green-400"><i class="fa-solid fa-rupee-sign"></i></div>
+                </div>
             </div>
         </div>
 
         <!-- Tabs -->
-        <div class="px-6">
-            <div class="flex gap-2 border-b border-zinc-800 pb-2">
-                <button onclick="showTab('students')" id="tab-students" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm">Students</button>
-                <button onclick="showTab('lessons')" id="tab-lessons" class="bg-zinc-800 text-zinc-400 hover:text-white px-4 py-2 rounded-lg text-sm transition">Lessons</button>
-                <button onclick="showTab('add')" id="tab-add" class="bg-zinc-800 text-zinc-400 hover:text-white px-4 py-2 rounded-lg text-sm transition">Add Lesson</button>
+        <div class="px-4 md:px-6">
+            <div class="flex flex-wrap gap-2 border-b border-zinc-800 pb-2">
+                <button onclick="switchTab('students')" id="tab-students" class="tab-active px-4 py-2 rounded-lg text-sm font-medium transition border">
+                    <i class="fa-solid fa-users mr-2"></i> Students
+                </button>
+                <button onclick="switchTab('lessons')" id="tab-lessons" class="tab-inactive px-4 py-2 rounded-lg text-sm font-medium transition border">
+                    <i class="fa-solid fa-book mr-2"></i> Lessons
+                </button>
+                <button onclick="switchTab('add-lesson')" id="tab-add-lesson" class="tab-inactive px-4 py-2 rounded-lg text-sm font-medium transition border">
+                    <i class="fa-solid fa-plus mr-2"></i> Add Lesson
+                </button>
             </div>
         </div>
 
-        <!-- Content -->
-        <div class="p-6">
-            <!-- Students -->
-            <div id="content-students">
-                <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-                    <h3 class="text-lg font-bold text-white mb-4">All Students</h3>
+        <!-- Tab Content -->
+        <div class="flex-1 p-4 md:p-6">
+            <!-- STUDENTS TAB -->
+            <div id="content-students" class="fade-in">
+                <div class="admin-card p-4 md:p-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                        <h3 class="text-lg font-bold text-white">All Students</h3>
+                        <button onclick="openAddStudentModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition">
+                            <i class="fa-solid fa-user-plus mr-1"></i> Add Student
+                        </button>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
                             <thead>
                                 <tr class="text-left text-zinc-500 border-b border-zinc-800">
-                                    <th class="pb-2">#</th>
-                                    <th class="pb-2">Name</th>
-                                    <th class="pb-2 hidden md:table-cell">Email</th>
-                                    <th class="pb-2">Progress</th>
-                                    <th class="pb-2 hidden sm:table-cell">Phone</th>
-                                    <th class="pb-2">Status</th>
+                                    <th class="pb-3 font-semibold">#</th>
+                                    <th class="pb-3 font-semibold">Name</th>
+                                    <th class="pb-3 font-semibold hidden md:table-cell">Email</th>
+                                    <th class="pb-3 font-semibold">Progress</th>
+                                    <th class="pb-3 font-semibold hidden sm:table-cell">Phone</th>
+                                    <th class="pb-3 font-semibold">Status</th>
+                                    <th class="pb-3 font-semibold">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="students-list"></tbody>
+                            <tbody id="students-table-body"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Lessons -->
-            <div id="content-lessons" class="hidden">
-                <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-                    <h3 class="text-lg font-bold text-white mb-4">All Lessons</h3>
+            <!-- LESSONS TAB -->
+            <div id="content-lessons" class="hidden fade-in">
+                <div class="admin-card p-4 md:p-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                        <h3 class="text-lg font-bold text-white">All Lessons <span class="text-zinc-500 text-sm font-normal">(Drag to reorder)</span></h3>
+                        <button onclick="switchTab('add-lesson')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition">
+                            <i class="fa-solid fa-plus mr-1"></i> Add New Lesson
+                        </button>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
                             <thead>
                                 <tr class="text-left text-zinc-500 border-b border-zinc-800">
-                                    <th class="pb-2">#</th>
-                                    <th class="pb-2">Title</th>
-                                    <th class="pb-2 hidden md:table-cell">Module</th>
-                                    <th class="pb-2 hidden sm:table-cell">Type</th>
-                                    <th class="pb-2">Actions</th>
+                                    <th class="pb-3 font-semibold">#</th>
+                                    <th class="pb-3 font-semibold">Title</th>
+                                    <th class="pb-3 font-semibold hidden md:table-cell">Module</th>
+                                    <th class="pb-3 font-semibold hidden sm:table-cell">Type</th>
+                                    <th class="pb-3 font-semibold">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="lessons-list"></tbody>
+                            <tbody id="lessons-table-body"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Add Lesson -->
-            <div id="content-add" class="hidden">
-                <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 max-w-3xl">
-                    <h3 class="text-lg font-bold text-white mb-4">Add New Lesson</h3>
+            <!-- ADD LESSON TAB -->
+            <div id="content-add-lesson" class="hidden fade-in">
+                <div class="admin-card p-4 md:p-6 max-w-3xl mx-auto">
+                    <h3 class="text-lg font-bold text-white mb-4">
+                        <i class="fa-solid fa-plus-circle text-red-500 mr-2"></i>
+                        <span id="add-lesson-title">Add New Lesson</span>
+                    </h3>
                     <form id="lesson-form" onsubmit="saveLesson(event)">
+                        <input type="hidden" id="edit-lesson-id" value="-1">
+                        
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
-                                <label class="text-zinc-400 text-xs font-bold uppercase">Type</label>
-                                <select id="lesson-type" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2 text-white">
-                                    <option value="video">Video</option>
-                                    <option value="quiz">Quiz</option>
+                                <label>Lesson Type</label>
+                                <select id="lesson-type" required onchange="toggleLessonFields()">
+                                    <option value="video">Video Lesson</option>
+                                    <option value="quiz">Quiz / MCQ</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="text-zinc-400 text-xs font-bold uppercase">Module</label>
-                                <input id="lesson-module" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2 text-white" placeholder="MODULE 01">
+                                <label>Module Name</label>
+                                <input type="text" id="lesson-module" placeholder="e.g., MODULE 01 - Basics" required>
                             </div>
                         </div>
+                        
                         <div class="mb-4">
-                            <label class="text-zinc-400 text-xs font-bold uppercase">Title</label>
-                            <input id="lesson-title" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2 text-white" placeholder="1.1 Course Overview">
+                            <label>Lesson Title</label>
+                            <input type="text" id="lesson-title-input" placeholder="e.g., 1.1 Course Overview" required>
                         </div>
+                        
                         <div class="mb-4">
-                            <label class="text-zinc-400 text-xs font-bold uppercase">Description</label>
-                            <textarea id="lesson-desc" rows="2" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2 text-white" placeholder="Description..."></textarea>
+                            <label>Description</label>
+                            <textarea id="lesson-desc-input" rows="2" placeholder="Lesson description..." required></textarea>
                         </div>
+                        
+                        <!-- Video Fields -->
                         <div id="video-fields">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                 <div>
-                                    <label class="text-zinc-400 text-xs font-bold uppercase">YouTube URL</label>
-                                    <input id="lesson-video" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2 text-white" placeholder="https://youtube.com/embed/...">
+                                    <label>Video URL (YouTube Embed)</label>
+                                    <input type="text" id="lesson-video" placeholder="https://www.youtube.com/embed/VIDEO_ID">
+                                    <p class="text-zinc-500 text-[10px] mt-1">Use Bunny.net embed link or YouTube embed link</p>
                                 </div>
                                 <div>
-                                    <label class="text-zinc-400 text-xs font-bold uppercase">PDF Link</label>
-                                    <input id="lesson-pdf" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2 text-white" placeholder="# or URL">
+                                    <label>PDF Link (Optional)</label>
+                                    <input type="text" id="lesson-pdf" placeholder="https://example.com/file.pdf or #">
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Quiz Fields -->
                         <div id="quiz-fields" class="hidden">
-                            <div id="questions-container" class="space-y-3 mb-4"></div>
-                            <button type="button" onclick="addQuestion()" class="bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-lg text-sm transition">+ Add Question</button>
+                            <div class="mb-4">
+                                <label class="text-sm font-bold text-white">Quiz Questions</label>
+                                <div id="questions-container" class="space-y-3">
+                                    <!-- Questions will be added here -->
+                                </div>
+                                <button type="button" onclick="addQuestionField()" class="mt-3 bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-lg text-sm transition">
+                                    <i class="fa-solid fa-plus mr-1"></i> Add Question
+                                </button>
+                            </div>
                         </div>
-                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-2 rounded-lg transition mt-4">Save Lesson</button>
+                        
+                        <div class="flex gap-3 mt-6">
+                            <button type="submit" class="btn-primary flex-1 md:flex-none px-8">
+                                <i class="fa-solid fa-save mr-2"></i> Save Lesson
+                            </button>
+                            <button type="button" onclick="resetLessonForm()" class="btn-secondary">
+                                <i class="fa-solid fa-times mr-1"></i> Cancel
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- ADD STUDENT MODAL -->
+    <div id="student-modal" class="hidden fixed inset-0 modal-overlay flex items-center justify-center p-4 z-[9999]">
+        <div class="modal-content p-6 max-w-md w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-white" id="student-modal-title">Add Student</h3>
+                <button onclick="closeStudentModal()" class="text-zinc-500 hover:text-white text-xl">&times;</button>
+            </div>
+            <form id="student-form" onsubmit="saveStudent(event)">
+                <input type="hidden" id="edit-student-id" value="">
+                <input type="hidden" id="edit-student-uid" value="">
+                <div class="mb-3">
+                    <label>Full Name</label>
+                    <input type="text" id="student-name" required placeholder="John Doe">
+                </div>
+                <div class="mb-3">
+                    <label>Email</label>
+                    <input type="email" id="student-email" required placeholder="student@example.com">
+                </div>
+                <div class="mb-3">
+                    <label>Phone</label>
+                    <input type="text" id="student-phone" placeholder="07XXXXXXXX">
+                </div>
+                <div class="mb-4">
+                    <label>Status</label>
+                    <select id="student-status">
+                        <option value="active">Active</option>
+                        <option value="disabled">Disabled</option>
+                    </select>
+                </div>
+                <div class="flex gap-3">
+                    <button type="submit" class="btn-primary flex-1">Save Student</button>
+                    <button type="button" onclick="closeStudentModal()" class="btn-secondary">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -204,7 +410,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, getDocs, collection, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDVJKSkNv2UQ3ZdCEiZav1XsBAa3xDO10E",
@@ -220,114 +426,133 @@
         const db = getFirestore(app);
 
         const ADMIN_EMAIL = "admin@example.com";
+        const COURSE_PRICE = 4900;
         let lessonsData = [];
         let studentsData = [];
+        let dragIndex = null;
 
-        // ============ LOGIN ============
-        window.handleLogin = async function(e) {
+        // ============ DEFAULT LESSONS (10 Samples) ============
+        const defaultLessons = [
+            { id: 0, type: "video", module: "MODULE 01 - Introduction", title: "1.1 What is Vehicle Brokerage?", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Learn the basics of vehicle brokerage and how the industry works.", pdf: "#" },
+            { id: 1, type: "video", module: "MODULE 01 - Introduction", title: "1.2 Types of Vehicles & Their Values", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Understand different vehicle types and how to determine their market value.", pdf: "#" },
+            { id: 2, type: "quiz", module: "MODULE 01 - Test", title: "1.3 Module 01 - Knowledge Check", desc: "Test your knowledge from Module 01.", questions: [
+                { q: "What is a vehicle broker?", a: ["A person who buys/sells vehicles", "A car mechanic", "A driving instructor"], correct: 0 },
+                { q: "Which factor is most important for vehicle valuation?", a: ["Age and condition", "Color", "Owner's age"], correct: 0 }
+            ]},
+            { id: 3, type: "video", module: "MODULE 02 - Sales & Marketing", title: "2.1 Effective Sales Techniques", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Learn proven sales techniques for vehicle brokers.", pdf: "#" },
+            { id: 4, type: "video", module: "MODULE 02 - Sales & Marketing", title: "2.2 Customer Relationship Management", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Build strong customer relationships for repeat business.", pdf: "#" },
+            { id: 5, type: "quiz", module: "MODULE 02 - Test", title: "2.3 Module 02 - Knowledge Check", desc: "Test your knowledge from Module 02.", questions: [
+                { q: "What does CRM stand for?", a: ["Customer Relationship Management", "Car Repair Method", "Credit Risk Management"], correct: 0 },
+                { q: "What is the most important factor in sales?", a: ["Building trust", "Low price", "Fast delivery"], correct: 0 }
+            ]},
+            { id: 6, type: "video", module: "MODULE 03 - Legal & Compliance", title: "3.1 Legal Requirements for Brokers", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Understand the legal requirements and regulations for vehicle brokers.", pdf: "#" },
+            { id: 7, type: "video", module: "MODULE 03 - Legal & Compliance", title: "3.2 Contracts and Agreements", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Learn how to create and manage contracts and agreements.", pdf: "#" },
+            { id: 8, type: "video", module: "MODULE 04 - Business Growth", title: "4.1 Scaling Your Broker Business", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Strategies to scale and grow your vehicle broker business.", pdf: "#" },
+            { id: 9, type: "quiz", module: "MODULE 04 - Final Test", title: "4.2 Final Comprehensive Exam", desc: "Final exam covering all modules.", questions: [
+                { q: "What is the key to successful vehicle brokering?", a: ["Knowledge and trust", "Low prices only", "Fast cars"], correct: 0 },
+                { q: "Which of these is a legal requirement for brokers?", a: ["Proper licensing", "Fancy office", "Company car"], correct: 0 },
+                { q: "How can you grow your broker business?", a: ["Build network and reputation", "Sell only expensive cars", "Work alone"], correct: 0 }
+            ]}
+        ];
+
+        // ============ AUTH ============
+        window.handleAuth = function(e) {
             e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-
-            showToast('Signing in...', 'info');
-
-            try {
-                const result = await signInWithEmailAndPassword(auth, email, password);
-                if (result.user.email === ADMIN_EMAIL) {
-                    showToast('Welcome Admin!', 'success');
-                } else {
-                    showToast('Access Denied! Admin only.', 'error');
-                    await signOut(auth);
-                }
-            } catch (error) {
-                let msg = 'Login failed!';
-                if (error.code === 'auth/user-not-found') msg = 'User not found!';
-                else if (error.code === 'auth/wrong-password') msg = 'Wrong password!';
-                else if (error.code === 'auth/invalid-email') msg = 'Invalid email!';
-                else msg = error.message;
-                showToast(msg, 'error');
-                console.error('Login error:', error);
-            }
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            if (email !== ADMIN_EMAIL) { showToast("Admin only!", "error"); return; }
+            showToast("Signing in...", "info");
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => showToast("Welcome Admin!", "success"))
+                .catch((err) => {
+                    let msg = "Login failed!";
+                    if (err.code === 'auth/user-not-found') msg = "User not found!";
+                    else if (err.code === 'auth/wrong-password') msg = "Wrong password!";
+                    else msg = err.message;
+                    showToast(msg, "error");
+                });
         };
 
-        window.handleLogout = function() {
-            signOut(auth);
-            showToast('Logged out!', 'info');
-        };
-
-        // ============ AUTH STATE ============
-        onAuthStateChanged(auth, async (user) => {
-            const loginPage = document.getElementById('login-page');
-            const dashboard = document.getElementById('admin-dashboard');
-
-            if (user && user.email === ADMIN_EMAIL) {
-                loginPage.classList.add('hidden');
-                dashboard.classList.remove('hidden');
-                await loadData();
-                renderAll();
-            } else {
-                loginPage.classList.remove('hidden');
-                dashboard.classList.add('hidden');
-                if (user) {
-                    await signOut(auth);
-                }
-            }
-        });
+        window.logoutUser = function() { signOut(auth); showToast("Logged out!", "info"); };
 
         // ============ LOAD DATA ============
-        async function loadData() {
+        async function loadLessons() {
             try {
-                // Load lessons
                 const docRef = doc(db, "admin", "lessons");
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     lessonsData = docSnap.data().lessons || [];
-                } else {
-                    lessonsData = [
-                        { id: 0, type: "video", module: "MODULE 01", title: "1.1 Course Overview", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Course introduction", pdf: "#" },
-                        { id: 1, type: "video", module: "MODULE 01", title: "1.2 Basics", video: "https://www.youtube.com/embed/dQw4w9WgXcQ", desc: "Basic concepts", pdf: "#" },
-                        { id: 2, type: "quiz", module: "MODULE 01 Test", title: "1.3 Quiz", desc: "Module 1 Quiz", questions: [{ q: "What is 2+2?", a: ["3", "4", "5"], correct: 1 }] }
-                    ];
+                }
+                if (lessonsData.length === 0) {
+                    lessonsData = defaultLessons;
                     await setDoc(docRef, { lessons: lessonsData });
                 }
+                renderLessonsTable();
+                updateStats();
+                return lessonsData;
+            } catch (error) {
+                console.error("Error loading lessons:", error);
+                lessonsData = defaultLessons;
+                renderLessonsTable();
+                updateStats();
+                return lessonsData;
+            }
+        }
 
-                // Load students
+        async function loadStudents() {
+            try {
                 const querySnapshot = await getDocs(collection(db, "students"));
                 studentsData = [];
                 querySnapshot.forEach((doc) => {
-                    studentsData.push({ uid: doc.id, ...doc.data() });
+                    const data = doc.data();
+                    studentsData.push({ uid: doc.id, ...data });
                 });
-
+                renderStudentsTable();
+                updateStats();
+                return studentsData;
             } catch (error) {
-                console.error('Load error:', error);
-                showToast('Error loading data!', 'error');
+                console.error("Error loading students:", error);
+                return [];
             }
         }
 
-        // ============ RENDER ============
-        function renderAll() {
-            renderStudents();
-            renderLessons();
-            renderStats();
+        async function saveLessonsToFirestore(lessons) {
+            try {
+                await setDoc(doc(db, "admin", "lessons"), { lessons: lessons });
+                lessonsData = lessons;
+                renderLessonsTable();
+                updateStats();
+                showToast("Lessons saved!", "success");
+            } catch (error) {
+                console.error("Error saving lessons:", error);
+                showToast("Error saving lessons!", "error");
+            }
         }
 
-        function renderStudents() {
-            const tbody = document.getElementById('students-list');
-            if (studentsData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-zinc-500 py-4">No students yet</td></tr>';
-                return;
-            }
+        // ============ RENDER STUDENTS ============
+        function renderStudentsTable() {
+            const tbody = document.getElementById('students-table-body');
             const total = lessonsData.length || 1;
+            let completed = 0;
+            let totalProgress = 0;
+            let income = 0;
+
             tbody.innerHTML = studentsData.map((s, i) => {
                 const progress = s.progress ? s.progress.length : 0;
                 const pct = Math.round((progress / total) * 100);
-                const status = pct === 100 ? '✅ Completed' : `${pct}%`;
+                totalProgress += pct;
+                if (pct === 100) completed++;
+                if (s.status !== 'disabled') income += COURSE_PRICE;
+
+                const statusClass = s.status === 'disabled' ? 'badge-disabled' : (pct === 100 ? 'badge-completed' : 'badge-incomplete');
+                const statusText = s.status === 'disabled' ? 'Disabled ⛔' : (pct === 100 ? 'Completed ✅' : `${pct}%`);
+
                 return `
-                    <tr class="border-b border-zinc-800">
-                        <td class="py-2 text-zinc-500">${i+1}</td>
-                        <td class="py-2 text-white">${s.fullName || 'N/A'}</td>
-                        <td class="py-2 text-zinc-400 hidden md:table-cell">${s.email || 'N/A'}</td>
-                        <td class="py-2">
+                    <tr class="table-row">
+                        <td class="py-3 text-zinc-500">${i+1}</td>
+                        <td class="py-3 text-white font-medium">${s.fullName || 'N/A'}</td>
+                        <td class="py-3 text-zinc-400 hidden md:table-cell">${s.email || 'N/A'}</td>
+                        <td class="py-3">
                             <div class="flex items-center gap-2">
                                 <div class="w-20 bg-zinc-800 rounded-full h-1.5">
                                     <div class="bg-red-600 h-1.5 rounded-full" style="width:${pct}%"></div>
@@ -335,153 +560,417 @@
                                 <span class="text-xs text-zinc-400">${pct}%</span>
                             </div>
                         </td>
-                        <td class="py-2 text-zinc-400 hidden sm:table-cell">${s.phone || 'N/A'}</td>
-                        <td class="py-2 ${pct === 100 ? 'text-green-400' : 'text-yellow-400'}">${status}</td>
+                        <td class="py-3 text-zinc-400 hidden sm:table-cell">${s.phone || 'N/A'}</td>
+                        <td class="py-3"><span class="${statusClass}">${statusText}</span></td>
+                        <td class="py-3">
+                            <div class="flex gap-1">
+                                <button onclick="editStudent('${s.uid}')" class="btn-edit"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="toggleStudentStatus('${s.uid}')" class="${s.status === 'disabled' ? 'btn-success' : 'btn-warning'}" style="background:#4a1a1a;color:#fca5a5;padding:6px 12px;border-radius:8px;font-size:12px;border:none;cursor:pointer;">
+                                    <i class="fa-solid ${s.status === 'disabled' ? 'fa-check' : 'fa-pause'}"></i>
+                                </button>
+                                <button onclick="deleteStudent('${s.uid}')" class="btn-danger"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
                     </tr>
                 `;
             }).join('');
+
+            document.getElementById('total-students').textContent = studentsData.length;
+            document.getElementById('completed-courses').textContent = completed;
+            document.getElementById('avg-progress').textContent = studentsData.length > 0 ? Math.round(totalProgress / studentsData.length) + '%' : '0%';
+            document.getElementById('total-income').textContent = `Rs. ${income.toLocaleString()}`;
         }
 
-        function renderLessons() {
-            const tbody = document.getElementById('lessons-list');
+        // ============ RENDER LESSONS (with Drag & Drop) ============
+        function renderLessonsTable() {
+            const tbody = document.getElementById('lessons-table-body');
             if (lessonsData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center text-zinc-500 py-4">No lessons yet</td></tr>';
+                document.getElementById('total-lessons').textContent = '0';
                 return;
             }
+
             tbody.innerHTML = lessonsData.map((l, i) => `
-                <tr class="border-b border-zinc-800">
-                    <td class="py-2 text-zinc-500">${i+1}</td>
-                    <td class="py-2 text-white">${l.title}</td>
-                    <td class="py-2 text-zinc-400 hidden md:table-cell">${l.module}</td>
-                    <td class="py-2 hidden sm:table-cell">
-                        <span class="text-xs px-2 py-1 rounded ${l.type === 'video' ? 'bg-blue-600/20 text-blue-400' : 'bg-yellow-600/20 text-yellow-400'}">
-                            ${l.type === 'video' ? '🎬' : '📝'} ${l.type}
+                <tr class="table-row drag-item" draggable="true" data-index="${i}" 
+                    ondragstart="onDragStart(event, ${i})" 
+                    ondragover="onDragOver(event)" 
+                    ondragend="onDragEnd(event)"
+                    ondrop="onDrop(event, ${i})">
+                    <td class="py-3 text-zinc-500 drag-handle">
+                        <i class="fa-solid fa-grip-vertical text-zinc-600"></i> ${i+1}
+                    </td>
+                    <td class="py-3 text-white font-medium">${l.title}</td>
+                    <td class="py-3 text-zinc-400 hidden md:table-cell">${l.module}</td>
+                    <td class="py-3 hidden sm:table-cell">
+                        <span class="text-xs px-2 py-1 rounded-full ${l.type === 'video' ? 'bg-blue-600/20 text-blue-400' : 'bg-yellow-600/20 text-yellow-400'}">
+                            ${l.type === 'video' ? '🎬 Video' : '📝 Quiz'}
                         </span>
                     </td>
-                    <td class="py-2">
-                        <button onclick="deleteLesson(${i})" class="text-red-500 hover:text-red-400 text-sm">Delete</button>
+                    <td class="py-3">
+                        <div class="flex gap-1">
+                            <button onclick="editLesson(${i})" class="btn-edit"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteLesson(${i})" class="btn-danger"><i class="fa-solid fa-trash"></i></button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
+
+            document.getElementById('total-lessons').textContent = lessonsData.length;
         }
 
-        function renderStats() {
-            const total = lessonsData.length || 1;
-            const completed = studentsData.filter(s => s.progress && s.progress.length === total).length;
-            const avg = studentsData.length > 0 ? Math.round(studentsData.reduce((sum, s) => sum + ((s.progress ? s.progress.length : 0) / total * 100), 0) / studentsData.length) : 0;
+        // ============ DRAG & DROP ============
+        window.onDragStart = function(e, index) {
+            dragIndex = index;
+            e.dataTransfer.effectAllowed = 'move';
+            e.target.closest('tr').classList.add('dragging');
+        };
+
+        window.onDragOver = function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const target = e.target.closest('tr');
+            if (target) target.classList.add('drag-over');
+        };
+
+        window.onDragEnd = function(e) {
+            document.querySelectorAll('.drag-item').forEach(el => {
+                el.classList.remove('dragging', 'drag-over');
+            });
+        };
+
+        window.onDrop = async function(e, dropIndex) {
+            e.preventDefault();
+            document.querySelectorAll('.drag-item').forEach(el => {
+                el.classList.remove('dragging', 'drag-over');
+            });
             
-            document.getElementById('stat-students').textContent = studentsData.length;
-            document.getElementById('stat-lessons').textContent = lessonsData.length;
-            document.getElementById('stat-completed').textContent = completed;
-            document.getElementById('stat-progress').textContent = avg + '%';
-        }
+            if (dragIndex === null || dragIndex === dropIndex) return;
+            
+            const [moved] = lessonsData.splice(dragIndex, 1);
+            lessonsData.splice(dropIndex, 0, moved);
+            lessonsData.forEach((l, i) => l.id = i);
+            
+            await saveLessonsToFirestore(lessonsData);
+            renderLessonsTable();
+            updateStats();
+            dragIndex = null;
+            showToast("Lessons reordered!", "success");
+        };
 
-        // ============ TABS ============
-        window.showTab = function(tab) {
-            ['students', 'lessons', 'add'].forEach(t => {
+        // ============ STUDENT CRUD ============
+        window.openAddStudentModal = function() {
+            document.getElementById('student-modal-title').textContent = 'Add Student';
+            document.getElementById('edit-student-id').value = '';
+            document.getElementById('edit-student-uid').value = '';
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-email').value = '';
+            document.getElementById('student-phone').value = '';
+            document.getElementById('student-status').value = 'active';
+            document.getElementById('student-modal').classList.remove('hidden');
+        };
+
+        window.editStudent = async function(uid) {
+            const s = studentsData.find(st => st.uid === uid);
+            if (!s) return;
+            document.getElementById('student-modal-title').textContent = 'Edit Student';
+            document.getElementById('edit-student-id').value = s.uid;
+            document.getElementById('edit-student-uid').value = s.uid;
+            document.getElementById('student-name').value = s.fullName || '';
+            document.getElementById('student-email').value = s.email || '';
+            document.getElementById('student-phone').value = s.phone || '';
+            document.getElementById('student-status').value = s.status || 'active';
+            document.getElementById('student-modal').classList.remove('hidden');
+        };
+
+        window.saveStudent = async function(e) {
+            e.preventDefault();
+            const uid = document.getElementById('edit-student-uid').value;
+            const name = document.getElementById('student-name').value;
+            const email = document.getElementById('student-email').value;
+            const phone = document.getElementById('student-phone').value;
+            const status = document.getElementById('student-status').value;
+
+            if (uid) {
+                // Update existing
+                await updateDoc(doc(db, "students", uid), {
+                    fullName: name,
+                    email: email,
+                    phone: phone,
+                    status: status
+                });
+                showToast("Student updated!", "success");
+            } else {
+                // Add new - need to create auth user first
+                showToast("Please add student via Firebase Console for now.", "warning");
+            }
+            closeStudentModal();
+            await loadStudents();
+        };
+
+        window.toggleStudentStatus = async function(uid) {
+            const s = studentsData.find(st => st.uid === uid);
+            if (!s) return;
+            const newStatus = s.status === 'disabled' ? 'active' : 'disabled';
+            await updateDoc(doc(db, "students", uid), { status: newStatus });
+            await loadStudents();
+            showToast(`Student ${newStatus === 'active' ? 'enabled' : 'disabled'}!`, "success");
+        };
+
+        window.deleteStudent = async function(uid) {
+            if (!confirm('Delete this student?')) return;
+            await deleteDoc(doc(db, "students", uid));
+            await loadStudents();
+            showToast("Student deleted!", "success");
+        };
+
+        window.closeStudentModal = function() {
+            document.getElementById('student-modal').classList.add('hidden');
+        };
+
+        // ============ LESSON CRUD ============
+        window.switchTab = function(tab) {
+            ['students', 'lessons', 'add-lesson'].forEach(t => {
+                document.getElementById(`tab-${t}`).className = `px-4 py-2 rounded-lg text-sm font-medium transition border ${t === tab ? 'tab-active' : 'tab-inactive'}`;
                 document.getElementById(`content-${t}`).classList.add('hidden');
-                document.getElementById(`tab-${t}`).className = 'bg-zinc-800 text-zinc-400 hover:text-white px-4 py-2 rounded-lg text-sm transition';
             });
             document.getElementById(`content-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-${tab}`).className = 'bg-red-600 text-white px-4 py-2 rounded-lg text-sm';
+            if (tab === 'add-lesson') {
+                document.getElementById('add-lesson-title').textContent = 'Add New Lesson';
+                document.getElementById('edit-lesson-id').value = '-1';
+                resetLessonForm();
+            }
         };
 
-        // ============ QUESTIONS ============
-        let qCount = 0;
-        window.addQuestion = function() {
+        window.toggleLessonFields = function() {
+            const type = document.getElementById('lesson-type').value;
+            document.getElementById('video-fields').classList.toggle('hidden', type === 'quiz');
+            document.getElementById('quiz-fields').classList.toggle('hidden', type === 'video');
+        };
+
+        let questionCounter = 0;
+        window.addQuestionField = function() {
             const container = document.getElementById('questions-container');
-            const div = document.createElement('div');
-            div.className = 'bg-zinc-950 p-3 rounded-lg border border-zinc-700';
-            div.innerHTML = `
-                <input type="text" class="q-text w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2 text-white mb-2" placeholder="Question">
-                <input type="text" class="q-opt w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2 text-white mb-1" placeholder="Option 1">
-                <input type="text" class="q-opt w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2 text-white mb-1" placeholder="Option 2">
-                <input type="text" class="q-opt w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2 text-white mb-1" placeholder="Option 3">
-                <input type="text" class="q-opt w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2 text-white mb-2" placeholder="Option 4">
-                <input type="number" class="q-correct w-20 bg-zinc-900 border border-zinc-700 rounded-lg p-2 text-white" placeholder="Correct (0-3)" value="0">
-                <button type="button" onclick="this.parentElement.remove()" class="text-red-500 text-sm mt-2">Remove</button>
+            const qDiv = document.createElement('div');
+            qDiv.className = 'bg-zinc-950 p-4 rounded-lg border border-zinc-800';
+            qDiv.id = `question-${questionCounter}`;
+            qDiv.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-sm font-bold text-white">Question ${questionCounter + 1}</span>
+                    <button type="button" onclick="removeQuestion('question-${questionCounter}')" class="text-red-500 hover:text-red-400 text-sm">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+                <div class="mb-2">
+                    <input type="text" class="question-text" placeholder="Enter question..." style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:8px 12px;width:100%;">
+                </div>
+                <div class="space-y-1 mb-2">
+                    <label class="text-[10px] text-zinc-500">Options (select correct answer below)</label>
+                    <input type="text" class="question-option" placeholder="Option 1" style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:6px 12px;width:100%;">
+                    <input type="text" class="question-option" placeholder="Option 2" style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:6px 12px;width:100%;">
+                    <input type="text" class="question-option" placeholder="Option 3 (Optional)" style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:6px 12px;width:100%;">
+                    <input type="text" class="question-option" placeholder="Option 4 (Optional)" style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:6px 12px;width:100%;">
+                </div>
+                <div>
+                    <label style="font-size:11px;color:#a1a1aa;">Correct Answer</label>
+                    <div class="flex gap-4 mt-1">
+                        ${[0,1,2,3].map(i => `
+                            <label class="flex items-center gap-1 text-sm text-zinc-400">
+                                <input type="radio" name="correct-${questionCounter}" value="${i}" ${i === 0 ? 'checked' : ''} class="accent-red-600">
+                                Option ${i+1}
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
             `;
-            container.appendChild(div);
-            qCount++;
+            container.appendChild(qDiv);
+            questionCounter++;
         };
 
-        // ============ SAVE LESSON ============
+        window.removeQuestion = function(id) {
+            document.getElementById(id).remove();
+        };
+
+        window.resetLessonForm = function() {
+            document.getElementById('lesson-form').reset();
+            document.getElementById('edit-lesson-id').value = '-1';
+            document.getElementById('add-lesson-title').textContent = 'Add New Lesson';
+            document.getElementById('questions-container').innerHTML = '';
+            questionCounter = 0;
+            toggleLessonFields();
+        };
+
         window.saveLesson = async function(e) {
             e.preventDefault();
             
+            const editId = parseInt(document.getElementById('edit-lesson-id').value);
             const type = document.getElementById('lesson-type').value;
             const module = document.getElementById('lesson-module').value;
-            const title = document.getElementById('lesson-title').value;
-            const desc = document.getElementById('lesson-desc').value;
-
+            const title = document.getElementById('lesson-title-input').value;
+            const desc = document.getElementById('lesson-desc-input').value;
+            
             let lesson = {
-                id: lessonsData.length,
+                id: editId >= 0 ? editId : lessonsData.length,
                 type: type,
                 module: module,
                 title: title,
                 desc: desc
             };
-
+            
             if (type === 'video') {
-                lesson.video = document.getElementById('lesson-video').value || '#';
+                lesson.video = document.getElementById('lesson-video').value || 'https://www.youtube.com/embed/dQw4w9WgXcQ';
                 lesson.pdf = document.getElementById('lesson-pdf').value || '#';
             } else {
-                const qTexts = document.querySelectorAll('.q-text');
-                const qOpts = document.querySelectorAll('.q-opt');
-                const qCorrects = document.querySelectorAll('.q-correct');
-                
+                const qDivs = document.querySelectorAll('#questions-container > div');
                 const questions = [];
-                for (let i = 0; i < qTexts.length; i++) {
-                    const opts = [];
-                    for (let j = 0; j < 4; j++) {
-                        const opt = qOpts[i * 4 + j];
-                        if (opt && opt.value.trim()) opts.push(opt.value.trim());
+                qDivs.forEach((div) => {
+                    const qText = div.querySelector('.question-text')?.value?.trim();
+                    const options = [];
+                    div.querySelectorAll('.question-option').forEach(opt => {
+                        if (opt.value.trim()) options.push(opt.value.trim());
+                    });
+                    const correctRadio = div.querySelector('input[type="radio"]:checked');
+                    const correct = correctRadio ? parseInt(correctRadio.value) : 0;
+                    if (qText && options.length >= 2) {
+                        questions.push({ q: qText, a: options, correct: correct });
                     }
-                    if (qTexts[i].value.trim() && opts.length >= 2) {
-                        questions.push({
-                            q: qTexts[i].value.trim(),
-                            a: opts,
-                            correct: parseInt(qCorrects[i]?.value || 0)
-                        });
-                    }
-                }
+                });
                 lesson.questions = questions;
             }
-
-            lessonsData.push(lesson);
-            await setDoc(doc(db, "admin", "lessons"), { lessons: lessonsData });
-            renderLessons();
-            renderStats();
-            document.getElementById('lesson-form').reset();
-            document.getElementById('questions-container').innerHTML = '';
-            showToast('Lesson saved!', 'success');
+            
+            if (editId >= 0) {
+                lessonsData[editId] = lesson;
+            } else {
+                lessonsData.push(lesson);
+            }
+            
+            await saveLessonsToFirestore(lessonsData);
+            resetLessonForm();
+            switchTab('lessons');
+            showToast("Lesson saved!", "success");
         };
 
-        // ============ DELETE LESSON ============
+        window.editLesson = function(index) {
+            const lesson = lessonsData[index];
+            if (!lesson) return;
+            
+            document.getElementById('edit-lesson-id').value = index;
+            document.getElementById('add-lesson-title').textContent = 'Edit Lesson';
+            document.getElementById('lesson-type').value = lesson.type;
+            document.getElementById('lesson-module').value = lesson.module || '';
+            document.getElementById('lesson-title-input').value = lesson.title || '';
+            document.getElementById('lesson-desc-input').value = lesson.desc || '';
+            document.getElementById('lesson-video').value = lesson.video || '';
+            document.getElementById('lesson-pdf').value = lesson.pdf || '#';
+            
+            if (lesson.type === 'quiz' && lesson.questions) {
+                document.getElementById('questions-container').innerHTML = '';
+                questionCounter = 0;
+                lesson.questions.forEach((q) => {
+                    const container = document.getElementById('questions-container');
+                    const qDiv = document.createElement('div');
+                    qDiv.className = 'bg-zinc-950 p-4 rounded-lg border border-zinc-800';
+                    qDiv.id = `question-${questionCounter}`;
+                    qDiv.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-sm font-bold text-white">Question ${questionCounter + 1}</span>
+                            <button type="button" onclick="removeQuestion('question-${questionCounter}')" class="text-red-500 hover:text-red-400 text-sm">
+                                <i class="fa-solid fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" class="question-text" value="${q.q || ''}" placeholder="Enter question..." style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:8px 12px;width:100%;">
+                        </div>
+                        <div class="space-y-1 mb-2">
+                            <label class="text-[10px] text-zinc-500">Options (select correct answer below)</label>
+                            ${[0,1,2,3].map(i => `
+                                <input type="text" class="question-option" value="${q.a[i] || ''}" placeholder="Option ${i+1}" style="background:#0d0d0f;border:1px solid #27272a;color:white;border-radius:8px;padding:6px 12px;width:100%;">
+                            `).join('')}
+                        </div>
+                        <div>
+                            <label style="font-size:11px;color:#a1a1aa;">Correct Answer</label>
+                            <div class="flex gap-4 mt-1">
+                                ${[0,1,2,3].map(i => `
+                                    <label class="flex items-center gap-1 text-sm text-zinc-400">
+                                        <input type="radio" name="correct-${questionCounter}" value="${i}" ${i === q.correct ? 'checked' : ''} class="accent-red-600">
+                                        Option ${i+1}
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(qDiv);
+                    questionCounter++;
+                });
+            }
+            
+            toggleLessonFields();
+            switchTab('add-lesson');
+        };
+
         window.deleteLesson = async function(index) {
             if (!confirm('Delete this lesson?')) return;
             lessonsData.splice(index, 1);
             lessonsData.forEach((l, i) => l.id = i);
-            await setDoc(doc(db, "admin", "lessons"), { lessons: lessonsData });
-            renderLessons();
-            renderStats();
-            showToast('Lesson deleted!', 'success');
+            await saveLessonsToFirestore(lessonsData);
+            showToast("Lesson deleted!", "success");
         };
+
+        // ============ UPDATE STATS ============
+        function updateStats() {
+            const total = lessonsData.length || 1;
+            const completed = studentsData.filter(s => s.progress && s.progress.length === total && s.status !== 'disabled').length;
+            const avg = studentsData.filter(s => s.status !== 'disabled').length > 0 ? 
+                Math.round(studentsData.filter(s => s.status !== 'disabled').reduce((sum, s) => sum + ((s.progress ? s.progress.length : 0) / total * 100), 0) / studentsData.filter(s => s.status !== 'disabled').length) : 0;
+            
+            document.getElementById('total-students').textContent = studentsData.filter(s => s.status !== 'disabled').length;
+            document.getElementById('total-lessons').textContent = lessonsData.length;
+            document.getElementById('completed-courses').textContent = completed;
+            document.getElementById('avg-progress').textContent = avg + '%';
+            
+            const income = studentsData.filter(s => s.status !== 'disabled').length * COURSE_PRICE;
+            document.getElementById('total-income').textContent = `Rs. ${income.toLocaleString()}`;
+        }
 
         // ============ TOAST ============
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `toast ${type === 'success' ? 'toast-success' : ''}`;
+            toast.className = `toast-notification toast-${type}`;
             toast.textContent = msg;
             container.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 3000);
+            setTimeout(() => toast.remove(), 3000);
         }
 
+        // ============ AUTH STATE ============
+        onAuthStateChanged(auth, async (user) => {
+            const authView = document.getElementById('auth-container');
+            const dashboard = document.getElementById('admin-dashboard');
+
+            if (user && user.email === ADMIN_EMAIL) {
+                authView.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+                document.getElementById('admin-email').textContent = user.email;
+                await loadLessons();
+                await loadStudents();
+                switchTab('students');
+            } else if (user && user.email !== ADMIN_EMAIL) {
+                showToast("Access Denied. Admin only.", "error");
+                signOut(auth);
+            } else {
+                authView.classList.remove('hidden');
+                dashboard.classList.add('hidden');
+            }
+        });
+
         // ============ INIT ============
-        // Show students tab by default
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('tab-students').click();
+            toggleLessonFields();
+            // Add sample question for demo
+            setTimeout(() => {
+                if (document.getElementById('questions-container').children.length === 0) {
+                    addQuestionField();
+                }
+            }, 500);
         });
 
     </script>
