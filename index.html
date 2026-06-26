@@ -133,6 +133,14 @@
 
         <div class="flex-1 flex flex-col lg:flex-row w-full mx-auto max-w-[1920px]">
             <aside class="w-full lg:w-80 bg-black border-b lg:border-b-0 lg:border-r border-zinc-800 flex flex-col shrink-0 max-h-[280px] lg:max-h-none">
+                <!-- Course Header in Sidebar -->
+                <div class="p-4 border-b border-zinc-800 bg-gradient-to-r from-red-950/20 to-transparent">
+                    <h2 class="text-xs font-bold text-amber-400 tracking-wider uppercase text-center">
+                        <i class="fa-solid fa-graduation-cap mr-2"></i>SmartBroker LMS PRO
+                    </h2>
+                    <p class="text-[9px] text-zinc-500 text-center mt-0.5">Vehicle Broker Master Course</p>
+                </div>
+                
                 <div class="p-3 border-b border-zinc-800 bg-zinc-900/20 flex justify-between items-center">
                     <h3 class="font-bold text-xs uppercase tracking-wider text-zinc-400">Curriculum</h3>
                     <span class="lg:hidden text-[10px] text-zinc-500">Scroll down to view lessons</span>
@@ -226,6 +234,28 @@
         </div>
     </div>
 
+    <!-- WELCOME POPUP -->
+    <div id="welcome-popup" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[9998]">
+        <div class="bg-gradient-to-br from-zinc-900 to-black border border-amber-500/30 rounded-2xl p-6 md:p-8 max-w-md w-full text-center shadow-2xl success-popup">
+            <div class="text-5xl md:text-6xl mb-3">🚗</div>
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-2" id="welcome-greeting">ආයුබෝවන්!</h2>
+            <p class="text-zinc-300 text-sm md:text-base leading-relaxed mb-4">
+                <span id="welcome-student-name" class="text-amber-400 font-bold">Student</span>!
+            </p>
+            <div class="bg-zinc-800/50 rounded-xl p-4 mb-5 border border-amber-500/20">
+                <p class="text-zinc-400 text-xs uppercase tracking-wider">🎯 <span id="welcome-message-text">ඔබගේ පැතිකඩ සම්පූර්ණ කර ඉගෙනුම ආරම්භ කරන්න!</span></p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="closeWelcomePopupAndOpenProfile()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-black font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-user-pen"></i> පැතිකඩ පුරවන්න
+                </button>
+                <button onclick="closeWelcomePopup()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 px-4 rounded-xl transition text-sm">
+                    පසුව කරන්න
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- SUCCESS POPUP -->
     <div id="success-popup" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[9999]">
         <div class="success-popup bg-gradient-to-br from-zinc-900 to-black border-2 border-amber-500 rounded-2xl p-6 md:p-10 max-w-md w-full text-center shadow-2xl">
@@ -312,6 +342,7 @@
         let completedLessons = [];
         let studentNameSaved = "Student";
         let hasShownSuccess = false;
+        let hasShownWelcome = false;
 
         function renderSidebar() {
             const container = document.getElementById('lessons-list');
@@ -453,7 +484,6 @@
             renderSidebar();
             calculateProgress();
             
-            // Check if course is now complete
             if (completedLessons.length === courseData.length && !hasShownSuccess) {
                 hasShownSuccess = true;
                 showSuccessPopup();
@@ -467,7 +497,6 @@
                 renderSidebar();
                 calculateProgress();
                 
-                // Check if course is now complete
                 if (completedLessons.length === courseData.length && !hasShownSuccess) {
                     hasShownSuccess = true;
                     showSuccessPopup();
@@ -481,23 +510,19 @@
             const completedCount = completedLessons.length;
             let percentage = Math.round((completedCount / totalLessons) * 100);
             
-            // Update desktop progress
             const progressText = document.getElementById('progress-text');
             const progressBar = document.getElementById('progress-bar');
             if (progressText) progressText.innerText = `${percentage}%`;
             if (progressBar) progressBar.style.width = `${percentage}%`;
             
-            // Update mobile progress
             const progressBarMobile = document.getElementById('progress-bar-mobile');
             const progressTextMobile = document.getElementById('progress-text-mobile');
             if (progressBarMobile) progressBarMobile.style.width = `${percentage}%`;
             if (progressTextMobile) progressTextMobile.innerText = `${percentage}%`;
             
-            // Show/hide certificate button
             const certBox = document.getElementById('sidebar-cert-box');
             if (percentage === 100) {
                 certBox.classList.remove('hidden');
-                // Check if we need to show success popup (only if not shown yet)
                 if (!hasShownSuccess && completedCount === totalLessons) {
                     hasShownSuccess = true;
                     showSuccessPopup();
@@ -505,8 +530,6 @@
             } else {
                 certBox.classList.add('hidden');
             }
-            
-            console.log(`Progress: ${completedCount}/${totalLessons} = ${percentage}%`);
         }
 
         async function syncProgressToFirebase() {
@@ -517,7 +540,6 @@
                     email: currentUser.email, 
                     fullName: studentNameSaved 
                 }, { merge: true });
-                console.log("Progress synced to Firebase:", completedLessons);
             } catch (error) {
                 console.error("Sync error:", error);
             }
@@ -607,6 +629,40 @@
                     piece.remove();
                 }, (delay + duration) * 1000 + 500);
             }
+        }
+
+        // Welcome Popup Functions
+        function showWelcomePopup(studentName) {
+            const popup = document.getElementById('welcome-popup');
+            if (!popup) return;
+            
+            const hour = new Date().getHours();
+            let greeting = "ආයුබෝවන්";
+            if (hour >= 5 && hour < 12) greeting = "🌅 සුබ උදෑසනක්";
+            else if (hour >= 12 && hour < 18) greeting = "☀️ සුබ මධ්‍යාහ්නයක්";
+            else greeting = "🌙 සුබ සන්ධ්‍යාවක්";
+            
+            document.getElementById('welcome-greeting').innerText = greeting;
+            document.getElementById('welcome-student-name').innerText = studentName || "Student";
+            
+            const hasProfile = document.getElementById('profile-name').value.trim() !== "";
+            if (!hasProfile) {
+                document.getElementById('welcome-message-text').innerHTML = '📝 කරුණාකර ඔබගේ පැතිකඩ සම්පූර්ණ කරන්න. ඉන්පසු ඔබගේ පාඨමාලාව ආරම්භ කරන්න!';
+            } else {
+                const lastLesson = document.getElementById('lesson-title')?.innerText || "පාඩම";
+                document.getElementById('welcome-message-text').innerHTML = `📚 ඔබ අවසන් වරට බැලූ "${lastLesson}" පාඩමේ සිට ඉදිරියට යන්න!`;
+            }
+            
+            popup.classList.remove('hidden');
+        }
+
+        window.closeWelcomePopup = function() {
+            document.getElementById('welcome-popup').classList.add('hidden');
+        }
+
+        window.closeWelcomePopupAndOpenProfile = function() {
+            closeWelcomePopup();
+            toggleProfileModal();
         }
 
         function showToast(message, type = 'info') {
@@ -705,12 +761,18 @@
                 selectLesson(savedLessonIndex); 
                 calculateProgress();
                 
+                // Show welcome popup after login
+                setTimeout(() => {
+                    showWelcomePopup(studentNameSaved || "Student");
+                }, 1500);
+                
                 showToast(`👋 සාදරයෙන් පිළිගනිමු ${studentNameSaved}!`, "success");
             } else {
                 currentUser = null;
                 authView.classList.remove("hidden");
                 dashboardView.classList.add("hidden");
                 hasShownSuccess = false;
+                hasShownWelcome = false;
             }
         });
 
@@ -720,6 +782,12 @@
         }
 
         document.getElementById('success-popup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('welcome-popup').addEventListener('click', function(e) {
             if (e.target === this) {
                 this.classList.add('hidden');
             }
